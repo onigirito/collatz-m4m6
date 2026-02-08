@@ -217,6 +217,21 @@
   </div>
 </div>
 
+<!-- ===== GPK NOTE ===== -->
+<div class="box box-warn" data-lang="en" class="show">
+<p class="box-label">&#9888; Note on GPK Statistics in 3n+1 Sweep Verification</p>
+<p>In the 3n+1 sweep verification, an efficiency optimization called the <b>stopping-time method</b> is used: once a trajectory value drops below the starting value <i>n</i>, the number is deemed to converge, and tracking stops immediately. This means GPK statistics are collected <b>only during the ascending phase</b> — the descending phase (where the value shrinks toward 1) is never executed.</p>
+<p>As a result, the GPK statistics show <b>G &gt; K (+3.66%)</b>, which the GUI labels as "divergence tendency." However, this is a <b>sampling bias</b> inherent to the stopping-time optimization. The descending phase — where K (Kill) events would dominate — is entirely excluded from the data. If the full trajectory down to 1 were tracked for every number, the G/K ratio would likely differ.</p>
+<p>The "divergence tendency" label in the GUI reflects this biased dataset and <b>does not indicate actual divergence</b>. For 3n+1, every number converges; the heuristic shrinkage factor per odd step is 3/4 (Lagarias, 1985), driven by the division by 2<sup>d</sup> that more than compensates for carry generation.</p>
+</div>
+
+<div class="box box-warn" data-lang="ja">
+<p class="box-label">&#9888; 3n+1 スイープ検証における GPK 統計の注意点</p>
+<p>3n+1 のスイープ検証では、<b>停止時間法</b>という効率化手法を使用しています。軌道の値が開始値 <i>n</i> 未満に戻った時点で収束と判定し、追跡を打ち切ります。そのため GPK 統計は<b>上昇フェーズのステップのみ</b>を集計しており、値が縮小して 1 に向かう下降フェーズは一切実行されません。</p>
+<p>この結果、GPK 統計では <b>G &gt; K（+3.66%）</b>となり、GUI 上で「発散傾向」と赤く表示されます。しかしこれは停止時間法に起因する<b>サンプリングバイアス</b>です。K（Kill）が多く出現するはずの下降フェーズのデータが丸ごと欠落しています。全軌道を 1 まで追跡した場合、G/K 比率は変わる可能性が高いです。</p>
+<p>GUI の「発散傾向」表示はこの偏ったデータに基づくものであり、<b>実際の発散を示すものではありません</b>。3n+1 では全数が収束し、1奇数ステップあたりの実効縮小率は 3/4 です（Lagarias, 1985）。÷2<sup>d</sup> による縮小がキャリー生成を上回ります。</p>
+</div>
+
 </div><!-- end page-home -->
 
 <!-- ========== PAGE: FEATURES ========== -->
