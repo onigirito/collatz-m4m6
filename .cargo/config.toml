@@ -1,0 +1,5 @@
+[env]
+PATH = { value = "C:\\msys64\\mingw64\\bin", force = false, relative = false }
+
+[target.x86_64-pc-windows-msvc]
+rustflags = ["-C", "target-feature=+crt-static"]
