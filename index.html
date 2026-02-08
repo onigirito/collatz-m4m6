@@ -9,11 +9,24 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Yu Gothic', 'Meiryo', sans-serif; line-height: 1.7; color: #222; background: var(--bg); }
 
-  /* Language switcher */
+  /* Language switcher + tab navigation */
   .lang-bar { background: var(--accent-dark); color: #fff; padding: 6px 20px; font-size: 0.85em; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
   .lang-bar .site-id { font-weight: 600; letter-spacing: 0.5px; }
   .lang-btn { background: none; border: 1px solid rgba(255,255,255,0.5); color: #fff; padding: 2px 10px; border-radius: 3px; cursor: pointer; margin-left: 4px; font-size: 0.85em; }
   .lang-btn.active { background: rgba(255,255,255,0.25); border-color: #fff; }
+
+  /* Tab navigation */
+  .nav-tabs { display: flex; gap: 2px; }
+  .nav-tab { background: none; border: none; color: rgba(255,255,255,0.7); padding: 6px 14px; cursor: pointer; font-size: 0.85em; border-radius: 4px 4px 0 0; white-space: nowrap; }
+  .nav-tab:hover { color: #fff; background: rgba(255,255,255,0.1); }
+  .nav-tab.active { color: #fff; background: rgba(255,255,255,0.2); font-weight: 600; }
+
+  /* Hamburger menu toggle */
+  .menu-toggle { display: none; background: none; border: 1px solid rgba(255,255,255,0.5); color: #fff; padding: 2px 8px; border-radius: 3px; cursor: pointer; font-size: 1.1em; line-height: 1; }
+
+  /* Page section switching */
+  .page-section { display: none; }
+  .page-section.active { display: block; }
 
   [data-lang] { display: none; }
   [data-lang].show { display: revert; }
@@ -80,23 +93,39 @@
     .content-inner { padding: 0 16px 40px; }
     .card-row { flex-direction: column; }
     .doc-cards { grid-template-columns: 1fr; }
+    .nav-tabs { display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--accent-dark); flex-direction: column; padding: 4px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+    .nav-tabs.open { display: flex; }
+    .nav-tab { text-align: left; padding: 10px 20px; border-radius: 0; }
+    .nav-tab.active { background: rgba(255,255,255,0.15); }
+    .menu-toggle { display: block; }
   }
 </style>
 </head>
 <body>
 
-<!-- ===== LANGUAGE BAR ===== -->
+<!-- ===== LANGUAGE BAR + TAB NAVIGATION ===== -->
 <div class="lang-bar">
   <span class="site-id">collatz-m4m6</span>
-  <div>
-    <button class="lang-btn active" onclick="setLang('en')" id="btn-en">English</button>
-    <button class="lang-btn" onclick="setLang('ja')" id="btn-ja">日本語</button>
+  <nav class="nav-tabs" id="nav-tabs">
+    <button class="nav-tab active" data-lang="en" data-page="home" onclick="setPage('home')">Home</button>
+    <button class="nav-tab" data-lang="en" data-page="features" onclick="setPage('features')">Features</button>
+    <button class="nav-tab" data-lang="en" data-page="technical" onclick="setPage('technical')">Technical</button>
+    <button class="nav-tab" data-lang="en" data-page="about" onclick="setPage('about')">About</button>
+    <button class="nav-tab active" data-lang="ja" data-page="home" onclick="setPage('home')">ホーム</button>
+    <button class="nav-tab" data-lang="ja" data-page="features" onclick="setPage('features')">機能</button>
+    <button class="nav-tab" data-lang="ja" data-page="technical" onclick="setPage('technical')">技術</button>
+    <button class="nav-tab" data-lang="ja" data-page="about" onclick="setPage('about')">概要</button>
+  </nav>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <button class="menu-toggle" onclick="toggleMenu()">&#9776;</button>
+    <button class="lang-btn active" onclick="setLang('en')" id="btn-en">EN</button>
+    <button class="lang-btn" onclick="setLang('ja')" id="btn-ja">JA</button>
   </div>
 </div>
 
 <div class="page-wrap">
 
-<!-- Hero -->
+<!-- Hero (always visible) -->
 <div class="hero">
   <h1 data-lang="en" class="show">Pair Predicate Decomposition Tool<br>for Collatz-type Maps \((xn+1)/2^d\)</h1>
   <h1 data-lang="ja">コラッツ型写像 \((xn+1)/2^d\) の<br>ペア述語分解ツール</h1>
@@ -105,6 +134,9 @@
 </div>
 
 <div class="content-inner">
+
+<!-- ========== PAGE: HOME ========== -->
+<div class="page-section active" id="page-home">
 
 <!-- ===== DOWNLOAD ===== -->
 <h2 id="download" data-lang="en" class="show">Download</h2>
@@ -151,35 +183,44 @@
 <h2 id="docs" data-lang="en" class="show">Documents</h2>
 <h2 id="docs-ja" data-lang="ja">ドキュメント</h2>
 
-<div class="doc-cards" data-lang="en" class="show">
-  <a class="doc-card" href="tool_description_en.html">
-    <h4>Tool Guide</h4>
-    <p>Usage instructions, settings, and tab descriptions for the tool.</p>
-  </a>
-  <a class="doc-card" href="TOOL_SPEC_en.html">
-    <h4>Tool Specification</h4>
-    <p>Module architecture, data flow, and GPK classification rules.</p>
-  </a>
-  <a class="doc-card" href="performance_report_en.html">
-    <h4>Performance Report</h4>
-    <p>Benchmarks, optimization history, and FPGA considerations.</p>
-  </a>
+<div data-lang="en" class="show">
+  <div class="doc-cards">
+    <a class="doc-card" href="tool_description_en.html">
+      <h4>Tool Guide</h4>
+      <p>Usage instructions, settings, and tab descriptions for the tool.</p>
+    </a>
+    <a class="doc-card" href="TOOL_SPEC_en.html">
+      <h4>Tool Specification</h4>
+      <p>Module architecture, data flow, and GPK classification rules.</p>
+    </a>
+    <a class="doc-card" href="performance_report_en.html">
+      <h4>Performance Report</h4>
+      <p>Benchmarks, optimization history, and FPGA considerations.</p>
+    </a>
+  </div>
 </div>
 
-<div class="doc-cards" data-lang="ja">
-  <a class="doc-card" href="tool_description.html">
-    <h4>ツール説明</h4>
-    <p>ツールの使い方・設定項目・タブの解説</p>
-  </a>
-  <a class="doc-card" href="TOOL_SPEC.html">
-    <h4>ツール仕様書</h4>
-    <p>モジュール構成・データフロー・GPK分類規則</p>
-  </a>
-  <a class="doc-card" href="performance_report.html">
-    <h4>パフォーマンス分析</h4>
-    <p>ベンチマーク・最適化履歴・FPGA検討</p>
-  </a>
+<div data-lang="ja">
+  <div class="doc-cards">
+    <a class="doc-card" href="tool_description.html">
+      <h4>ツール説明</h4>
+      <p>ツールの使い方・設定項目・タブの解説</p>
+    </a>
+    <a class="doc-card" href="TOOL_SPEC.html">
+      <h4>ツール仕様書</h4>
+      <p>モジュール構成・データフロー・GPK分類規則</p>
+    </a>
+    <a class="doc-card" href="performance_report.html">
+      <h4>パフォーマンス分析</h4>
+      <p>ベンチマーク・最適化履歴・FPGA検討</p>
+    </a>
+  </div>
 </div>
+
+</div><!-- end page-home -->
+
+<!-- ========== PAGE: FEATURES ========== -->
+<div class="page-section" id="page-features">
 
 <!-- ===== FEATURES ===== -->
 <h2 id="features" data-lang="en" class="show">Features</h2>
@@ -274,6 +315,11 @@
   <span data-lang="ja">49.9億個全数収束（最大停止時間 282, n = 2,788,008,987）</span>
 </div>
 
+</div><!-- end page-features -->
+
+<!-- ========== PAGE: TECHNICAL ========== -->
+<div class="page-section" id="page-technical">
+
 <!-- ===== PERFORMANCE ===== -->
 <h2 id="performance" data-lang="en" class="show">Performance</h2>
 <h2 id="performance-ja" data-lang="ja">パフォーマンス</h2>
@@ -363,24 +409,10 @@
 </ul>
 </div>
 
-<!-- ===== TOOL SPEC ===== -->
-<h2 id="spec" data-lang="en" class="show">Tool Specification</h2>
-<h2 id="spec-ja" data-lang="ja">ツール仕様書</h2>
+</div><!-- end page-technical -->
 
-<div data-lang="en" class="show">
-<p>Detailed technical specification including module architecture, data flow, dual-path design (trajectory vs stopping-time), GPK classification rules, GUI layout, output file formats, and performance characteristics.</p>
-<ul>
-<li><a href="TOOL_SPEC_en.html">Tool Specification</a></li>
-<li><a href="performance_report_en.html">Performance Analysis Report</a></li>
-</ul>
-</div>
-<div data-lang="ja">
-<p>モジュール構成、データフロー、二重パス設計（軌道追跡 vs 停止時間）、GPK分類規則、GUI仕様、出力ファイル形式、パフォーマンス特性を記載した詳細技術仕様書。</p>
-<ul>
-<li><a href="TOOL_SPEC.html">ツール仕様レポート</a></li>
-<li><a href="performance_report.html">パフォーマンス分析レポート</a></li>
-</ul>
-</div>
+<!-- ========== PAGE: ABOUT ========== -->
+<div class="page-section" id="page-about">
 
 <!-- ===== SOURCE ===== -->
 <h2 id="source" data-lang="en" class="show">Source Code</h2>
@@ -433,6 +465,8 @@
 </ul>
 </div>
 
+</div><!-- end page-about -->
+
 </div><!-- end content-inner -->
 
 <footer>
@@ -447,16 +481,38 @@
 <!-- MathJax for formulas -->
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
-<!-- Language switching -->
+<!-- Language switching + Tab navigation -->
 <script>
+var currentPage = 'home';
+
+function setPage(id) {
+  currentPage = id;
+  document.querySelectorAll('.page-section').forEach(function(el) {
+    el.classList.toggle('active', el.id === 'page-' + id);
+  });
+  document.querySelectorAll('.nav-tab').forEach(function(btn) {
+    btn.classList.toggle('active', btn.getAttribute('data-page') === id);
+  });
+  // Close mobile menu
+  document.getElementById('nav-tabs').classList.remove('open');
+  // Scroll to top
+  window.scrollTo(0, 0);
+}
+
+function toggleMenu() {
+  document.getElementById('nav-tabs').classList.toggle('open');
+}
+
 function setLang(lang) {
-  document.querySelectorAll('[data-lang]').forEach(el => {
+  document.querySelectorAll('[data-lang]').forEach(function(el) {
     el.classList.toggle('show', el.getAttribute('data-lang') === lang);
   });
   document.getElementById('btn-en').classList.toggle('active', lang === 'en');
   document.getElementById('btn-ja').classList.toggle('active', lang === 'ja');
   document.documentElement.lang = lang;
   localStorage.setItem('collatz-lang', lang);
+  // Re-apply active tab for new language
+  setPage(currentPage);
 }
 
 // Restore saved language or detect from browser
