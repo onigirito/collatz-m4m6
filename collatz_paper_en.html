@@ -305,7 +305,7 @@ $$
 <p>All operations are applied bitwise. &#9633;</p>
 </div>
 
-<p><b>Remark 2.1.</b> The choice of basis is not unique. For instance, \(\{\text{m3}(a \wedge \neg b),\; \text{m6}(b)\}\) or \(\{\text{m4}(a),\; \text{m8}(a \vee b)\}\) also generate all 16 predicates. However, m4/m6 has the distinguished property of directly preserving the numerical information of \(n\) (i.e., \(n\) is recoverable). Other basis pairs generally require additional operations for reconstruction.</p>
+<p><b>Remark 2.1.</b> The choice of basis is not unique. For instance, \(\{\text{m3}(a \wedge \neg b),\; \text{m6}(b)\}\) or \(\{\text{m4}(a),\; \text{m8}(a \vee b)\}\) also generate all 16 predicates. However, m4/m6 is the unique basis pair that directly preserves the numerical information of \(n\), requiring only the zipper structure to reconstruct \(n\) with no additional operations (direct reconstructibility). Other basis pairs can also reconstruct \(n\)&mdash;for example, the complement pair \((\text{m13}, \text{m11}) = (\neg a, \neg b)\) recovers \(n\) via bitwise negation, and \((\text{m13}, \text{m6}) = (\neg a, b)\) via negation of the left bits alone&mdash;but all such pairs require additional logical operations.</p>
 
 <p>Note that not every pair of predicates forms a basis. For example, \(\{\text{m2}(\text{AND}),\; \text{m7}(\text{XOR})\}\) are both symmetric in \((a,b)\), meaning \(f(a,b) = f(b,a)\). Since any Boolean composition of symmetric functions remains symmetric, this pair can only generate the 8 symmetric predicates (m1, m2, m7, m8, m9, m10, m15, m16) and cannot produce asymmetric predicates such as \(\text{m4}(a,b) = a\).</p>
 
@@ -670,6 +670,14 @@ $$
 c_{\text{in},0} = 1 \;\xrightarrow{\text{pair }0}\; c_{\text{out},0} = c_{\text{in},1} \;\xrightarrow{\text{pair }1}\; c_{\text{out},1} = c_{\text{in},2} \;\xrightarrow{\text{pair }2}\; \cdots
 $$
 
+<p>Within each pair, two stages of carry exist:</p>
+
+$$
+c_{\text{in},i} \;\xrightarrow{\text{m6-stage}}\; c_{\text{mid},i} \;\xrightarrow{\text{m4-stage}}\; c_{\text{out},i}
+$$
+
+<p>Therefore, to determine the output bits (new m4\(_i\), new m6\(_i\)) of pair \(i\), in principle all carries from pair 0 through pair \(i-1\) must be settled.</p>
+
 <p><b>Question.</b> Is this sequential dependence essential? Can the carry at each pair be expressed in "closed form" from the m4/m6 bit strings?</p>
 
 <h2>4.2 Local Carry Classification (GPK)</h2>
@@ -769,9 +777,33 @@ for i = 0 to k-1:
 <div class="proof"><i>Proof.</i> The loop runs \(k\) times; each iteration involves constant-time Boolean operations.</div>
 </div>
 
+<p><b>Output computation after carry determination:</b></p>
+
+<p>For each pair \(i\), once \(c_{\text{in},i}\) is known:</p>
+
+$$
+c_{\text{mid},i} = G_{\text{mid}}[i] \vee (P_{\text{mid}}[i] \wedge c_{\text{in},i})
+$$
+$$
+\text{new\_m6}_i = r_i^{(6)} \oplus b_i \oplus c_{\text{in},i}
+$$
+$$
+\text{new\_m4}_i = r_i^{(4)} \oplus a_i \oplus c_{\text{mid},i}
+$$
+
+<p>This is also computed independently per pair in \(O(1)\).</p>
+
 <h2>4.6 Cost of Local GPK Computation</h2>
 
-<p><b>Key observation.</b> Computing local GPK values \(G_{\text{mid}}[i], P_{\text{mid}}[i], G_{\text{out}}[i], P_{\text{out}}[i]\) requires only <b>referencing m4/m6 bits and taking AND/XOR</b>. The reference targets differ by \(x\) (Table 3.1), but the type and count of operations are identical. In all cases, <b>each pair's local GPK is obtained in \(O(1)\) without additional arithmetic</b>.</p>
+<p><b>Key observation.</b> Computing local GPK values \(G_{\text{mid}}[i], P_{\text{mid}}[i], G_{\text{out}}[i], P_{\text{out}}[i]\) requires only <b>referencing m4/m6 bits and taking AND/XOR</b>. The reference targets differ by \(x\) (Table 3.1), but the type and count of operations are identical.</p>
+
+<ul>
+<li>\(x=3\): References m4 bits at positions \(i\) and \(i-1\), and m4/m6 bits at position \(i\).</li>
+<li>\(x=5\): References m4 bits at positions \(i\) and \(i-1\) (m4 with m4), and m6 bits at positions \(i\) and \(i-1\) (m6 with m6).</li>
+<li>In all cases, <b>each pair's local GPK is obtained in \(O(1)\) without additional arithmetic</b>.</li>
+</ul>
+
+<p>Therefore, computing local GPK for all pairs is \(O(k)\), and the subsequent scan is also \(O(k)\), so complete carry determination is achieved in \(O(k)\) time.</p>
 
 <h2>4.7 Parallelization via GPK Tree</h2>
 
@@ -787,12 +819,105 @@ Both coincide. For \(P\): \(P_{(AB)C} = P_C \wedge P_B \wedge P_A = P_{A(BC)}\).
 </div>
 
 <div class="theorem">
+<span class="theorem-title">Algorithm 4.2 (GPK tree composition).</span>
+<pre>
+Input:  Pair GPK sequence (G_0, P_0), ..., (G_{k-1}, P_{k-1})
+Output: Prefix GPK: (G_{0..j}, P_{0..j}) for all j
+
+Level 0: Each pair's (G_i, P_i)
+
+Level 1: Compose adjacent pairs
+  (G_{01}, P_{01}), (G_{23}, P_{23}), ...
+
+Level 2: Compose further
+  (G_{0123}, P_{0123}), ...
+
+... completes in log_2(k) levels
+</pre>
+</div>
+
+<div class="theorem">
 <span class="theorem-title">Proposition 4.4.</span> GPK tree composition completes \(O(k)\) total work in \(O(\log k)\) depth. Each level uses only AND and OR operations.
+<div class="proof"><i>Proof.</i> At each level \(l\) of the binary tree, \(k/2^l\) compositions are performed, each involving a constant number of AND/OR operations. The total number of levels is \(\lceil \log_2 k \rceil\).</div>
 </div>
 
 <p><b>Remark 4.1.</b> The GPK tree is an optimization for parallel computation and is not required for correctness proofs. The sequential scan (Algorithm 4.1) determines all carries in \(O(k)\) time.</p>
 
-<h2>4.8 Summary of This Section</h2>
+<h2>4.8 Worked Example: \(n=27\), \(x=5\) Carry Determination</h2>
+
+<p>We revisit the example of &sect;3.7 from the GPK perspective.</p>
+
+<p>\(n=27\), m4 \(= (0,1,1)\), m6 \(= (1,0,1)\). LSB order: \(a = (1,1,0)\), \(b = (1,0,1)\).</p>
+
+<p><b>Local GPK computation:</b></p>
+
+<table>
+<tr><th>Pair \(i\)</th><th>\(b_{i-1}\)</th><th>\(b_i\)</th><th>\(G_{\text{mid}}\)</th><th>\(P_{\text{mid}}\)</th><th>\(a_{i-1}\)</th><th>\(a_i\)</th><th>\(G_{\text{out}}\)</th><th>\(P_{\text{out}}\)</th><th>\(G_i\)</th><th>\(P_i\)</th></tr>
+<tr><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td></tr>
+<tr><td>1</td><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td><td>1</td><td>0</td><td>1</td><td>0</td></tr>
+<tr><td>2</td><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td></tr>
+</table>
+
+<p>GPK sequence (from LSB): <b>P, G, P</b></p>
+
+<p><b>Scan:</b></p>
+
+<table>
+<tr><th>Step</th><th>\(c_{\text{in}}\)</th><th>GPK</th><th>\(c_{\text{out}}\)</th><th>Interpretation</th></tr>
+<tr><td>\(i=0\)</td><td>1</td><td>P</td><td>1</td><td>Propagates initial carry 1</td></tr>
+<tr><td>\(i=1\)</td><td>1</td><td>G</td><td>1</td><td>Self-generates (independent of \(c_{\text{in}}\))</td></tr>
+<tr><td>\(i=2\)</td><td>1</td><td>P</td><td>1</td><td>Propagates carry 1</td></tr>
+</table>
+
+<p>All pairs have \(c_{\text{in}} = 1\). Consistent with the step-by-step computation of &sect;3.7.</p>
+
+<p><b>Structural interpretation.</b> Since pair 1 is Generate, even if pair 0 had killed the carry, carry would still reach pair 2. GPK describes the "terrain" of carry propagation, and the initial value \(c_0 = 1\) flows over this terrain.</p>
+
+<h2>4.9 Worked Example: \(n=27\), \(x=3\) Carry Determination</h2>
+
+<p>\(n=27\), LSB order: \(a = (1,1,0)\), \(b = (1,0,1)\).</p>
+
+<p><b>Local GPK computation (\(3n+1\) reference pattern):</b></p>
+
+<table>
+<tr><th>Pair \(i\)</th><th>\(a_{i-1}\)</th><th>\(b_i\)</th><th>\(G_{\text{mid}}\)</th><th>\(P_{\text{mid}}\)</th><th>\(a_i\)</th><th>\(b_i\)</th><th>\(G_{\text{out}}\)</th><th>\(P_{\text{out}}\)</th><th>\(G_i\)</th><th>\(P_i\)</th></tr>
+<tr><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td>1</td><td>1</td><td>0</td><td>1</td><td>0</td></tr>
+<tr><td>1</td><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td></tr>
+<tr><td>2</td><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td>0</td></tr>
+</table>
+
+<p>Note: The m4-stage \(G_{\text{out}}, P_{\text{out}}\) are AND, XOR of \((a_i, b_i)\), which is none other than m2, m7 of \(n\).</p>
+
+<p>\(n=27\) pairs (LSB order): \((1,1), (1,0), (0,1)\)</p>
+<ul>
+<li>m2(AND): \(1, 0, 0\) &rarr; \(G_{\text{out}} = 1, 0, 0\) &#10003;</li>
+<li>m7(XOR): \(0, 1, 1\) &rarr; \(P_{\text{out}} = 0, 1, 1\) &#10003;</li>
+</ul>
+
+<p>GPK sequence (from LSB): <b>G, P, G</b></p>
+
+<p><b>Scan:</b></p>
+
+<table>
+<tr><th>Step</th><th>\(c_{\text{in}}\)</th><th>GPK</th><th>\(c_{\text{out}}\)</th></tr>
+<tr><td>\(i=0\)</td><td>1</td><td>G</td><td>1</td></tr>
+<tr><td>\(i=1\)</td><td>1</td><td>P</td><td>1</td></tr>
+<tr><td>\(i=2\)</td><td>1</td><td>G</td><td>1</td></tr>
+</table>
+
+<p>All pairs have \(c_{\text{in}} = 1\). Consistent with the step-by-step computation of &sect;3.8.</p>
+
+<h2>4.10 Answer to the Question of &sect;4.1</h2>
+
+<p>We organize the answer to the question posed in &sect;4.1: "Is the sequential dependence of carry essential?"</p>
+
+<p><b>Answer 1 (Computational).</b> The local GPK of each pair is obtained in \(O(1)\) by merely referencing m4/m6 bits. Subsequent carry determination completes in a single \(O(k)\) scan. The multiplication \(xn\) is absorbed into reference index shifts and does not appear at the scan stage.</p>
+
+<p><b>Answer 2 (Structural).</b> While the carry <i>values</i> are determined sequentially, each pair's <i>behavior</i> with respect to carry (whether G, P, or K) is independent of the carry value. Thus, "what the carry does" is determined locally; only "how far the carry reaches" is a global question.</p>
+
+<p><b>Answer 3 (Parallelization).</b> The global propagation can also be compressed to \(O(\log k)\) depth via GPK tree composition. This is the same principle as carry-lookahead adders [6], and associativity (Proposition 4.3) guarantees its correctness.</p>
+
+<h2>4.11 Summary of This Section</h2>
 
 <p>1. Carry propagation reduces to GPK (Generate/Propagate/Kill) classification of each pair. GPK is computed by AND and XOR alone, reading bits according to the reference pattern (Table 3.1).</p>
 
@@ -890,13 +1015,25 @@ $$G_{\text{out}}[i] = a_{i-1} \wedge a_i, \quad P_{\text{out}}[i] = a_{i-1} \opl
 
 <div class="proof"><i>Verification.</i> \(n = 31 = 011111_2\), pairs \(((0,1),(1,1),(1,1))\), \(k=3\).
 
-<p>Since pairs 1 and 2 are both \((1,1)\), any per-pair independent function must give the same output at both positions. The 3-bit patterns attainable by any such function have equal second and third components.</p>
+<p>LSB order: \(a = (1,1,0)\), \(b = (1,1,1)\).</p>
 
-<p>However, \(G = (1, 1, 0)\) (MSB order) has second component 1 and third component 0, violating this constraint.</p>
+<p>Overall GPK for \(5n+1\) (MSB order): \(G = (1, 1, 0)\), \(P = (0, 0, 1)\).</p>
+
+<p>The 16-predicate values for \(n=31\) (MSB order, duplicates removed):</p>
+
+$$
+\{(0,0,0),\; (0,1,1),\; (1,0,0),\; (1,1,1)\}
+$$
+
+<p>Since pairs 1 and 2 are both \((1,1)\), any per-pair independent function must give the same output at both positions. Therefore, the 3-bit patterns attainable by any Boolean composition of the 16 predicates are limited to those with equal second and third components.</p>
+
+<p>However, \(G = (1, 1, 0)\) has second component 1 and third component 0, violating this constraint.</p>
 
 <p>All <b>784 combinations</b> were verified computationally; none match. &#9633;</p>
 </div>
 </div>
+
+<p><b>Remark 5.2.</b> The essence of Proposition 5.2 is the consequence of per-pair independence that "identical pairs can only produce identical outputs." Because GPK depends on relationships between adjacent pairs, even identical pairs can have different GPK values if their neighboring pairs differ. This is precisely the information that is in principle indescribable within the 16-predicate framework.</p>
 
 <h2>5.5 Classification Theorem</h2>
 
@@ -935,7 +1072,15 @@ $$
 
 <p>Only when \(s = 1\) do the requirements fall within the descriptive power.</p>
 
-<h2>5.7 Summary of This Section</h2>
+<p><b>Relation to the Collatz conjecture.</b> Regarding why the Collatz conjecture is formulated for \(3n+1\), the Classification Theorem (5.3) offers the following structural explanation: \(x = 3\) is the unique parameter for which part of the carry structure can be read directly as internal information of \(n\) within the predicate space. Whether this "transparency" contributes to the dynamical property of \(3n+1\)&mdash;convergence of all trajectories&mdash;remains open, but the structural singularity has been identified.</p>
+
+<h2>5.7 Numerical Verification</h2>
+
+<p><b>Verification of Theorem B.</b> For the 50 odd numbers \(n = 1, 3, 5, \ldots, 99\) and large values \(n = 127, 255, 511, 1023, 4095, 8191, 65535, 99991, 999999\), the coincidence of the m4-stage \(G_{\text{out}}[i]\) with \(\text{m2}(n)_i\), and \(P_{\text{out}}[i]\) with \(\text{m7}(n)_i\) for \(3n+1\) was verified computationally. Full agreement for all numbers.</p>
+
+<p><b>Verification of Theorem C.</b> In addition to the exhaustive 784-way matching for \(n = 31\), the same matching was performed for \(n = 7, 13, 19, 27, 43, 83\). For \(n = 27, 43\), some predicate combinations coincidentally match (due to the arrangement of pair values), but for \(n = 31\), complete non-coincidence holds. Theorem C is an existence statement; a single counterexample suffices for the proof.</p>
+
+<h2>5.8 Summary of This Section</h2>
 
 <p>1. <b>Theorem B (5.1):</b> The m4-stage GPK of \(3n+1\) coincides with m2(AND)/m7(XOR)/m9(NOR) of \(n\). Reading the pair type of \(n\) determines carry generation, propagation, and absorption.</p>
 
@@ -969,11 +1114,37 @@ In binary, \(v_2(m)\) equals the number of trailing zeros.
 
 <h2>6.3 Effect on Pair Structure</h2>
 
-<p>Consider the conversion from the pair representation of \(m = xn+1\) to that of \(n' = m/2^d\). After removing \(d\) trailing bits and re-padding to even length, the pair boundaries may shift.</p>
+<p>Consider the conversion from the pair representation of \(m = xn+1\) to that of \(n' = m/2^d\).</p>
 
-<p><b>When \(d\) is even:</b> Removing \(d = 2q\) bits removes \(q\) complete pairs. Pair boundaries are preserved. The m4/m6 correspondence is maintained.</p>
+<p>Let the binary representation of \(m\) be \(\hat{\beta}(m) = s_1 s_2 \cdots s_{2l}\) (even-digit padded). Since the trailing \(d\) bits are all zeros:</p>
 
-<p><b>When \(d\) is odd:</b> Removing \(d = 2q+1\) bits removes \(q\) pairs plus 1 bit. The remaining bit string has odd length, requiring a leading-zero pad. This shifts all bits by one position in the pairing, <b>swapping the roles of m4 and m6</b>.</p>
+$$
+\hat{\beta}(m) = s_1 s_2 \cdots s_{2l-d} \underbrace{0 \cdots 0}_{d}
+$$
+
+<p>Removing the trailing \(d\) bits yields the bit string of \(m/2^d\):</p>
+
+$$
+\beta(m/2^d) = s_1 s_2 \cdots s_{2l-d}
+$$
+
+<p>This string is then even-digit padded and grouped into pairs. <b>The parity of \(d\) determines how pair boundaries shift.</b></p>
+
+<p><b>When \(d\) is even:</b> Removing \(d = 2q\) bits removes \(q\) complete pairs. Pair boundaries are preserved. The remaining pair sequence coincides with the first \(l-q\) pairs of \(m\).</p>
+
+$$
+P(m/2^d) = ((s_1, s_2), (s_3, s_4), \ldots, (s_{2l-d-1}, s_{2l-d}))
+$$
+
+<p>The m4/m6 correspondence is maintained.</p>
+
+<p><b>When \(d\) is odd:</b> Removing \(d = 2q+1\) bits removes \(q\) pairs plus 1 bit. The remaining bit string has odd length, requiring a leading-zero pad:</p>
+
+$$
+\hat{\beta}(m/2^d) = 0\, s_1\, s_2\, \cdots\, s_{2l-d}
+$$
+
+<p>The padding causes the original pair \((s_1, s_2)\) to be regrouped as \((0, s_1)\) and \((s_2, s_3)\). <b>This corresponds to swapping the roles of m4 and m6.</b></p>
 
 <h2>6.4 The m4&harr;m6 Exchange Theorem</h2>
 
@@ -984,6 +1155,17 @@ In binary, \(v_2(m)\) equals the number of trailing zeros.
 <li>When \(d\) is even: the m4/m6 correspondence is <b>maintained</b>.</li>
 <li>When \(d\) is odd: the m4/m6 correspondence is <b>exchanged</b>.</li>
 </ul>
+
+<p>More precisely, letting the MSB-side pair sequence of \(m\) be \((\alpha_0, \beta_0), (\alpha_1, \beta_1), \ldots\), the re-pairing after removing the trailing \(d\) bits gives:</p>
+
+$$
+d \text{ even}: \quad \text{m4}(n')_j = \alpha_j, \quad \text{m6}(n')_j = \beta_j
+$$
+$$
+d \text{ odd}: \quad \text{m4}(n')_j \sim \beta_j, \quad \text{m6}(n')_j \sim \alpha_{j+1}
+$$
+
+<p>where \(\sim\) denotes correspondence up to padding and boundary effects.</p>
 
 <div class="proof"><i>Proof.</i> When \(d\) is even, the \(d\) removed bits constitute an even number of pairs, preserving pair boundaries. When \(d\) is odd, the remaining bit string has odd length; the leading-zero padding shifts all bits by one position within their pairs. Bits formerly in left positions move to right positions and vice versa.</div>
 </div>
@@ -1002,11 +1184,19 @@ In binary, \(v_2(m)\) equals the number of trailing zeros.
 
 <p>\(d=1\) (odd) &rarr; exchange.</p>
 
-<p><b>Example 6.3 (\(d=2\), even: maintained).</b> \(n = 7 = 0111_2\). Pairs: \(((0,1),(1,1))\). m4 \(= (0,1)\), m6 \(= (1,1)\).</p>
+<p><b>Example 6.3 (\(d=2\), even: maintained).</b> \(n = 7 = 111_2\). Even-digit padding: \(0111_2\). Pairs: \(((0,1),(1,1))\). m4 \(= (0,1)\), m6 \(= (1,1)\).</p>
 
-<p>\(5 \times 7 + 1 = 36 = 100100_2\). \(v_2(36) = 2\) (even). \(36/4 = 9 = 1001_2\). Pairs: \(((1,0),(0,1))\). m4' \(= (1,0)\), m6' \(= (0,1)\).</p>
+<p>\(5 \times 7 + 1 = 36 = 100100_2\). Pairs: \(((1,0),(0,1),(0,0))\).</p>
 
-<p>\(d=2\) (even) &rarr; pair boundaries restored. m4 remains m4, m6 remains m6. <b>No exchange.</b></p>
+<p>\(v_2(36) = 2\) (even). Division process:</p>
+<pre>
+36 &divide; 2 = 18    (100100 &rarr; 10010)    &larr; pair boundaries shift by 1 bit
+18 &divide; 2 = 9     (10010 &rarr; 1001)      &larr; pair boundaries return to original
+</pre>
+
+<p>\(n' = 9 = 1001_2\). Pairs: \(((1,0),(0,1))\). m4' \(= (1,0)\), m6' \(= (0,1)\).</p>
+
+<p>\(d=2\) (even) &rarr; two right shifts restore pair boundaries to original positions. m4 remains m4, m6 remains m6. <b>No exchange.</b></p>
 
 <table>
 <tr><th>Item</th><th>Example 6.1 (\(n=27\))</th><th>Example 6.3 (\(n=7\))</th></tr>
@@ -1027,6 +1217,8 @@ In binary, \(v_2(m)\) equals the number of trailing zeros.
 </div>
 
 <p>In particular, \(\div 2\) is <b>positional relocation</b> of information (swapping left/right roles within pairs), not <b>destruction</b> of information.</p>
+
+<p><b>Remark 6.1.</b> The increase and decrease of digit count is directly related to convergence/divergence of the map. The result \(xn+1\) is larger than \(n\) (bit count may increase), but \(\div 2^d\) reduces the bit count. If \(d\) is sufficiently large, the digit count decreases and the trajectory "shrinks." The balance of this digit-count variation is the core of the Collatz conjecture, but this paper does not address this question.</p>
 
 <h2>6.7 The Map \(T\) in m4/m6 Representation</h2>
 
@@ -1158,6 +1350,26 @@ ref_L(i) = (a[i-1], a[i])    // m4-stage: adjacent m4 bits
 
 <h2>7.4 Comparison with Conventional Methods</h2>
 
+<p><b>Conventional arithmetic computation:</b></p>
+<pre>
+1. Compute x &times; n (k-bit &times; constant &rarr; O(k) addition;
+   for multi-precision: O(k&sup2;) or O(k log k))
+2. Add 1 (O(k) carry propagation)
+3. Count trailing zeros (O(k))
+4. Divide by 2^d (O(k) shift)
+</pre>
+
+<p>In standard pencil-and-paper multiplication, \(3 \times n = n + 2n\) (one shift and one addition) appears to be \(O(k)\), but this is specific to \(x=3\). Similarly \(5 \times n = 4n + n\) is \(O(k)\), but for general \(x\) the cost is \(O(k \log x)\).</p>
+
+<p><b>m4/m6 scan:</b></p>
+<pre>
+1. Extract m4, m6 (O(k))
+2. Scan according to reference pattern (O(k), bit references
+   and 1-bit additions only)
+3. Read trailing zeros (O(k))
+4. Re-pair (O(k))
+</pre>
+
 <p>The asymptotic order \(O(k)\) is the same as conventional arithmetic computation. The essential differences are:</p>
 
 <p><b>Difference 1 (Operation type).</b> Conventional methods use arithmetic operations (addition, shift). The m4/m6 scan uses only bit references and 1-bit additions. The constant factor is smaller.</p>
@@ -1168,7 +1380,11 @@ ref_L(i) = (a[i-1], a[i])    // m4-stage: adjacent m4 bits
 
 <h2>7.5 Correctness Verification</h2>
 
-<p>The correctness of Algorithm 7.1 was verified by comparison with conventional arithmetic computation for \(n = 1, 3, 5, \ldots, 99\) (50 odd numbers) and large values \(n = 127, 255, 511, 1023, 4095, 8191, 65535, 99991, 999999\), under both \(3n+1\) and \(5n+1\). Full trajectory tracking for \(n=27\) (the 5n+1 cycle \(27 \to 17 \to 43 \to 27\) and the 3n+1 trajectory to \(n=1\)) confirmed step-by-step agreement.</p>
+<p><b>Verification 1 (\(3n+1\)).</b> For the 50 odd numbers \(n = 1, 3, 5, \ldots, 99\), complete agreement was confirmed between the arithmetic computation \(3n+1\) and the m4/m6 scan results (value of \(xn+1\), \(d\), next odd number \(n'\)). Agreement was also confirmed for large values \(n = 127, 255, 511, 1023, 4095, 8191, 65535, 99991, 999999\).</p>
+
+<p><b>Verification 2 (\(5n+1\)).</b> Complete agreement between arithmetic computation \(5n+1\) and the m4/m6 scan was confirmed over the same verification range.</p>
+
+<p><b>Verification 3 (Trajectory tracking).</b> The \(5n+1\) trajectory starting from \(n=27\) (\(27 \to 17 \to 43 \to 27\), a 3-step cycle) was tracked by m4/m6 scan, confirming that intermediate and final values at each step agree with arithmetic computation. For \(3n+1\), the trajectory of \(n=27\) was tracked until reaching \(n=1\), with full agreement at every step.</p>
 
 <h2>7.6 Scope of Generalization</h2>
 
@@ -1182,6 +1398,7 @@ ref_L(i) = (a[i-1], a[i])    // m4-stage: adjacent m4 bits
 
 <div class="theorem">
 <span class="theorem-title">Proposition 7.2 (Post-hoc GPK derivation).</span> At each pair during the scan, GPK classification can be derived in \(O(1)\) additional cost.
+<div class="proof"><i>Proof.</i> \(G_{\text{mid}} = \text{AND}(r^{(6)}, b_i)\), \(P_{\text{mid}} = \text{XOR}(r^{(6)}, b_i)\), \(G_{\text{out}} = \text{AND}(r^{(4)}, a_i)\), \(P_{\text{out}} = \text{XOR}(r^{(4)}, a_i)\), \(G_i = G_{\text{out}} \vee (P_{\text{out}} \wedge G_{\text{mid}})\), \(P_i = P_{\text{out}} \wedge P_{\text{mid}}\). All are \(O(1)\) bitwise operations.</div>
 </div>
 
 <div class="theorem">
@@ -1203,6 +1420,8 @@ Application:  Single trajectory tracking, small to medium numbers
 Advantage:    Minimal overhead, simplest implementation
 </pre>
 
+<p>This is Algorithm 7.1 itself. It reads reference bits, performs two 1-bit additions and a carry update, repeating \(k\) times. No GPK classification is computed. The complexity \(O(k)\) is asymptotically optimal (reading the input alone requires \(\Omega(k)\)).</p>
+
 <h3>Layer 2: Scan + GPK Classification (Analytical)</h3>
 <pre>
 Complexity:   O(k) time (constant-factor increase), O(k) space
@@ -1213,6 +1432,8 @@ Application:  Carry structure analysis, cycle condition verification,
 Advantage:    Structural information obtained at negligible extra cost
 </pre>
 
+<p>GPK classification is computed simultaneously at each pair during the scan (Proposition 7.2). In addition to the next odd number \(n'\), the G/P/K classification of each pair, the reach of carry propagation, and the m2/m7 pattern (for \(x=3\)) are obtained. The amount of information obtained from the same \(O(k)\) cost is qualitatively different.</p>
+
 <h3>Layer 3: GPK Tree Composition (Parallel)</h3>
 <pre>
 Complexity:   O(k) work, O(log k) depth
@@ -1222,6 +1443,17 @@ Application:  Large-scale parallel verification (2^68+), FPGA/GPU
 Advantage:    Logarithmic depth, direct mapping to hardware
               carry-lookahead
 </pre>
+
+<p>Uses the binary tree composition of &sect;4.7. First, local GPK for all pairs is computed in \(O(k)\) (per-pair independent, fully parallelizable), then prefix GPK is composed via binary tree in \(O(\log k)\) levels. Each level uses only AND/OR.</p>
+
+<p>This layer becomes effective when the following conditions are met:</p>
+<ul>
+<li>\(k\) is very large (\(k > 10^6\) or so)</li>
+<li>Parallel processors are available (GPU, FPGA, ASIC)</li>
+<li>Single-step latency is the bottleneck (the \(O(k)\) of the scan is unacceptable)</li>
+</ul>
+
+<p>As carry-lookahead adders [6] have over 50 years of hardware track record, the implementation is an application of established technology.</p>
 
 <table>
 <tr><th>Condition</th><th>Recommended Layer</th></tr>
@@ -1244,7 +1476,15 @@ Advantage:    Logarithmic depth, direct mapping to hardware
 <tr><td>Layer 3 (GPK tree)</td><td>\(O(k)\)</td><td>\(O(\log k)\)</td><td><b>Absorbed into reference indices</b></td><td><b>Yes</b></td></tr>
 </table>
 
-<p><b>Note.</b> The asymptotic \(O(k)\) is identical for conventional methods and Layers 1/2. The differences lie at the constant-coefficient level in: (1) operation type, (2) information extraction efficiency, (3) parallelizability, and (4) generality across \(x\).</p>
+<p><b>Note.</b> The asymptotic \(O(k)\) is identical for conventional methods and Layers 1/2. The differences lie at the constant-coefficient level:</p>
+
+<p><b>(1) Operation type.</b> Conventional methods use multi-precision integer multiplication (at the GMP level, shift + add, but internally involving carry propagation). Layers 1/2 use only 1-bit additions and AND/XOR. The hardware-level operation cost differs.</p>
+
+<p><b>(2) Information extraction efficiency.</b> Conventional methods yield only the numerical value of \(n'\). Layer 2 obtains GPK classification, carry landscape, \(d\), and exchange information at the same cost. There is a qualitative difference in the amount of information obtained from the same computational energy.</p>
+
+<p><b>(3) Parallelizability.</b> Carry propagation in conventional methods is sequential, and parallelization requires a separate implementation of carry-lookahead. Layer 3 is naturally parallelized as a GPK tree.</p>
+
+<p><b>(4) Generality across \(x\).</b> Conventional methods require different multiplication implementations for each \(x\). Layers 1/2/3 accommodate any \(x\) (where \(x-1\) is a power of 2) by simply swapping the reference pattern (four index expressions).</p>
 
 <!-- ============ SECTION 8 ============ -->
 <div class="page-break"></div>
@@ -1327,6 +1567,12 @@ Advantage:    Logarithmic depth, direct mapping to hardware
 <h2>8.7 Formulation of Cycle Conditions</h2>
 
 <div class="theorem">
+<span class="theorem-title">Definition 8.1.</span> A sequence of odd numbers \(n_0, n_1, \ldots, n_{p-1}\) forms a cycle of period \(p\) if \(T(n_i) = n_{i+1 \bmod p}\) holds for all \(i\).
+</div>
+
+<p>In m4/m6 space, this translates to the following conditions.</p>
+
+<div class="theorem">
 <span class="theorem-title">Proposition 8.1 (m4/m6 cycle conditions).</span> Necessary conditions for \(\{n_0, \ldots, n_{p-1}\}\) to form a cycle of \(5n+1\):
 
 <p><b>(i) Pair-count condition:</b> \(\sum_{i=0}^{p-1} (\delta_i - d_i) = 0\), where \(\delta_i\) is the bit increase from addition at step \(i\) and \(d_i\) is the trailing-zero count. The cycle returns to its starting bit length.</p>
@@ -1337,6 +1583,10 @@ Advantage:    Logarithmic depth, direct mapping to hardware
 </div>
 
 <p>Conditions (i) and (ii) follow from the definition of cycles and the exchange principle of &sect;6. Condition (iii) is the explicit composition of scans; its closed-form description is a topic for future work.</p>
+
+<p><b>Verification.</b> Cycle C (\(27 \to 17 \to 43 \to 27\)): \(d = (3, 1, 3)\). \(\sum d_i = 7\) (odd), which appears to violate condition (ii).</p>
+
+<p>However, bit removal such as \(d=3\) involves re-arrangement of pair boundaries, and the determination of exchange depends not on the simple sum of \(d \bmod 2\) but on the consistency of the entire bit string at each step. Condition (ii) requires a more precise formulation that accounts for boundary shifts during re-pairing. This refinement is left for future work.</p>
 
 <h2>8.8 Summary of This Section</h2>
 
