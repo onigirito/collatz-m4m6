@@ -40,8 +40,14 @@
   .record-th { background: var(--accent); color: #fff; }
 
   .card-row { display: flex; gap: 16px; margin: 16px 0; flex-wrap: wrap; }
+  .card-row.vertical { flex-direction: column; }
   .card { flex: 1; min-width: 240px; background: var(--card-bg); border: 1px solid #dee2e6; border-radius: 8px; padding: 16px; }
   .card h4 { margin: 0 0 8px 0; color: var(--accent); }
+
+  .screenshot { width: 100%; border-radius: 6px; border: 1px solid #ccc; margin: 12px 0; cursor: pointer; transition: box-shadow 0.2s; }
+  .screenshot:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.2); }
+  .screenshot-full { display: flex; align-items: center; justify-content: center; width: 100%; margin: 20px 0; }
+  .screenshot-full img { max-width: 100%; border-radius: 8px; border: 1px solid #ccc; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
 
   .box { border-radius: 6px; padding: 14px 18px; margin: 14px 0; }
   .box-warn { background: var(--warn-bg); border: 1px solid #e0c36a; }
@@ -157,24 +163,27 @@
 <h2 data-lang="en" class="show">Features</h2>
 <h2 data-lang="ja">機能</h2>
 
-<div class="card-row">
+<div class="card-row vertical">
   <div class="card">
     <h4 data-lang="en" class="show">Single Analysis</h4>
     <h4 data-lang="ja">単発解析</h4>
     <p data-lang="en" class="show">Analyze a single odd number via pair predicate decomposition. One-step or full trajectory tracking with GPK string, d-value, exchange status, and carry chain length at each step.</p>
     <p data-lang="ja">1つの奇数に対して、ペア述語分解による詳細解析。1ステップまたは軌道追跡で、GPK列・d値・交換の有無・キャリー連鎖長を表示。</p>
+    <img src="screenshot_single.png" alt="Single Analysis — trajectory tracking with GPK strings" class="screenshot" onclick="window.open(this.src)">
   </div>
   <div class="card">
     <h4 data-lang="en" class="show">Range Analysis (Sweep)</h4>
     <h4 data-lang="ja">区間解析（スイープ）</h4>
     <p data-lang="en" class="show">Verify all odd numbers in a range using parallel threads. The same exhaustive method used in world-record verification — on your own PC.</p>
     <p data-lang="ja">指定範囲の全奇数を並列検証。世界記録と同じ全数検証方式をあなたのPCで実行。</p>
+    <img src="screenshot_sweep.png" alt="Range Analysis — GPK statistics and carry chain histogram" class="screenshot" onclick="window.open(this.src)">
   </div>
   <div class="card">
     <h4 data-lang="en" class="show">Log Analysis</h4>
     <h4 data-lang="ja">解析</h4>
     <p data-lang="en" class="show">Browse past run logs from the <code>output/</code> folder. Re-display GPK graphs and carry chain histograms.</p>
     <p data-lang="ja">過去の実行ログ（<code>output/</code>）を閲覧。GPKグラフやキャリー連鎖長ヒストグラムを再表示。</p>
+    <img src="screenshot_log.png" alt="Log Analysis — browse and visualize past results" class="screenshot" onclick="window.open(this.src)">
   </div>
 </div>
 
