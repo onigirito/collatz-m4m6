@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>collatz-m4m6 — Pair Predicate Decomposition Tool for Collatz-type Maps</title>
 <style>
-  :root { --accent: #2a6496; --accent-dark: #1a3a5c; --warn: #856404; --warn-bg: #fff3cd; --danger-bg: #f8d7da; --info-bg: #d1ecf1; --bg: #fafafa; --card-bg: #fff; --sidebar-w: 220px; }
+  :root { --accent: #2a6496; --accent-dark: #1a3a5c; --warn: #856404; --warn-bg: #fff3cd; --danger-bg: #f8d7da; --info-bg: #d1ecf1; --bg: #fafafa; --card-bg: #fff; }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Yu Gothic', 'Meiryo', sans-serif; line-height: 1.7; color: #222; background: var(--bg); }
 
@@ -18,21 +18,10 @@
   [data-lang] { display: none; }
   [data-lang].show { display: revert; }
 
-  /* Layout: sidebar + main */
-  .page-wrap { display: flex; min-height: calc(100vh - 36px); }
-
-  /* Sidebar */
-  .sidebar { width: var(--sidebar-w); min-width: var(--sidebar-w); background: #fff; border-right: 1px solid #dee2e6; position: sticky; top: 36px; height: calc(100vh - 36px); overflow-y: auto; padding: 16px 0; font-size: 0.88em; }
-  .sidebar nav a { display: block; padding: 7px 18px; color: #444; text-decoration: none; border-left: 3px solid transparent; transition: all 0.15s; }
-  .sidebar nav a:hover { background: #f0f4f8; color: var(--accent); }
-  .sidebar nav a.active { border-left-color: var(--accent); color: var(--accent); background: #e8f0f8; font-weight: 600; }
-  .sidebar nav .nav-group { padding: 12px 18px 4px; font-size: 0.78em; font-weight: 700; color: #999; text-transform: uppercase; letter-spacing: 0.5px; }
-
-  /* Hamburger (mobile) */
-  .menu-toggle { display: none; background: none; border: none; color: #fff; font-size: 1.4em; cursor: pointer; padding: 0 4px; }
+  /* Layout */
+  .page-wrap { display: block; min-height: calc(100vh - 36px); }
 
   /* Main content */
-  .main-content { flex: 1; min-width: 0; padding: 0; }
   .content-inner { max-width: 880px; margin: 0 auto; padding: 0 28px 40px; }
 
   /* Hero */
@@ -78,15 +67,19 @@
 
   code { background: #e9ecef; padding: 1px 5px; border-radius: 3px; font-size: 0.9em; }
 
+  /* Document cards */
+  .doc-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 16px 0; }
+  .doc-card { background: var(--card-bg); border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; text-decoration: none; color: inherit; transition: box-shadow 0.2s, border-color 0.2s; }
+  .doc-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.12); border-color: var(--accent); }
+  .doc-card h4 { margin: 0 0 8px 0; color: var(--accent); font-size: 1.05em; }
+  .doc-card p { margin: 0; font-size: 0.9em; color: #555; }
+
   /* Mobile */
   @media (max-width: 840px) {
-    .sidebar { position: fixed; top: 36px; left: -260px; width: 260px; min-width: 260px; height: calc(100vh - 36px); z-index: 90; transition: left 0.25s; box-shadow: none; }
-    .sidebar.open { left: 0; box-shadow: 4px 0 16px rgba(0,0,0,0.15); }
-    .menu-toggle { display: block; }
-    .page-wrap { display: block; }
     .hero h1 { font-size: 1.3em; }
     .content-inner { padding: 0 16px 40px; }
     .card-row { flex-direction: column; }
+    .doc-cards { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -94,10 +87,7 @@
 
 <!-- ===== LANGUAGE BAR ===== -->
 <div class="lang-bar">
-  <div style="display:flex;align-items:center;gap:12px;">
-    <button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')" aria-label="Menu">&#9776;</button>
-    <span class="site-id">collatz-m4m6</span>
-  </div>
+  <span class="site-id">collatz-m4m6</span>
   <div>
     <button class="lang-btn active" onclick="setLang('en')" id="btn-en">English</button>
     <button class="lang-btn" onclick="setLang('ja')" id="btn-ja">日本語</button>
@@ -105,56 +95,6 @@
 </div>
 
 <div class="page-wrap">
-
-<!-- ===== SIDEBAR ===== -->
-<aside class="sidebar" id="sidebar">
-  <nav>
-    <div class="nav-group" data-lang="en" class="show">Navigation</div>
-    <div class="nav-group" data-lang="ja">メニュー</div>
-
-    <a href="#download" data-lang="en" class="show">Download</a>
-    <a href="#download-ja" data-lang="ja">ダウンロード</a>
-
-    <a href="#paper" data-lang="en" class="show">Paper</a>
-    <a href="#paper-ja" data-lang="ja">論文</a>
-
-    <a href="#features" data-lang="en" class="show">Features</a>
-    <a href="#features-ja" data-lang="ja">機能</a>
-
-    <a href="#sweep" data-lang="en" class="show">Sweep Verification</a>
-    <a href="#sweep-ja" data-lang="ja">区間検証</a>
-
-    <a href="#gpk" data-lang="en" class="show">GPK Classification</a>
-    <a href="#gpk-ja" data-lang="ja">GPK 分類</a>
-
-    <a href="#performance" data-lang="en" class="show">Performance</a>
-    <a href="#performance-ja" data-lang="ja">パフォーマンス</a>
-
-    <a href="#settings" data-lang="en" class="show">Settings</a>
-    <a href="#settings-ja" data-lang="ja">設定項目</a>
-
-    <a href="#csv" data-lang="en" class="show">CSV Output</a>
-    <a href="#csv-ja" data-lang="ja">CSV 出力</a>
-
-    <a href="#theory" data-lang="en" class="show">Theory</a>
-    <a href="#theory-ja" data-lang="ja">理論的背景</a>
-
-    <a href="#spec" data-lang="en" class="show">Tool Spec</a>
-    <a href="#spec-ja" data-lang="ja">仕様書</a>
-
-    <a href="#source" data-lang="en" class="show">Source Code</a>
-    <a href="#source-ja" data-lang="ja">ソースコード</a>
-
-    <a href="#license" data-lang="en" class="show">License</a>
-    <a href="#license-ja" data-lang="ja">ライセンス</a>
-
-    <a href="#support" data-lang="en" class="show">Support</a>
-    <a href="#support-ja" data-lang="ja">支援</a>
-  </nav>
-</aside>
-
-<!-- ===== MAIN CONTENT ===== -->
-<div class="main-content">
 
 <!-- Hero -->
 <div class="hero">
@@ -206,6 +146,40 @@
   <li data-lang="en" class="show"><a href="collatz_paper_ja.html">Japanese version / 日本語版 (HTML)</a></li>
   <li data-lang="ja"><a href="collatz_paper_ja.html">日本語版 (HTML)</a></li>
 </ul>
+
+<!-- ===== DOCUMENTS ===== -->
+<h2 id="docs" data-lang="en" class="show">Documents</h2>
+<h2 id="docs-ja" data-lang="ja">ドキュメント</h2>
+
+<div class="doc-cards" data-lang="en" class="show">
+  <a class="doc-card" href="tool_description_en.html">
+    <h4>Tool Guide</h4>
+    <p>Usage instructions, settings, and tab descriptions for the tool.</p>
+  </a>
+  <a class="doc-card" href="TOOL_SPEC_en.html">
+    <h4>Tool Specification</h4>
+    <p>Module architecture, data flow, and GPK classification rules.</p>
+  </a>
+  <a class="doc-card" href="performance_report_en.html">
+    <h4>Performance Report</h4>
+    <p>Benchmarks, optimization history, and FPGA considerations.</p>
+  </a>
+</div>
+
+<div class="doc-cards" data-lang="ja">
+  <a class="doc-card" href="tool_description.html">
+    <h4>ツール説明</h4>
+    <p>ツールの使い方・設定項目・タブの解説</p>
+  </a>
+  <a class="doc-card" href="TOOL_SPEC.html">
+    <h4>ツール仕様書</h4>
+    <p>モジュール構成・データフロー・GPK分類規則</p>
+  </a>
+  <a class="doc-card" href="performance_report.html">
+    <h4>パフォーマンス分析</h4>
+    <p>ベンチマーク・最適化履歴・FPGA検討</p>
+  </a>
+</div>
 
 <!-- ===== FEATURES ===== -->
 <h2 id="features" data-lang="en" class="show">Features</h2>
@@ -396,8 +370,8 @@
 <div data-lang="en" class="show">
 <p>Detailed technical specification including module architecture, data flow, dual-path design (trajectory vs stopping-time), GPK classification rules, GUI layout, output file formats, and performance characteristics.</p>
 <ul>
-<li><a href="TOOL_SPEC.html">Tool Specification</a> (Japanese)</li>
-<li><a href="performance_report.html">Performance Analysis Report</a> (Japanese)</li>
+<li><a href="TOOL_SPEC_en.html">Tool Specification</a></li>
+<li><a href="performance_report_en.html">Performance Analysis Report</a></li>
 </ul>
 </div>
 <div data-lang="ja">
@@ -468,13 +442,12 @@
   <span data-lang="ja">Rust &amp; eframe で構築</span>
 </footer>
 
-</div><!-- end main-content -->
 </div><!-- end page-wrap -->
 
 <!-- MathJax for formulas -->
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
-<!-- Language switching + sidebar scroll tracking -->
+<!-- Language switching -->
 <script>
 function setLang(lang) {
   document.querySelectorAll('[data-lang]').forEach(el => {
@@ -485,36 +458,6 @@ function setLang(lang) {
   document.documentElement.lang = lang;
   localStorage.setItem('collatz-lang', lang);
 }
-
-// Close sidebar on mobile when a link is clicked
-document.querySelectorAll('.sidebar nav a').forEach(a => {
-  a.addEventListener('click', () => {
-    document.querySelector('.sidebar').classList.remove('open');
-  });
-});
-
-// Scroll spy: highlight active sidebar link (language-aware)
-(function() {
-  var sections = ['download','paper','features','sweep','gpk','performance','settings','csv','theory','spec','source','license','support'];
-  var ticking = false;
-  function updateActive() {
-    var scrollY = window.scrollY + 80;
-    var lang = document.documentElement.lang || 'en';
-    var suffix = lang === 'ja' ? '-ja' : '';
-    var current = '';
-    sections.forEach(id => {
-      var el = document.getElementById(id + suffix);
-      if (el && el.getBoundingClientRect().top + window.scrollY <= scrollY) current = id;
-    });
-    document.querySelectorAll('.sidebar nav a').forEach(a => {
-      var href = a.getAttribute('href');
-      a.classList.toggle('active', href === '#' + current + suffix);
-    });
-    ticking = false;
-  }
-  window.addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(updateActive); } });
-  updateActive();
-})();
 
 // Restore saved language or detect from browser
 (function() {
