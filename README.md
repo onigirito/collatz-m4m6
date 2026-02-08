@@ -42,9 +42,12 @@ Measured on Intel Core i7-12650H.
 
 ## Download
 
-**[collatz-gui.exe](https://github.com/onigirito/collatz-m4m6/releases)** (Windows x86_64, ~15 MB, standalone)
+**[collatz-gui.exe](https://github.com/onigirito/collatz-m4m6/releases)** v0.2.0 (Windows x86_64, 14.6 MB, standalone / crt-static)
 
-SHA-256: `7f9e336cb1704de075923d5609773c1e62f4be7dc9e6a21150f9158aa179dee4`
+```
+SHA-256: 7f9e336cb1704de075923d5609773c1e62f4be7dc9e6a21150f9158aa179dee4
+```
+Verify: `certutil -hashfile collatz-gui.exe SHA256`
 
 Requirements: Windows 10/11, OpenGL 2.0
 
