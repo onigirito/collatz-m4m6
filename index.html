@@ -113,43 +113,43 @@
     <div class="nav-group" data-lang="ja">メニュー</div>
 
     <a href="#download" data-lang="en" class="show">Download</a>
-    <a href="#download" data-lang="ja">ダウンロード</a>
+    <a href="#download-ja" data-lang="ja">ダウンロード</a>
 
     <a href="#paper" data-lang="en" class="show">Paper</a>
-    <a href="#paper" data-lang="ja">論文</a>
+    <a href="#paper-ja" data-lang="ja">論文</a>
 
     <a href="#features" data-lang="en" class="show">Features</a>
-    <a href="#features" data-lang="ja">機能</a>
+    <a href="#features-ja" data-lang="ja">機能</a>
 
     <a href="#sweep" data-lang="en" class="show">Sweep Verification</a>
-    <a href="#sweep" data-lang="ja">区間検証</a>
+    <a href="#sweep-ja" data-lang="ja">区間検証</a>
 
     <a href="#gpk" data-lang="en" class="show">GPK Classification</a>
-    <a href="#gpk" data-lang="ja">GPK 分類</a>
+    <a href="#gpk-ja" data-lang="ja">GPK 分類</a>
 
     <a href="#performance" data-lang="en" class="show">Performance</a>
-    <a href="#performance" data-lang="ja">パフォーマンス</a>
+    <a href="#performance-ja" data-lang="ja">パフォーマンス</a>
 
     <a href="#settings" data-lang="en" class="show">Settings</a>
-    <a href="#settings" data-lang="ja">設定項目</a>
+    <a href="#settings-ja" data-lang="ja">設定項目</a>
 
     <a href="#csv" data-lang="en" class="show">CSV Output</a>
-    <a href="#csv" data-lang="ja">CSV 出力</a>
+    <a href="#csv-ja" data-lang="ja">CSV 出力</a>
 
     <a href="#theory" data-lang="en" class="show">Theory</a>
-    <a href="#theory" data-lang="ja">理論的背景</a>
+    <a href="#theory-ja" data-lang="ja">理論的背景</a>
 
     <a href="#spec" data-lang="en" class="show">Tool Spec</a>
-    <a href="#spec" data-lang="ja">仕様書</a>
+    <a href="#spec-ja" data-lang="ja">仕様書</a>
 
     <a href="#source" data-lang="en" class="show">Source Code</a>
-    <a href="#source" data-lang="ja">ソースコード</a>
+    <a href="#source-ja" data-lang="ja">ソースコード</a>
 
     <a href="#license" data-lang="en" class="show">License</a>
-    <a href="#license" data-lang="ja">ライセンス</a>
+    <a href="#license-ja" data-lang="ja">ライセンス</a>
 
     <a href="#support" data-lang="en" class="show">Support</a>
-    <a href="#support" data-lang="ja">支援</a>
+    <a href="#support-ja" data-lang="ja">支援</a>
   </nav>
 </aside>
 
@@ -396,13 +396,15 @@
 <div data-lang="en" class="show">
 <p>Detailed technical specification including module architecture, data flow, dual-path design (trajectory vs stopping-time), GPK classification rules, GUI layout, output file formats, and performance characteristics.</p>
 <ul>
-<li><a href="TOOL_SPEC.md">TOOL_SPEC.md</a> (Japanese)</li>
+<li><a href="TOOL_SPEC.html">Tool Specification</a> (Japanese)</li>
+<li><a href="performance_report.html">Performance Analysis Report</a> (Japanese)</li>
 </ul>
 </div>
 <div data-lang="ja">
 <p>モジュール構成、データフロー、二重パス設計（軌道追跡 vs 停止時間）、GPK分類規則、GUI仕様、出力ファイル形式、パフォーマンス特性を記載した詳細技術仕様書。</p>
 <ul>
-<li><a href="TOOL_SPEC.md">TOOL_SPEC.md</a></li>
+<li><a href="TOOL_SPEC.html">ツール仕様レポート</a></li>
+<li><a href="performance_report.html">パフォーマンス分析レポート</a></li>
 </ul>
 </div>
 
@@ -491,20 +493,22 @@ document.querySelectorAll('.sidebar nav a').forEach(a => {
   });
 });
 
-// Scroll spy: highlight active sidebar link
+// Scroll spy: highlight active sidebar link (language-aware)
 (function() {
   var sections = ['download','paper','features','sweep','gpk','performance','settings','csv','theory','spec','source','license','support'];
   var ticking = false;
   function updateActive() {
     var scrollY = window.scrollY + 80;
+    var lang = document.documentElement.lang || 'en';
+    var suffix = lang === 'ja' ? '-ja' : '';
     var current = '';
     sections.forEach(id => {
-      var el = document.getElementById(id);
+      var el = document.getElementById(id + suffix);
       if (el && el.getBoundingClientRect().top + window.scrollY <= scrollY) current = id;
     });
     document.querySelectorAll('.sidebar nav a').forEach(a => {
       var href = a.getAttribute('href');
-      a.classList.toggle('active', href === '#' + current);
+      a.classList.toggle('active', href === '#' + current + suffix);
     });
     ticking = false;
   }
