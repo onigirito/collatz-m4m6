@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>collatz-m4m6 — Pair Predicate Decomposition Tool for Collatz-type Maps</title>
+<style>
+  :root { --accent: #2a6496; --accent-dark: #1a3a5c; --warn: #856404; --warn-bg: #fff3cd; --danger-bg: #f8d7da; --info-bg: #d1ecf1; --bg: #fafafa; --card-bg: #fff; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Yu Gothic', 'Meiryo', sans-serif; line-height: 1.7; color: #222; background: var(--bg); }
+  .container { max-width: 920px; margin: 0 auto; padding: 0 20px; }
+
+  /* Language switcher */
+  .lang-bar { background: var(--accent-dark); color: #fff; padding: 6px 0; text-align: right; font-size: 0.85em; }
+  .lang-bar .container { display: flex; justify-content: space-between; align-items: center; }
+  .lang-bar .site-id { font-weight: 600; letter-spacing: 0.5px; }
+  .lang-btn { background: none; border: 1px solid rgba(255,255,255,0.5); color: #fff; padding: 2px 10px; border-radius: 3px; cursor: pointer; margin-left: 4px; font-size: 0.85em; }
+  .lang-btn.active { background: rgba(255,255,255,0.25); border-color: #fff; }
+
+  [data-lang] { display: none; }
+  [data-lang].show { display: revert; }
+
+  /* Hero */
+  .hero { background: linear-gradient(135deg, var(--accent-dark), var(--accent)); color: #fff; padding: 40px 0; margin-bottom: 32px; }
+  .hero h1 { font-size: 1.8em; margin-bottom: 8px; }
+  .hero .subtitle { font-size: 1.05em; opacity: 0.9; margin-bottom: 16px; }
+  .hero .highlight { color: #ffd966; font-weight: bold; }
+
+  h2 { font-size: 1.35em; border-left: 4px solid var(--accent); padding-left: 12px; margin: 32px 0 16px 0; }
+  h3 { font-size: 1.1em; color: var(--accent); margin: 20px 0 8px 0; }
+
+  p { margin-bottom: 12px; }
+  ul, ol { margin: 0 0 12px 24px; }
+  li { margin-bottom: 6px; }
+
+  table { border-collapse: collapse; width: 100%; margin: 12px 0 20px 0; font-size: 0.92em; }
+  th, td { border: 1px solid #ccc; padding: 8px 12px; text-align: left; }
+  th { background: #e9ecef; font-weight: 600; }
+  td.num { text-align: right; font-family: 'Consolas', monospace; }
+  .record-th { background: var(--accent); color: #fff; }
+
+  .card-row { display: flex; gap: 16px; margin: 16px 0; flex-wrap: wrap; }
+  .card { flex: 1; min-width: 240px; background: var(--card-bg); border: 1px solid #dee2e6; border-radius: 8px; padding: 16px; }
+  .card h4 { margin: 0 0 8px 0; color: var(--accent); }
+
+  .box { border-radius: 6px; padding: 14px 18px; margin: 14px 0; }
+  .box-warn { background: var(--warn-bg); border: 1px solid #e0c36a; }
+  .box-info { background: var(--info-bg); border: 1px solid #bee5eb; }
+  .box-code { background: #f0f4f8; border: 1px solid #c8d6e5; font-family: 'Consolas', monospace; font-size: 0.9em; line-height: 2; }
+  .box-label { font-weight: bold; margin-bottom: 6px; }
+
+  .download-section { background: #1a3a5c; color: #fff; border-radius: 10px; padding: 24px 28px; margin: 20px 0; }
+  .download-section h3 { color: #ffd966; margin-top: 0; }
+  .download-section a { color: #8ecae6; }
+  .download-section code { background: rgba(255,255,255,0.15); color: #fff; padding: 2px 6px; border-radius: 3px; font-size: 0.85em; word-break: break-all; }
+
+  .doi-placeholder { background: #fff3cd; border: 2px dashed #e0c36a; border-radius: 8px; padding: 16px; margin: 16px 0; text-align: center; color: #856404; font-weight: 600; }
+
+  footer { margin-top: 40px; padding: 20px 0; border-top: 1px solid #ccc; color: #888; font-size: 0.85em; text-align: center; }
+
+  code { background: #e9ecef; padding: 1px 5px; border-radius: 3px; font-size: 0.9em; }
+
+  @media (max-width: 640px) {
+    .card-row { flex-direction: column; }
+    .hero h1 { font-size: 1.4em; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== LANGUAGE BAR ===== -->
+<div class="lang-bar">
+  <div class="container">
+    <span class="site-id">collatz-m4m6</span>
+    <div>
+      <button class="lang-btn active" onclick="setLang('en')" id="btn-en">English</button>
+      <button class="lang-btn" onclick="setLang('ja')" id="btn-ja">日本語</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== HERO ===== -->
+<div class="hero">
+  <div class="container">
+    <h1 data-lang="en" class="show">Pair Predicate Decomposition Tool<br>for Collatz-type Maps \((xn+1)/2^d\)</h1>
+    <h1 data-lang="ja">コラッツ型写像 \((xn+1)/2^d\) の<br>ペア述語分解ツール</h1>
+    <p class="subtitle" data-lang="en" class="show">Structural analysis of Collatz maps via carry propagation — not multiplication, but addition.</p>
+    <p class="subtitle" data-lang="ja">乗算ではなく加算器のキャリー伝播として写像を構造的に分解・解析</p>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ===== SWEEP INTRO ===== -->
+<h2 data-lang="en" class="show">Full-Range Verification (Sweep)</h2>
+<h2 data-lang="ja">区間全数検証（スイープ）</h2>
+
+<div data-lang="en" class="show">
+<p>You may have seen headlines like "<b>Collatz conjecture verified up to 2<sup>71</sup></b>." This does not mean a single large number was tested. It means <span class="highlight" style="color:var(--accent);font-weight:bold;">every odd number from 3 to 2<sup>71</sup> — trillions of numbers — was individually confirmed to converge</span>. Research institutions worldwide invest massive computing resources for this kind of exhaustive verification.</p>
+<p>This tool's <b>Range Analysis</b> tab provides exactly this sweep capability. Enter a start and end value, click "Start", and the tool verifies all odd numbers in the range using parallel threads. Most Collatz tools only let you trace a single number — <b>tools with sweep capability are rare</b>.</p>
+<p>Moreover, conventional verification tools output only 3 values: count, convergence yes/no, and maximum stopping time. No structural information is recorded. This tool simultaneously accumulates <b>GPK statistics and carry chain length distributions</b>, providing insight into <i>why</i> convergence occurs — not just <i>that</i> it occurs. <b>It records what happened during verification, not just the outcome.</b></p>
+</div>
+
+<div data-lang="ja">
+<p>「<b>コラッツ予想は 2<sup>71</sup> まで検証済み</b>」という世界記録を目にしたことはありませんか？ これは1つの大きな数を調べたのではなく、<b style="color:var(--accent);">3 から 2<sup>71</sup> までの全奇数 — 数千兆個 — を1つ残らず収束確認した</b>記録です。</p>
+<p>本ツールの<b>区間解析</b>タブは、まさにこのスイープ機能を提供します。開始値と終了値を入力し「検証開始」を押すだけ。コラッツ計算ツールの大半は「1つの数の軌道を追う」タイプであり、<b>指定区間の全奇数をスイープ検証できるツールは限られています</b>。</p>
+<p>さらに従来の検証ツールが出力するのは「検証数・収束の有無・最大停止時間」の3点のみ。本ツールは検証と同時に <b>GPK 統計・キャリー連鎖長分布</b>を蓄積し、収束の「なぜ」に迫る構造情報を提供します。<b>「検証過程で何が起きていたか」を記録できる唯一のスイープツールです。</b></p>
+</div>
+
+<h3 data-lang="en" class="show">Verified Results</h3>
+<h3 data-lang="ja">実測スイープ実績</h3>
+
+<table>
+  <tr><th class="record-th" data-lang="en" class="show">Map</th><th class="record-th" data-lang="ja">写像</th><th class="record-th" data-lang="en" class="show">Range</th><th class="record-th" data-lang="ja">検証範囲</th><th class="record-th" data-lang="en" class="show">Odd numbers</th><th class="record-th" data-lang="ja">奇数の個数</th><th class="record-th" data-lang="en" class="show">Time</th><th class="record-th" data-lang="ja">所要時間</th><th class="record-th" data-lang="en" class="show">Result</th><th class="record-th" data-lang="ja">結果</th></tr>
+  <tr><td>3n+1</td><td>3 ~ 99,999,999,999 (&asymp;2<sup>37</sup>)</td><td data-lang="en" class="show">50 billion</td><td data-lang="ja">500億個</td><td>~2m 17s</td><td data-lang="en" class="show">All converge (max stopping time 345)</td><td data-lang="ja">全数収束（最大停止時間 345）</td></tr>
+</table>
+<p style="color:#666;font-size:0.88em;" data-lang="en" class="show">Measured on Intel Core i7-12650H (single desktop PC). Current world record: ~2<sup>71</sup> (Jan 2025, David Barina, GPU cluster). You can reproduce verification on your own machine.</p>
+<p style="color:#666;font-size:0.88em;" data-lang="ja">Intel Core i7-12650H（デスクトップPC1台）での実測値。現在の世界記録は 2<sup>71</sup> 規模（2025年1月, David Barina, GPUクラスタ）。あなたのPCで検証を再現できます。</p>
+
+<!-- ===== DOWNLOAD ===== -->
+<div class="download-section">
+  <h3 data-lang="en" class="show">Download</h3>
+  <h3 data-lang="ja">ダウンロード</h3>
+
+  <p data-lang="en" class="show"><b>collatz-gui.exe</b> (Windows x86_64, ~15 MB, standalone — no runtime required)<br>
+  <a href="https://github.com/onigirito/collatz-m4m6/releases">Download from GitHub Releases</a></p>
+  <p data-lang="ja"><b>collatz-gui.exe</b>（Windows x86_64, 約15MB, 単体実行可 — ランタイム不要）<br>
+  <a href="https://github.com/onigirito/collatz-m4m6/releases">GitHub Releases からダウンロード</a></p>
+
+  <p data-lang="en" class="show">SHA-256: <code>7f9e336cb1704de075923d5609773c1e62f4be7dc9e6a21150f9158aa179dee4</code><br>
+  Verify: <code>certutil -hashfile collatz-gui.exe SHA256</code></p>
+  <p data-lang="ja">SHA-256: <code>7f9e336cb1704de075923d5609773c1e62f4be7dc9e6a21150f9158aa179dee4</code><br>
+  検証: <code>certutil -hashfile collatz-gui.exe SHA256</code></p>
+
+  <p data-lang="en" class="show" style="font-size:0.88em;opacity:0.8;">Requirements: Windows 10/11, OpenGL 2.0 (any GPU from 2010+). Output files are saved to <code>output/</code> in the same directory.</p>
+  <p data-lang="ja" style="font-size:0.88em;opacity:0.8;">動作要件: Windows 10/11, OpenGL 2.0（2010年以降のGPU）。結果は同ディレクトリの <code>output/</code> に自動保存。</p>
+</div>
+
+<!-- ===== PAPER (DOI placeholder) ===== -->
+<h2 data-lang="en" class="show">Paper</h2>
+<h2 data-lang="ja">論文</h2>
+
+<div class="doi-placeholder" data-lang="en" class="show">DOI: Pending (Zenodo submission in progress)</div>
+<div class="doi-placeholder" data-lang="ja">DOI: 取得予定（Zenodo 投稿準備中）</div>
+
+<p data-lang="en" class="show"><b>Pair Predicate Decomposition of Collatz-type Maps \((xn+1)/2^d\) and the Structural Closure of \(3n+1\)</b></p>
+<p data-lang="ja"><b>コラッツ型写像 \((xn+1)/2^d\) のペア述語分解と \(3n+1\) の構造的閉鎖性</b></p>
+
+<ul>
+  <li data-lang="en" class="show"><a href="collatz_paper_en.html">English version (HTML)</a></li>
+  <li data-lang="ja"><a href="collatz_paper_en.html">English version (HTML)</a></li>
+  <li data-lang="en" class="show"><a href="collatz_paper_ja.html">Japanese version / 日本語版 (HTML)</a></li>
+  <li data-lang="ja"><a href="collatz_paper_ja.html">日本語版 (HTML)</a></li>
+</ul>
+
+<!-- ===== FEATURES ===== -->
+<h2 data-lang="en" class="show">Features</h2>
+<h2 data-lang="ja">機能</h2>
+
+<div class="card-row">
+  <div class="card">
+    <h4 data-lang="en" class="show">Single Analysis</h4>
+    <h4 data-lang="ja">単発解析</h4>
+    <p data-lang="en" class="show">Analyze a single odd number via pair predicate decomposition. One-step or full trajectory tracking with GPK string, d-value, exchange status, and carry chain length at each step.</p>
+    <p data-lang="ja">1つの奇数に対して、ペア述語分解による詳細解析。1ステップまたは軌道追跡で、GPK列・d値・交換の有無・キャリー連鎖長を表示。</p>
+  </div>
+  <div class="card">
+    <h4 data-lang="en" class="show">Range Analysis (Sweep)</h4>
+    <h4 data-lang="ja">区間解析（スイープ）</h4>
+    <p data-lang="en" class="show">Verify all odd numbers in a range using parallel threads. The same exhaustive method used in world-record verification — on your own PC.</p>
+    <p data-lang="ja">指定範囲の全奇数を並列検証。世界記録と同じ全数検証方式をあなたのPCで実行。</p>
+  </div>
+  <div class="card">
+    <h4 data-lang="en" class="show">Log Analysis</h4>
+    <h4 data-lang="ja">解析</h4>
+    <p data-lang="en" class="show">Browse past run logs from the <code>output/</code> folder. Re-display GPK graphs and carry chain histograms.</p>
+    <p data-lang="ja">過去の実行ログ（<code>output/</code>）を閲覧。GPKグラフやキャリー連鎖長ヒストグラムを再表示。</p>
+  </div>
+</div>
+
+<!-- ===== GPK ===== -->
+<h2 data-lang="en" class="show">GPK Classification &amp; Carry Chains</h2>
+<h2 data-lang="ja">GPK 分類とキャリー連鎖</h2>
+
+<div data-lang="en" class="show">
+<p>Pair predicate decomposition executes each step of the Collatz map as carry propagation in an adder circuit, not as multiplication. The carry behavior at each pair position is classified as GPK:</p>
+<table>
+<tr><th>Class</th><th>Meaning</th><th>Effect on carry</th></tr>
+<tr><td><b>G</b> (Generate)</td><td>This pair generates a new carry</td><td>Output carry = 1 regardless of input</td></tr>
+<tr><td><b>P</b> (Propagate)</td><td>This pair passes the input carry through</td><td>Output = input</td></tr>
+<tr><td><b>K</b> (Kill)</td><td>This pair absorbs the carry</td><td>Output carry = 0 regardless of input</td></tr>
+</table>
+<p><b>G &gt; K</b> indicates growth tendency (divergence); <b>G &lt; K</b> indicates shrinkage (convergence). For 3n+1, G &asymp; 38% and K &asymp; 35% — G exceeds K, yet all numbers converge because division by \(2^d\) more than compensates for carry generation.</p>
+</div>
+
+<div data-lang="ja">
+<p>ペア述語分解では、コラッツ写像の1ステップを乗算ではなく加算器のキャリー伝播として実行します。各ペア位置でのキャリーの振る舞いがGPKとして分類されます：</p>
+<table>
+<tr><th>分類</th><th>意味</th><th>キャリーへの影響</th></tr>
+<tr><td><b>G</b> (Generate)</td><td>キャリーを新たに生成</td><td>入力に関係なく出力 = 1</td></tr>
+<tr><td><b>P</b> (Propagate)</td><td>入力キャリーをそのまま伝播</td><td>出力 = 入力</td></tr>
+<tr><td><b>K</b> (Kill)</td><td>キャリーを消滅させる</td><td>入力に関係なく出力 = 0</td></tr>
+</table>
+<p><b>G &gt; K</b> なら成長傾向、<b>G &lt; K</b> なら縮小傾向。3n+1 では G &asymp; 38%, K &asymp; 35% で G &gt; K ですが、÷2<sup>d</sup> の効果が上回るため全数収束します。</p>
+</div>
+
+<h3 data-lang="en" class="show">GPK Statistics: 2<sup>33</sup>-Scale Verification</h3>
+<h3 data-lang="ja">GPK 統計: 2<sup>33</sup> 規模検証</h3>
+
+<div class="box box-code">
+  G (Generate) = 113,183,623,064 &ensp;(<b>38.16%</b>)<br>
+  P (Propagate) = &ensp;81,071,432,343 &ensp;(<b>27.34%</b>)<br>
+  K (Kill) &emsp;&emsp;&ensp;= 102,328,662,110 &ensp;(<b>34.50%</b>)<br>
+  <span data-lang="en" class="show">Total pairs = 296,583,717,517 &ensp;|&ensp; Total steps = 17,463,252,353</span>
+  <span data-lang="ja">総ペア数 = 296,583,717,517 &ensp;|&ensp; 総ステップ数 = 17,463,252,353</span><br>
+  <span data-lang="en" class="show">All 4.99 billion odd numbers converge (max stopping time 282, n = 2,788,008,987)</span>
+  <span data-lang="ja">49.9億個全数収束（最大停止時間 282, n = 2,788,008,987）</span>
+</div>
+
+<!-- ===== PERFORMANCE ===== -->
+<h2 data-lang="en" class="show">Performance</h2>
+<h2 data-lang="ja">パフォーマンス</h2>
+
+<div data-lang="en" class="show">
+<p>Three-tier computation architecture automatically selects the optimal path:</p>
+<table>
+<tr><th>Phase</th><th>Bit width</th><th>Method</th><th>Speed (3n+1, 50M odds)</th></tr>
+<tr><td>Phase 1 (u128)</td><td>~128 bit</td><td>CPU native multiply</td><td class="num">~442M nums/s</td></tr>
+<tr><td>Phase 1.5 (U256)</td><td>~256 bit</td><td>Stack-based 4&times;u64</td><td class="num">(fallback)</td></tr>
+<tr><td>Phase 2 (Packed scan)</td><td>Arbitrary</td><td>Kogge-Stone pair decomposition</td><td class="num">~5.3M nums/s</td></tr>
+</table>
+<p>For sweeps, most numbers complete within u128 (Phase 1). GPK statistics add only <b>1.3&times; overhead</b> via packed scan (vs 20&times; overhead when collecting GPK through conventional arithmetic). When GPK collection is needed, the effective speed gap narrows to <b>5.5&times;</b>.</p>
+</div>
+
+<div data-lang="ja">
+<p>3段階演算アーキテクチャが数値の大きさに応じて最適パスを自動選択：</p>
+<table>
+<tr><th>フェーズ</th><th>ビット幅</th><th>演算方式</th><th>速度（3n+1, 50M奇数）</th></tr>
+<tr><td>Phase 1 (u128)</td><td>~128bit</td><td>CPUネイティブ乗算</td><td class="num">~442M nums/s</td></tr>
+<tr><td>Phase 1.5 (U256)</td><td>~256bit</td><td>スタック割当 4&times;u64</td><td class="num">（フォールバック）</td></tr>
+<tr><td>Phase 2 (パックドscan)</td><td>任意長</td><td>Kogge-Stone ペア述語分解</td><td class="num">~5.3M nums/s</td></tr>
+</table>
+<p>スイープではほぼ全数がu128（Phase 1）で完結。GPK統計のオーバーヘッドはパックドscanで<b>約1.3倍</b>（従来手法では約20倍）。GPK統計が必要な場面での実質速度差は<b>約5.5倍</b>に縮小。</p>
+</div>
+
+<!-- ===== SETTINGS ===== -->
+<h2 data-lang="en" class="show">Settings</h2>
+<h2 data-lang="ja">設定項目</h2>
+
+<div data-lang="en" class="show">
+<ul>
+<li><b>GPK Statistics checkbox</b> — Toggles GPK collection on/off. ON: accumulates G/P/K ratios and carry chain distributions. OFF: maximum sweep speed (~442M nums/s).</li>
+<li><b>u128 Phase1 checkbox</b> — ON (default): uses CPU native arithmetic for numbers within 128 bits (~84&times; faster for 3n+1 sweeps). OFF: uses pair predicate decomposition for all steps.</li>
+<li><b>x =</b> — Map constant. Must satisfy x-1 = power of 2 (3, 5, 9, 17, ...).</li>
+<li><b>max_steps</b> — Maximum iterations per number before giving up.</li>
+</ul>
+</div>
+
+<div data-lang="ja">
+<ul>
+<li><b>GPK統計 チェックボックス</b> — GPK収集のON/OFF。ON: G/P/K比率・キャリー連鎖長分布を蓄積。OFF: 最大スイープ速度（~442M nums/s）。</li>
+<li><b>u128 Phase1 チェックボックス</b> — ON（デフォルト）: 128bit以内の数をCPUネイティブ演算（3n+1スイープで約84倍高速）。OFF: 全ステップをペア述語分解で実行。</li>
+<li><b>x =</b> — 写像の定数。x-1 が2の冪である必要あり（3, 5, 9, 17, ...）。</li>
+<li><b>max_steps</b> — 1つの数に対する最大ステップ数。</li>
+</ul>
+</div>
+
+<div class="box box-warn">
+<p class="box-label" data-lang="en" class="show">&#9888; Warning: max_steps for divergent maps (5n+1, 9n+1, ...)</p>
+<p class="box-label" data-lang="ja">&#9888; 注意: 発散系列（5n+1, 9n+1 等）での max_steps</p>
+<p data-lang="en" class="show">Maps other than 3n+1 may diverge. Setting max_steps too high can cause exponential memory growth. Recommended: 3n+1 = 1,000–10,000; 5n+1 = start at 1,000 or below; 9n+1+ = 100–500. You can stop at any time.</p>
+<p data-lang="ja">3n+1以外の写像は発散する場合があります。max_stepsを大きくするとメモリが指数的に増大します。推奨: 3n+1 = 1,000〜10,000; 5n+1 = 1,000以下で開始; 9n+1以上 = 100〜500。停止ボタンでいつでも中断可能。</p>
+</div>
+
+<!-- ===== CSV ===== -->
+<h2 data-lang="en" class="show">CSV Output (Single Analysis)</h2>
+<h2 data-lang="ja">CSV 出力（単発解析）</h2>
+
+<div data-lang="en" class="show">
+<p>Trajectory tracking in Single Analysis mode automatically saves results as CSV files containing all 16 predicates, GPK strings, d-values, exchange flags, and carry chain lengths at each step. Open in Excel or Python (pandas) for custom analysis — explore patterns that may reveal new structural laws.</p>
+</div>
+<div data-lang="ja">
+<p>単発解析の軌道追跡では、結果がCSVファイルとして自動保存されます。各ステップの16述語・GPK列・d値・交換の有無・キャリー連鎖長を記録。ExcelやPython (pandas) で自由に解析でき、まだ知られていない構造的法則の探索に最適です。</p>
+</div>
+
+<!-- ===== THEORY ===== -->
+<h2 data-lang="en" class="show">Theoretical Background</h2>
+<h2 data-lang="ja">理論的背景</h2>
+
+<div data-lang="en" class="show">
+<p>This tool implements the algorithm described in the accompanying paper. The key theoretical results are:</p>
+<ul>
+<li><b>Theorem A (Unified Algorithm):</b> The map \(T(n) = (xn+1)/2^d\) is computable by an \(O(k)\) bit-scan of m4/m6 pair projections. Multiplication \(xn\) is decomposed into reference pattern index shifts.</li>
+<li><b>Theorem B (Structural Privilege of 3n+1):</b> For \(x=3\), the m4-stage GPK coincides with predicates m2(AND) and m7(XOR) of \(n\) itself — the carry landscape is readable directly from the pair type.</li>
+<li><b>Theorem C (Limitation):</b> For \(x \geq 5\), this coincidence is impossible. The 16-predicate framework's per-pair independence cannot express the inter-pair correlations required.</li>
+<li><b>Classification Theorem:</b> \(x=3\) is the <i>unique</i> parameter for which the carry structure closes within the predicate space.</li>
+</ul>
+</div>
+<div data-lang="ja">
+<p>本ツールは論文に記載のアルゴリズムを実装しています。主要な理論的結果:</p>
+<ul>
+<li><b>定理 A（統一アルゴリズム）:</b> 写像 \(T(n) = (xn+1)/2^d\) は m4/m6 ペア射影の \(O(k)\) ビット走査で計算可能。乗算 \(xn\) は参照パターンの添字シフトに分解。</li>
+<li><b>定理 B（3n+1の構造的特権）:</b> \(x=3\) では m4段GPKが入力 \(n\) の述語 m2(AND), m7(XOR) に一致 — ペア型を読むだけでキャリー地形が判明。</li>
+<li><b>定理 C（限界）:</b> \(x \geq 5\) ではこの一致は不可能。16述語の各ペア独立性により、ペア間相関は原理的に表現不可能。</li>
+<li><b>分類定理:</b> キャリー構造が述語空間内で閉じるのは \(x=3\) のときに限る。</li>
+</ul>
+</div>
+
+<!-- ===== SOURCE ===== -->
+<h2 data-lang="en" class="show">Source Code</h2>
+<h2 data-lang="ja">ソースコード</h2>
+
+<p data-lang="en" class="show">Rust (edition 2021). Source code available at <a href="https://github.com/onigirito/collatz-m4m6">github.com/onigirito/collatz-m4m6</a>.</p>
+<p data-lang="ja">Rust (edition 2021)。ソースコード: <a href="https://github.com/onigirito/collatz-m4m6">github.com/onigirito/collatz-m4m6</a></p>
+
+<!-- ===== LICENSE ===== -->
+<h2 data-lang="en" class="show">License &amp; Disclaimer</h2>
+<h2 data-lang="ja">ライセンス・免責事項</h2>
+
+<div data-lang="en" class="show">
+<p>This software is released under the <b>MIT License</b>. You are free to use, modify, and redistribute it.</p>
+<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. The author assumes no liability for any damages arising from its use.</p>
+<div class="box box-info">
+<p class="box-label">Request for academic / commercial use</p>
+<p>If you use this software, its algorithms, or the accompanying paper in academic publications, commercial products, or research that generates revenue or funding, I would appreciate it if you <a href="https://github.com/onigirito">contact me</a> beforehand. This is a courtesy request, not a license restriction.</p>
+</div>
+</div>
+
+<div data-lang="ja">
+<p>本ソフトウェアは <b>MIT ライセンス</b>で公開されています。自由に利用・改変・再配布できます。</p>
+<p>本ソフトウェアは「現状のまま」提供され、いかなる保証もありません。使用により生じたいかなる損害についても著者は責任を負いません。</p>
+<div class="box box-info">
+<p class="box-label">学術・商用利用時のお願い</p>
+<p>本ソフトウェア・アルゴリズム・論文を学術発表・商用製品・収益や研究資金を伴う研究に利用される場合は、事前に<a href="https://github.com/onigirito">ご連絡</a>いただけると幸いです。これはライセンス上の制約ではなく、お願いです。</p>
+</div>
+</div>
+
+<!-- ===== DONATION ===== -->
+<h2 data-lang="en" class="show">Support This Project</h2>
+<h2 data-lang="ja">プロジェクトを支援する</h2>
+
+<div data-lang="en" class="show">
+<p>This tool and paper are developed by one person in their free time. If you find this work useful, consider supporting its continued development:</p>
+<ul>
+<li>Star the <a href="https://github.com/onigirito/collatz-m4m6">GitHub repository</a></li>
+<li>Report bugs or suggest features via <a href="https://github.com/onigirito/collatz-m4m6/issues">Issues</a></li>
+<li>Donations are welcome — details on the <a href="https://github.com/onigirito">author's GitHub profile</a></li>
+</ul>
+</div>
+
+<div data-lang="ja">
+<p>本ツールと論文は個人が趣味の時間で開発しています。もしこの研究が役に立ったなら、継続開発を支援いただけると嬉しいです：</p>
+<ul>
+<li><a href="https://github.com/onigirito/collatz-m4m6">GitHub リポジトリ</a>にスターをつける</li>
+<li>バグ報告・機能提案は <a href="https://github.com/onigirito/collatz-m4m6/issues">Issues</a> へ</li>
+<li>寄付も募集中です — 詳しくは<a href="https://github.com/onigirito">作者の GitHub プロフィール</a>をご覧ください</li>
+</ul>
+</div>
+
+</div><!-- end container -->
+
+<footer>
+  <div class="container">
+    collatz-m4m6 &copy; 2026 onigirito &ensp;|&ensp;
+    <a href="LICENSE" style="color:#888;">MIT License</a> &ensp;|&ensp;
+    <span data-lang="en" class="show">Built with Rust &amp; eframe</span>
+    <span data-lang="ja">Rust &amp; eframe で構築</span>
+  </div>
+</footer>
+
+<!-- MathJax for formulas -->
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+<!-- Language switching -->
+<script>
+function setLang(lang) {
+  document.querySelectorAll('[data-lang]').forEach(el => {
+    el.classList.toggle('show', el.getAttribute('data-lang') === lang);
+  });
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+  document.getElementById('btn-ja').classList.toggle('active', lang === 'ja');
+  document.documentElement.lang = lang;
+  localStorage.setItem('collatz-lang', lang);
+}
+// Restore saved language or detect from browser
+(function() {
+  var saved = localStorage.getItem('collatz-lang');
+  if (saved) { setLang(saved); return; }
+  var browserLang = (navigator.language || '').toLowerCase();
+  setLang(browserLang.startsWith('ja') ? 'ja' : 'en');
+})();
+</script>
+
+</body>
+</html>

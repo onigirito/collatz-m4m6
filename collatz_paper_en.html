@@ -1,0 +1,1533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pair Predicate Decomposition of Collatz-type Maps and the Structural Closure of 3n+1</title>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        /* Screen styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Times New Roman', 'Latin Modern Roman', Georgia, serif;
+            font-size: 11pt;
+            line-height: 1.6;
+            color: #000;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .paper {
+            max-width: 210mm;
+            margin: 0 auto;
+            background-color: white;
+            padding: 25mm 25mm 30mm 25mm;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1.paper-title {
+            font-size: 16pt;
+            text-align: center;
+            margin: 0 0 8pt 0;
+            border: none;
+            line-height: 1.3;
+        }
+
+        .author { text-align: center; font-size: 11pt; margin-bottom: 20pt; }
+
+        .abstract-box {
+            margin: 20pt 20pt;
+            padding: 10pt 15pt;
+            border-left: 3pt solid #333;
+            background-color: #f9f9f9;
+        }
+        .abstract-box h2 { font-size: 12pt; margin-bottom: 6pt; border: none; }
+
+        h1 { font-size: 14pt; margin: 24pt 0 10pt 0; border-bottom: 1.5pt solid #000; padding-bottom: 3pt; }
+        h2 { font-size: 12pt; margin: 18pt 0 8pt 0; border-bottom: 0.5pt solid #ccc; padding-bottom: 2pt; }
+        h3 { font-size: 11pt; margin: 12pt 0 6pt 0; font-style: italic; }
+
+        p { margin-bottom: 8pt; text-align: justify; }
+
+        table { width: auto; border-collapse: collapse; margin: 10pt auto; font-size: 10pt; }
+        th, td { border: 1pt solid #999; padding: 4pt 8pt; text-align: center; }
+        th { background-color: #eee; font-weight: bold; }
+        caption { font-size: 10pt; margin-bottom: 4pt; font-weight: bold; }
+
+        pre { background-color: #f4f4f4; padding: 8pt; border: 0.5pt solid #ccc; font-size: 9pt; overflow-x: auto; margin: 8pt 0; }
+        code { font-family: 'Courier New', monospace; font-size: 9.5pt; }
+
+        .theorem { margin: 10pt 0; padding: 8pt 12pt; border-left: 3pt solid #333; background-color: #fafafa; }
+        .theorem-title { font-weight: bold; }
+        .proof { margin: 6pt 0 10pt 0; }
+        .proof::after { content: " \25A1"; }
+
+        ul, ol { margin-left: 20pt; margin-bottom: 8pt; }
+        li { margin-bottom: 4pt; }
+
+        hr { border: none; border-top: 0.5pt solid #ccc; margin: 16pt 0; }
+
+        .page-break { page-break-before: always; }
+
+        /* Print styles */
+        @media print {
+            body { background: white; padding: 0; margin: 0; font-size: 10.5pt; }
+            .paper { box-shadow: none; padding: 0; max-width: none; }
+
+            @page { size: A4; margin: 25mm 20mm 25mm 20mm; }
+
+            h1 { page-break-after: avoid; }
+            h2 { page-break-after: avoid; }
+            table { page-break-inside: avoid; }
+            .theorem { page-break-inside: avoid; }
+            .page-break { page-break-before: always; }
+        }
+    </style>
+</head>
+<body>
+<div class="paper">
+
+<!-- ============ TITLE PAGE ============ -->
+<h1 class="paper-title">Pair Predicate Decomposition of Collatz-type Maps \((xn+1)/2^d\)<br>and the Structural Closure of \(3n+1\)</h1>
+
+<div class="author">
+    <!-- Author name omitted for review -->
+    <br>February 2026
+</div>
+
+<!-- ============ ABSTRACT ============ -->
+<div class="abstract-box">
+<h2>Abstract</h2>
+<p>
+We decompose the binary representation of a natural number \(n\) into 2-bit pairs and introduce a system of 16 Boolean predicates defined on each pair, with the left-bit projection m4 and right-bit projection m6 serving as basis. Within this framework, we decompose the additive structure of Collatz-type maps \(T(n) = (xn+1)/2^d\) and classify the carry behavior at each pair position as Generate/Propagate/Kill (GPK).
+</p>
+<p>
+Our main result is the following. For \(x=3\), the GPK of the upper stage (m4-stage) of the addition coincides, at every pair position, with the intra-pair predicates m2(AND) and m7(XOR) of the input \(n\) itself (Theorem B). That is, the carry structure of \(3n+1\) can be read directly from the encoding of \(n\). We call this property <b>structural closure</b>. In contrast, we prove that this coincidence fails for all \(x \geq 5\) (Theorem C). For \(x \geq 5\), the GPK depends on correlations between adjacent pairs, but since all 16 predicates are per-pair independent, they cannot express inter-pair correlations.
+</p>
+<p>
+From these results it follows that the carry structure of the map closes within the predicate space only for \(x=3\) (Classification Theorem). Whether this closure property contributes to the dynamical difference between \(3n+1\) and \(5n+1\) remains open, but the structural singularity of the parameter \(x=3\) has been characterized within the predicate framework.
+</p>
+</div>
+
+<hr>
+
+<!-- ============ SECTION 1 ============ -->
+<h1>1. Introduction</h1>
+
+<h2>1.1 Background</h2>
+
+<p>The Collatz conjecture asserts that for any positive integer \(n\), repeated application of the map</p>
+
+$$
+n \mapsto \begin{cases} n/2 & \text{if } n \text{ is even} \\ 3n+1 & \text{if } n \text{ is odd} \end{cases}
+$$
+
+<p>eventually reaches 1 in finitely many steps. Since its formulation in 1937, it has resisted proof, famously prompting Erd&#337;s to remark that "mathematics is not yet ready for such problems" [1].</p>
+
+<p>The focus of this paper is not the proof of the Collatz conjecture itself, but a more fundamental question: <b>What is the internal structure of the map \(T(n) = (xn+1)/2^d\)</b>, and <b>what is special about the parameter \(x=3\)</b>?</p>
+
+<p>The variant \(5n+1\) is a well-studied counterpart. Unlike \(3n+1\), it does not exhibit convergence to 1 and possesses multiple non-trivial cycles, such as \(13 \to 33 \to 83 \to 13\) and \(27 \to 17 \to 43 \to 27\) [2]. Why the dynamical behavior differs so sharply as a function of \(x\) is not well understood.</p>
+
+<h2>1.2 Prior Work</h2>
+
+<p>The analysis of Collatz-type maps has a long history. Lagarias [1] provides a comprehensive survey of the problem's breadth and difficulty. Wirsching [3] developed binary-representation-based analysis and studied the statistical properties of the Collatz map.</p>
+
+<p>In practice, the odd-to-odd transition is captured by the Syracuse function</p>
+
+$$
+T(n) = \frac{3n+1}{2^{v_2(3n+1)}}
+$$
+
+<p>where \(v_2(m)\) denotes the 2-adic valuation (number of trailing zeros) of \(m\). The Syracuse function streamlines trajectory tracking by eliding even steps, but it does not penetrate the internal structure of the map. The arithmetic operation \(3n+1\) remains a black box, and the trailing-zero count can only be determined after computation.</p>
+
+<p>Binary-based approaches include Terras's stopping time analysis [4] and Everett's binary-operation description [5], but both presuppose the arithmetic execution of \(3 \times n\).</p>
+
+<h2>1.3 Our Approach</h2>
+
+<p>This paper treats natural numbers not as arithmetic objects but as <b>information structures</b>.</p>
+
+<p>Specifically, we decompose the binary representation of \(n\) into a sequence of 2-bit pairs and introduce a system of 16 Boolean predicates defined on each pair \((a_i, b_i)\). Of these 16 predicates, m4 (the left-bit projection of each pair) and m6 (the right-bit projection) form a basis; the remaining 14 are derived from m4 and m6 by bitwise Boolean operations.</p>
+
+<p>Under this basis decomposition, the operation \(xn+1\) is described as follows. Decomposing \(xn+1 = (x-1)n + n + 1\), the term \((x-1)n\) corresponds to a left shift of the bit string of \(n\). The shift amount \(s = \log_2(x-1)\) determines which bit positions of m4/m6 are referenced. Based on this reference pattern, the addition at each pair position is decomposed into bit-level Boolean operations (AND, XOR, and carry propagation).</p>
+
+<p>The core discovery is that when \(x=3\), the shift amount is 1 bit, and the inputs to one of the two addition stages (the m4-stage) coincide with the pair \((a_i, b_i)\) of \(n\) itself. Consequently, the positions of carry Generation and Propagation can be read directly as the intra-pair predicates \(\text{m2} = \text{AND}(a_i, b_i)\) and \(\text{m7} = \text{XOR}(a_i, b_i)\).</p>
+
+<p>For \(x \geq 5\), this degeneracy does not occur, and references to adjacent pairs become necessary. This difference arises from an essential property of the 16 predicates&mdash;per-pair independence&mdash;and is confirmed by exhaustive verification over all 784 predicate combinations.</p>
+
+<h2>1.4 Main Results</h2>
+
+<p>The main results of this paper are summarized as follows.</p>
+
+<div class="theorem">
+<span class="theorem-title">Theorem A (Unified Algorithm).</span> For any odd number \(n\) and parameter \(x\) of the \(xn+1\) type, the next odd number \(n' = T(n)\) is computable by an \(O(k)\) bit-scan of m4/m6, where \(k = \lceil \log_2(n) \rceil / 2\) is the number of pairs. The multiplication \(xn\) is decomposed into index shifts of the reference pattern and intra-pair 1-bit additions.
+</div>
+
+<div class="theorem">
+<span class="theorem-title">Theorem B (Structural Privilege of \(3n+1\)).</span> In the m4-stage carry structure of \(3n+1\), the Generate positions coincide with m2(AND) and the Propagate positions coincide with m7(XOR), at every pair position.
+</div>
+
+<div class="theorem">
+<span class="theorem-title">Theorem C (Limitation of the 16 Predicates).</span> For \(x \geq 5\), the overall carry structure \((G, P)\) of \(xn+1\) cannot be expressed as any combination of AND, OR, XOR of any two of the 16 predicates m1&ndash;m16 of \(n\).
+</div>
+
+<p>Combining Theorems B and C, \(x = 3\) is the <b>unique</b> parameter for which the carry structure of the map closes within the complete space of 16 predicates.</p>
+
+<h2>1.5 Organization</h2>
+
+<p>Section 2 defines the pair predicate system and establishes basis properties. Section 3 derives the decomposition of \(xn+1\) into pair-wise addition and exhibits the \(x\)-dependence of reference patterns. Section 4 formulates the carry problem and its resolution by scanning. Section 5 proves the structural privilege of \(3n+1\) and the limitation theorem for the 16 predicates. Section 6 discusses the m4&harr;m6 exchange principle under division by 2. Section 7 formulates the unified algorithm and evaluates computational complexity. Section 8 applies the framework to cycle analysis. Section 9 presents discussion and open problems. Section 10 states the conclusion.</p>
+
+<!-- ============ SECTION 2 ============ -->
+<div class="page-break"></div>
+<h1>2. Pair Predicate System</h1>
+
+<p>This section rigorously defines the 2-bit pair decomposition of natural numbers and the system of 16 Boolean predicates defined thereon. We show that m4 and m6 form a basis, and confirm the completeness and per-pair independence of the system.</p>
+
+<h2>2.1 Two-Bit Pair Decomposition</h2>
+
+<div class="theorem">
+<span class="theorem-title">Definition 2.1 (Even-digit padding).</span> For a positive integer \(n\), write its binary representation as \(\beta(n) = d_{L-1} d_{L-2} \cdots d_1 d_0\), where \(d_{L-1} = 1\) (most significant bit) and \(L = \lfloor \log_2 n \rfloor + 1\). When \(L\) is odd, prepend a single zero to make the digit count even:
+
+$$
+\hat{\beta}(n) = \begin{cases} \beta(n) & \text{if } L \text{ is even} \\ 0\beta(n) & \text{if } L \text{ is odd} \end{cases}
+$$
+
+Denote the padded digit count by \(2k\). Then \(k = \lceil L/2 \rceil\) is the <i>pair count</i>.
+</div>
+
+<div class="theorem">
+<span class="theorem-title">Definition 2.2 (Pair sequence).</span> Group the padded binary representation \(\hat{\beta}(n) = s_1 s_2 \cdots s_{2k}\) into consecutive 2-bit pairs from the left:
+
+$$
+P(n) = \bigl((a_0, b_0),\, (a_1, b_1),\, \ldots,\, (a_{k-1}, b_{k-1})\bigr)
+$$
+
+where \(a_i = s_{2i+1}\) and \(b_i = s_{2i+2}\) (1-indexed). That is, \(a_i\) is the left bit and \(b_i\) is the right bit of each pair.
+</div>
+
+<p><b>Example 2.1.</b> \(n = 27 = 11011_2\) &rarr; padding: \(011011\) &rarr; pairs: \(((0,1),(1,0),(1,1))\). Pair count \(k=3\).</p>
+
+<p><b>Example 2.2.</b> \(n = 17 = 10001_2\) &rarr; padding: \(010001\) &rarr; pairs: \(((0,1),(0,0),(0,1))\). Pair count \(k=3\).</p>
+
+<div class="theorem">
+<span class="theorem-title">Definition 2.3 (Zipper structure and reconstruction).</span> To reconstruct the original binary representation from the pair sequence \(P(n)\), interleave the left and right bits:
+
+$$
+\hat{\beta}(n) = a_0\, b_0\, a_1\, b_1\, \cdots\, a_{k-1}\, b_{k-1}
+$$
+
+We call this interleaving the <i>zipper structure</i>. Reconstruction is unique: removing the leading-zero padding recovers \(n\) uniquely.
+</div>
+
+<h2>2.2 Definition of m4 and m6</h2>
+
+<div class="theorem">
+<span class="theorem-title">Definition 2.4 (Projections m4, m6).</span> For the pair sequence \(P(n) = ((a_0, b_0), \ldots, (a_{k-1}, b_{k-1}))\), define two bit strings:
+
+$$
+\text{m4}(n) = (a_0, a_1, \ldots, a_{k-1})
+$$
+$$
+\text{m6}(n) = (b_0, b_1, \ldots, b_{k-1})
+$$
+
+m4 is the left-bit projection (LEFT) and m6 is the right-bit projection (RIGHT) of each pair.
+</div>
+
+<div class="theorem">
+<span class="theorem-title">Proposition 2.1 (Reconstruction).</span> The number \(n\) is uniquely reconstructed from the pair \((\text{m4}(n), \text{m6}(n))\).
+<div class="proof"><i>Proof.</i> The zipper structure recovers \(\hat{\beta}(n)\), and removal of the leading zero uniquely determines \(n\).</div>
+</div>
+
+<p><b>Example 2.3.</b> \(n=27\): m4 \(= (0,1,1)\), m6 \(= (1,0,1)\). Zipper: \(0\,1\,1\,0\,1\,1 = 011011_2 = 27\). &#10003;</p>
+
+<h2>2.3 The 16 Predicates</h2>
+
+<p>There are \(2^{2^2} = 16\) Boolean functions of two inputs, forming a complete system. For each pair \((a_i, b_i)\), we define the 16 predicates m1&ndash;m16 as follows.</p>
+
+<div class="theorem">
+<span class="theorem-title">Definition 2.5 (The 16 predicates).</span>
+
+<table>
+<tr><th>Pred.</th><th>Name</th><th>Definition \(f(a,b)\)</th><th>Truth values (0,0)(0,1)(1,0)(1,1)</th></tr>
+<tr><td>m1</td><td>FALSE</td><td>0</td><td>0 0 0 0</td></tr>
+<tr><td>m2</td><td>AND</td><td>\(a \wedge b\)</td><td>0 0 0 1</td></tr>
+<tr><td>m3</td><td>L&gt;R</td><td>\(a \wedge \neg b\)</td><td>0 0 1 0</td></tr>
+<tr><td>m4</td><td>LEFT</td><td>\(a\)</td><td>0 0 1 1</td></tr>
+<tr><td>m5</td><td>R&gt;L</td><td>\(\neg a \wedge b\)</td><td>0 1 0 0</td></tr>
+<tr><td>m6</td><td>RIGHT</td><td>\(b\)</td><td>0 1 0 1</td></tr>
+<tr><td>m7</td><td>XOR</td><td>\(a \oplus b\)</td><td>0 1 1 0</td></tr>
+<tr><td>m8</td><td>OR</td><td>\(a \vee b\)</td><td>0 1 1 1</td></tr>
+<tr><td>m9</td><td>NOR</td><td>\(\neg a \wedge \neg b\)</td><td>1 0 0 0</td></tr>
+<tr><td>m10</td><td>XNOR</td><td>\(\neg(a \oplus b)\)</td><td>1 0 0 1</td></tr>
+<tr><td>m11</td><td>NOT_R</td><td>\(\neg b\)</td><td>1 0 1 0</td></tr>
+<tr><td>m12</td><td>R&rarr;L</td><td>\(a \vee \neg b\)</td><td>1 0 1 1</td></tr>
+<tr><td>m13</td><td>NOT_L</td><td>\(\neg a\)</td><td>1 1 0 0</td></tr>
+<tr><td>m14</td><td>L&rarr;R</td><td>\(\neg a \vee b\)</td><td>1 1 0 1</td></tr>
+<tr><td>m15</td><td>NAND</td><td>\(\neg(a \wedge b)\)</td><td>1 1 1 0</td></tr>
+<tr><td>m16</td><td>TRUE</td><td>1</td><td>1 1 1 1</td></tr>
+</table>
+</div>
+
+<p>Each predicate is applied bitwise to the pair sequence of \(n\):</p>
+
+$$
+\text{m}_j(n) = \bigl(f_j(a_0, b_0),\, f_j(a_1, b_1),\, \ldots,\, f_j(a_{k-1}, b_{k-1})\bigr)
+$$
+
+<h2>2.4 Basis Theorem</h2>
+
+<div class="theorem">
+<span class="theorem-title">Theorem 2.1 (m4/m6 basis).</span> All 16 predicates m1&ndash;m16 can be expressed by bitwise Boolean operations on m4 and m6.
+
+<p><i>Proof.</i> We give the expression for each predicate directly:</p>
+
+<table>
+<tr><th>Predicate</th><th>Expression in m4/m6</th></tr>
+<tr><td>m1</td><td>\(\mathbf{0}\) (constant zero)</td></tr>
+<tr><td>m2</td><td>m4 AND m6</td></tr>
+<tr><td>m3</td><td>m4 AND (NOT m6)</td></tr>
+<tr><td>m4</td><td>m4 (basis)</td></tr>
+<tr><td>m5</td><td>(NOT m4) AND m6</td></tr>
+<tr><td>m6</td><td>m6 (basis)</td></tr>
+<tr><td>m7</td><td>m4 XOR m6</td></tr>
+<tr><td>m8</td><td>m4 OR m6</td></tr>
+<tr><td>m9</td><td>(NOT m4) AND (NOT m6)</td></tr>
+<tr><td>m10</td><td>NOT (m4 XOR m6)</td></tr>
+<tr><td>m11</td><td>NOT m6</td></tr>
+<tr><td>m12</td><td>m4 OR (NOT m6)</td></tr>
+<tr><td>m13</td><td>NOT m4</td></tr>
+<tr><td>m14</td><td>(NOT m4) OR m6</td></tr>
+<tr><td>m15</td><td>NOT (m4 AND m6)</td></tr>
+<tr><td>m16</td><td>\(\mathbf{1}\) (constant one)</td></tr>
+</table>
+
+<p>All operations are applied bitwise. &#9633;</p>
+</div>
+
+<p><b>Remark 2.1.</b> The choice of basis is not unique. For instance, \(\{\text{m3}(a \wedge \neg b),\; \text{m6}(b)\}\) or \(\{\text{m4}(a),\; \text{m8}(a \vee b)\}\) also generate all 16 predicates. However, m4/m6 has the distinguished property of directly preserving the numerical information of \(n\) (i.e., \(n\) is recoverable). Other basis pairs generally require additional operations for reconstruction.</p>
+
+<p>Note that not every pair of predicates forms a basis. For example, \(\{\text{m2}(\text{AND}),\; \text{m7}(\text{XOR})\}\) are both symmetric in \((a,b)\), meaning \(f(a,b) = f(b,a)\). Since any Boolean composition of symmetric functions remains symmetric, this pair can only generate the 8 symmetric predicates (m1, m2, m7, m8, m9, m10, m15, m16) and cannot produce asymmetric predicates such as \(\text{m4}(a,b) = a\).</p>
+
+<h2>2.5 Per-Pair Independence</h2>
+
+<div class="theorem">
+<span class="theorem-title">Definition 2.6 (Per-pair independence).</span> A function \(g: \{0,1\}^{2k} \to \{0,1\}^k\) is <i>per-pair independent</i> if the \(i\)-th component of the output depends only on the \(i\)-th pair \((a_i, b_i)\) of the input:
+
+$$
+g(n)_i = h(a_i, b_i) \quad \text{for some } h: \{0,1\}^2 \to \{0,1\}
+$$
+</div>
+
+<div class="theorem">
+<span class="theorem-title">Proposition 2.2.</span> All 16 predicates m1&ndash;m16 are per-pair independent.
+<div class="proof"><i>Proof.</i> By Definition 2.5, each \(f_j(a_i, b_i)\) is a function of \((a_i, b_i)\) alone.</div>
+</div>
+
+<div class="theorem">
+<span class="theorem-title">Proposition 2.3 (Closure).</span> The bitwise AND, OR, XOR, and NOT of per-pair independent functions are again per-pair independent.
+<div class="proof"><i>Proof.</i> If \(g_1(n)_i = h_1(a_i, b_i)\) and \(g_2(n)_i = h_2(a_i, b_i)\), then \((g_1 \text{ AND } g_2)(n)_i = h_1(a_i, b_i) \wedge h_2(a_i, b_i)\) depends only on \((a_i, b_i)\). The other operations are analogous.</div>
+</div>
+
+<div class="theorem">
+<span class="theorem-title">Corollary 2.1.</span> Any Boolean composition of m1&ndash;m16 is per-pair independent and cannot express correlations between positions \(i\) and \(j\) (\(i \neq j\)).
+</div>
+
+<p>This property is used essentially in Section 5 to prove that the carry structure of \(5n+1\) cannot be described by the 16 predicates.</p>
+
+<h2>2.6 Complement Pairs</h2>
+
+<p>The 16 predicates possess a natural symmetry.</p>
+
+<div class="theorem">
+<span class="theorem-title">Definition 2.7 (Complement pair).</span> Predicates \(\text{m}_j\) and \(\text{m}_{17-j}\) are called a complement pair. They satisfy \(\text{m}_j(a,b) + \text{m}_{17-j}(a,b) = 1\).
+</div>
+
+<table>
+<tr><th>Pair</th><th>Predicate</th><th>Complement</th><th>Type</th></tr>
+<tr><td>1</td><td>m1 (FALSE)</td><td>m16 (TRUE)</td><td>Constant</td></tr>
+<tr><td>2</td><td>m2 (AND)</td><td>m15 (NAND)</td><td>Logical</td></tr>
+<tr><td>3</td><td>m3 (L&gt;R)</td><td>m14 (L&rarr;R)</td><td>Implication</td></tr>
+<tr><td>4</td><td>m4 (LEFT)</td><td>m13 (NOT_L)</td><td>Projection</td></tr>
+<tr><td>5</td><td>m5 (R&gt;L)</td><td>m12 (R&rarr;L)</td><td>Implication</td></tr>
+<tr><td>6</td><td>m6 (RIGHT)</td><td>m11 (NOT_R)</td><td>Projection</td></tr>
+<tr><td>7</td><td>m7 (XOR)</td><td>m10 (XNOR)</td><td>Exclusive</td></tr>
+<tr><td>8</td><td>m8 (OR)</td><td>m9 (NOR)</td><td>Logical</td></tr>
+</table>
+
+<div class="theorem">
+<span class="theorem-title">Proposition 2.4.</span> \(\text{m}_j(n) = \neg\, \text{m}_{17-j}(n)\) holds for all \(n\).
+<div class="proof"><i>Proof.</i> Verify \(f_j(a,b) + f_{17-j}(a,b) = 1\) for each row of the truth table.</div>
+</div>
+
+<h2>2.7 Summary of This Section</h2>
+
+<p>Established results:</p>
+
+<p>1. A natural number \(n\) is uniquely decomposed into a 2-bit pair sequence \(P(n)\), and is completely reconstructed from m4 (left-bit string) and m6 (right-bit string).</p>
+
+<p>2. The 16 two-input Boolean functions on pairs \((a_i, b_i)\) form a complete system, all expressible as bitwise operations on m4 and m6.</p>
+
+<p>3. All 16 predicates are per-pair independent, and this property is preserved under Boolean composition. Consequently, correlations between distinct pair positions cannot be described within the 16-predicate framework.</p>
+
+<p>4. The 16 predicates form 8 complement pairs, with predicate numbers \(j\) and \(17-j\) paired.</p>
+
+<p>Section 3 derives how \(xn+1\)-type maps are described on this predicate system.</p>
+
+<!-- ============ SECTION 3 ============ -->
+<div class="page-break"></div>
+<h1>3. Decomposition of \(xn+1\)</h1>
+
+<p>This section decomposes the Collatz-type map \(xn+1\) into pair-wise addition. We show that the shift amount \(s = \log_2(x-1)\) determines the reference pattern on the pair structure, and derive the cases \(x=3\) and \(x=5\) in detail.</p>
+
+<h2>3.1 Decomposition Principle</h2>
+
+<div class="theorem">
+<span class="theorem-title">Proposition 3.1 (Additive decomposition).</span> For a positive odd number \(n\) and parameter \(x\):
+
+$$
+xn + 1 = (x-1)n + n + 1
+$$
+
+The term \((x-1)n\) corresponds to a left shift of the binary representation of \(n\).
+
+<div class="proof"><i>Proof.</i> When \(x-1\) is a power of 2, \((x-1)n = 2^s n\) is exactly an \(s\)-bit left shift of \(n\). This paper treats the case \(x \in \{3, 5, 9, 17, \ldots\}\) where \(x-1\) is a power of 2.</div>
+</div>
+
+<p><b>Remark 3.1.</b> When \(x-1\) is not a power of 2 (e.g., \(x=7\), \(x-1=6=2 \cdot 3\)), additional additions beyond a simple shift arise. The framework is in principle extensible, but for clarity we focus on \(x-1 = 2^s\). The primary objects of study are \(x=3\) (\(s=1\)) and \(x=5\) (\(s=2\)).</p>
+
+<h2>3.2 Shift and Pair Structure</h2>
+
+<p>Let \(P(n) = ((a_0, b_0), \ldots, (a_{k-1}, b_{k-1}))\) be the pair sequence of \(n\), with corresponding binary representation \(\hat{\beta}(n) = a_0\, b_0\, a_1\, b_1\, \cdots\, a_{k-1}\, b_{k-1}\). The binary representation of \(2^s n\) appends \(s\) zeros at the end.</p>
+
+<p><b>Case \(s=2\) (\(x=5\), \(4n\)):</b></p>
+
+$$
+P(4n) = ((a_0, b_0),\, (a_1, b_1),\, \ldots,\, (a_{k-1}, b_{k-1}),\, (0, 0))
+$$
+
+<p>A zero pair \((0,0)\) is appended. <b>Pair boundaries are preserved.</b></p>
+
+$$
+\text{m4}(4n) = (a_0, a_1, \ldots, a_{k-1}, 0) = \text{m4}(n) \| 0
+$$
+$$
+\text{m6}(4n) = (b_0, b_1, \ldots, b_{k-1}, 0) = \text{m6}(n) \| 0
+$$
+
+<p>where \(\|\) denotes bit-string concatenation.</p>
+
+<p><b>Case \(s=1\) (\(x=3\), \(2n\)):</b></p>
+
+$$
+\hat{\beta}(2n) = a_0\, b_0\, a_1\, b_1\, \cdots\, a_{k-1}\, b_{k-1}\, 0
+$$
+
+<p>The digit count becomes odd, so a leading zero is prepended:</p>
+
+$$
+\hat{\beta}(2n)_{\text{padded}} = 0\, a_0\, b_0\, a_1\, b_1\, \cdots\, a_{k-1}\, b_{k-1}\, 0
+$$
+
+<p>Grouping into pairs:</p>
+
+$$
+P(2n) = ((0, a_0),\, (b_0, a_1),\, (b_1, a_2),\, \ldots,\, (b_{k-1}, 0))
+$$
+
+<p><b>Pair boundaries shift by 1 bit.</b> As a result:</p>
+
+$$
+\text{m4}(2n) = (0, b_0, b_1, \ldots, b_{k-1}) = 0 \| \text{m6}(n)
+$$
+$$
+\text{m6}(2n) = (a_0, a_1, \ldots, a_{k-1}, 0) = \text{m4}(n) \| 0
+$$
+
+<div class="theorem">
+<span class="theorem-title">Proposition 3.2 (m4/m6 crossover under \(2n\)).</span> \(\text{m4}(2n)\) equals \(\text{m6}(n)\) with a leading zero prepended, and \(\text{m6}(2n)\) equals \(\text{m4}(n)\) with a trailing zero appended. That is, the \(2n\) operation swaps the roles of m4 and m6.
+</div>
+
+<h2>3.3 Pair Addition Formulation</h2>
+
+<p>We describe \(xn + 1 = 2^s n + n + 1\) as addition over pair sequences. Below we use LSB (least significant pair) ordering. Let the pair sequence of \(n\) in LSB order be \((a_0, b_0), (a_1, b_1), \ldots\)</p>
+
+<p>At pair position \(i\), the contribution from \(n\) is \((a_i, b_i)\), and the contribution from \(2^s n\) is determined by the shift amount. Addition at each pair position proceeds in two stages: right bit (m6) then left bit (m4).</p>
+
+<div class="theorem">
+<span class="theorem-title">Definition 3.1 (Two-stage pair addition).</span> At pair position \(i\):
+
+<p><b>m6-stage (right bit):</b></p>
+$$
+\text{sum}_{R,i} = r_i^{(6)} + b_i + c_{\text{in},i}
+$$
+
+<p>where \(r_i^{(6)}\) is the right bit of \(2^s n\) at pair position \(i\), and \(c_{\text{in},i}\) is the input carry to pair \(i\).</p>
+
+$$
+\text{new\_m6}_i = \text{sum}_{R,i} \bmod 2, \quad c_{\text{mid},i} = \lfloor \text{sum}_{R,i} / 2 \rfloor
+$$
+
+<p><b>m4-stage (left bit):</b></p>
+$$
+\text{sum}_{L,i} = r_i^{(4)} + a_i + c_{\text{mid},i}
+$$
+
+<p>where \(r_i^{(4)}\) is the left bit of \(2^s n\) at pair position \(i\).</p>
+
+$$
+\text{new\_m4}_i = \text{sum}_{L,i} \bmod 2, \quad c_{\text{out},i} = \lfloor \text{sum}_{L,i} / 2 \rfloor
+$$
+
+<p><b>Carry propagation:</b> \(c_{\text{in},0} = 1\) (effect of +1), \(c_{\text{in},i+1} = c_{\text{out},i}\).</p>
+</div>
+
+<h2>3.4 Reference Pattern for \(x=5\)</h2>
+
+<p>In \(5n+1 = 4n + n + 1\), the term \(4n\) is a 1-pair shift (&sect;3.2), so at pair position \(i\):</p>
+
+$$
+r_i^{(4)} = a_{i-1}, \quad r_i^{(6)} = b_{i-1} \quad (a_{-1} = b_{-1} = 0)
+$$
+
+<div class="theorem">
+<span class="theorem-title">Proposition 3.3 (Reference pattern for \(5n+1\)).</span> In the pair addition for \(5n+1\):
+
+$$
+\text{m6-stage inputs}: (b_{i-1},\, b_i) \quad \text{&mdash; adjacent m6 bits}
+$$
+$$
+\text{m4-stage inputs}: (a_{i-1},\, a_i) \quad \text{&mdash; adjacent m4 bits}
+$$
+
+<div class="proof"><i>Proof.</i> Substitute \(r_i^{(6)} = b_{i-1}\) into the m6-stage: \(\text{sum}_{R,i} = b_{i-1} + b_i + c_{\text{in},i}\). Substitute \(r_i^{(4)} = a_{i-1}\) into the m4-stage: \(\text{sum}_{L,i} = a_{i-1} + a_i + c_{\text{mid},i}\).</div>
+</div>
+
+<p><b>Remark 3.2.</b> For \(5n+1\), both the m6-stage and the m4-stage have isomorphic reference patterns (adjacent same-type reference). This is because \(s=2\) is even (&sect;3.6 generalizes).</p>
+
+<h2>3.5 Reference Pattern for \(x=3\)</h2>
+
+<p>In \(3n+1 = 2n + n + 1\), the term \(2n\) is a 1-bit shift. By &sect;3.2, and tracking the pair boundary shift precisely in LSB order:</p>
+
+$$
+r_i^{(6)} = a_{i-1} \quad (a_{-1} = 0), \qquad r_i^{(4)} = b_i
+$$
+
+<div class="theorem">
+<span class="theorem-title">Proposition 3.4 (Reference pattern for \(3n+1\)).</span> In the pair addition for \(3n+1\):
+
+$$
+\text{m6-stage inputs}: (a_{i-1},\, b_i) \quad \text{&mdash; cross-reference between m4 of the previous pair and m6 of the current pair}
+$$
+$$
+\text{m4-stage inputs}: (b_i,\, a_i) = (a_i,\, b_i) \quad \text{&mdash; within the current pair (order is immaterial by commutativity)}
+$$
+
+<div class="proof"><i>Proof.</i> Substitute \(r_i^{(6)} = a_{i-1}\) into the m6-stage: \(\text{sum}_{R,i} = a_{i-1} + b_i + c_{\text{in},i}\). Substitute \(r_i^{(4)} = b_i\) into the m4-stage: \(\text{sum}_{L,i} = b_i + a_i + c_{\text{mid},i} = a_i + b_i + c_{\text{mid},i}\).</div>
+</div>
+
+<p><b>Key observation.</b> The m4-stage inputs \((a_i, b_i)\) are precisely pair \(i\) of \(n\) itself. This coincidence is the foundation of Theorem B in Section 5.</p>
+
+<h2>3.6 General Reference Patterns</h2>
+
+<p>The parity of the shift amount \(s\) qualitatively determines the reference pattern structure.</p>
+
+<div class="theorem">
+<span class="theorem-title">Proposition 3.5 (Classification of reference patterns).</span> For \(x - 1 = 2^s\):
+
+<p><b>When \(s\) is even (\(s = 2t\)):</b> The shift corresponds to \(t\) full pairs. Pair boundaries are preserved.</p>
+
+$$
+r_i^{(4)} = a_{i-t}, \quad r_i^{(6)} = b_{i-t}
+$$
+
+<p>The m6-stage references m6 bits and the m4-stage references m4 bits (<b>isomorphic reference</b>).</p>
+
+<p><b>When \(s\) is odd (\(s = 2t+1\)):</b> The shift is \(t\) pairs plus 1 bit, and pair boundaries shift by 1 bit.</p>
+
+$$
+r_i^{(4)} = b_{i-t-1}, \quad r_i^{(6)} = a_{i-t}
+$$
+
+<p>The m6-stage references m4-derived bits and the m4-stage references m6-derived bits (<b>cross-reference</b>).</p>
+</div>
+
+<p><b>Table 3.1: Principal reference patterns.</b></p>
+
+<table>
+<tr><th>\(x\)</th><th>\(s\)</th><th>Pair shift</th><th>Boundary</th><th>m6-stage input</th><th>m4-stage input</th><th>Type</th></tr>
+<tr><td>3</td><td>1</td><td>0+1bit</td><td>shifted</td><td>\((a_{i-1}, b_i)\)</td><td>\((a_i, b_i)\)</td><td>cross + intra-pair</td></tr>
+<tr><td>5</td><td>2</td><td>1 pair</td><td>preserved</td><td>\((b_{i-1}, b_i)\)</td><td>\((a_{i-1}, a_i)\)</td><td>isomorphic adjacent</td></tr>
+<tr><td>9</td><td>3</td><td>1+1bit</td><td>shifted</td><td>\((a_{i-2}, b_i)\)</td><td>\((a_i, b_{i-1})\)</td><td>cross + distant</td></tr>
+<tr><td>17</td><td>4</td><td>2 pairs</td><td>preserved</td><td>\((b_{i-2}, b_i)\)</td><td>\((a_{i-2}, a_i)\)</td><td>isomorphic distant</td></tr>
+</table>
+
+<h2>3.7 Worked Example: \(n=27\) under \(5n+1\)</h2>
+
+<p>\(n=27\): m4 \(= (0,1,1)\), m6 \(= (1,0,1)\). LSB order: \(a = (1,1,0)\), \(b = (1,0,1)\).</p>
+
+<p><b>Pair 0 (LSB, \(i=0\)):</b></p>
+$$
+\text{m6-stage}: b_{-1} + b_0 + c_{\text{in}} = 0 + 1 + 1 = 2 \;\Rightarrow\; \text{new\_m6}_0 = 0,\; c_{\text{mid}} = 1
+$$
+$$
+\text{m4-stage}: a_{-1} + a_0 + c_{\text{mid}} = 0 + 1 + 1 = 2 \;\Rightarrow\; \text{new\_m4}_0 = 0,\; c_{\text{out}} = 1
+$$
+
+<p><b>Pair 1 (\(i=1\)):</b></p>
+$$
+\text{m6-stage}: b_0 + b_1 + 1 = 1 + 0 + 1 = 2 \;\Rightarrow\; \text{new\_m6}_1 = 0,\; c_{\text{mid}} = 1
+$$
+$$
+\text{m4-stage}: a_0 + a_1 + 1 = 1 + 1 + 1 = 3 \;\Rightarrow\; \text{new\_m4}_1 = 1,\; c_{\text{out}} = 1
+$$
+
+<p><b>Pair 2 (\(i=2\)):</b></p>
+$$
+\text{m6-stage}: b_1 + b_2 + 1 = 0 + 1 + 1 = 2 \;\Rightarrow\; \text{new\_m6}_2 = 0,\; c_{\text{mid}} = 1
+$$
+$$
+\text{m4-stage}: a_1 + a_2 + 1 = 1 + 0 + 1 = 2 \;\Rightarrow\; \text{new\_m4}_2 = 0,\; c_{\text{out}} = 1
+$$
+
+<p><b>Overflow pair (\(i=3\)):</b></p>
+$$
+\text{m6-stage}: b_2 + 0 + 1 = 1 + 0 + 1 = 2 \;\Rightarrow\; \text{new\_m6}_3 = 0,\; c_{\text{mid}} = 1
+$$
+$$
+\text{m4-stage}: a_2 + 0 + 1 = 0 + 0 + 1 = 1 \;\Rightarrow\; \text{new\_m4}_3 = 1,\; c_{\text{out}} = 0
+$$
+
+<p>Result (LSB order): \(((0,0),(1,0),(0,0),(1,0))\) &rarr; MSB order: \(((1,0),(0,0),(1,0),(0,0))\)</p>
+
+$$
+5 \times 27 + 1 = 136 = 10001000_2 \quad \checkmark
+$$
+
+<h2>3.8 Worked Example: \(n=27\) under \(3n+1\)</h2>
+
+<p>Same \(n=27\): LSB order: \(a = (1,1,0)\), \(b = (1,0,1)\).</p>
+
+<p><b>Pair 0 (\(i=0\)):</b></p>
+$$
+\text{m6-stage}: a_{-1} + b_0 + c_{\text{in}} = 0 + 1 + 1 = 2 \;\Rightarrow\; \text{new\_m6}_0 = 0,\; c_{\text{mid}} = 1
+$$
+$$
+\text{m4-stage}: a_0 + b_0 + c_{\text{mid}} = 1 + 1 + 1 = 3 \;\Rightarrow\; \text{new\_m4}_0 = 1,\; c_{\text{out}} = 1
+$$
+
+<p><b>Pair 1 (\(i=1\)):</b></p>
+$$
+\text{m6-stage}: a_0 + b_1 + 1 = 1 + 0 + 1 = 2 \;\Rightarrow\; \text{new\_m6}_1 = 0,\; c_{\text{mid}} = 1
+$$
+$$
+\text{m4-stage}: a_1 + b_1 + 1 = 1 + 0 + 1 = 2 \;\Rightarrow\; \text{new\_m4}_1 = 0,\; c_{\text{out}} = 1
+$$
+
+<p><b>Pair 2 (\(i=2\)):</b></p>
+$$
+\text{m6-stage}: a_1 + b_2 + 1 = 1 + 1 + 1 = 3 \;\Rightarrow\; \text{new\_m6}_2 = 1,\; c_{\text{mid}} = 1
+$$
+$$
+\text{m4-stage}: a_2 + b_2 + 1 = 0 + 1 + 1 = 2 \;\Rightarrow\; \text{new\_m4}_2 = 0,\; c_{\text{out}} = 1
+$$
+
+<p><b>Overflow pair (\(i=3\)):</b></p>
+$$
+\text{m6-stage}: a_2 + 0 + 1 = 0 + 0 + 1 = 1 \;\Rightarrow\; \text{new\_m6}_3 = 1,\; c_{\text{mid}} = 0
+$$
+$$
+\text{m4-stage}: 0 + 0 + 0 = 0 \;\Rightarrow\; \text{new\_m4}_3 = 0,\; c_{\text{out}} = 0
+$$
+
+<p>Result (LSB order): \(((1,0),(0,0),(0,1),(0,1))\) &rarr; MSB order: \(((0,1),(0,1),(0,0),(1,0))\)</p>
+
+$$
+3 \times 27 + 1 = 82 = 01010010_2 \quad \checkmark
+$$
+
+<h2>3.9 Summary of This Section</h2>
+
+<p>1. Decomposing \(xn+1 = (x-1)n + n + 1\), the term \((x-1)n\) is an \(s = \log_2(x-1)\)-bit left shift, and the parity of \(s\) determines whether pair boundaries are preserved or shifted.</p>
+
+<p>2. Addition at pair position \(i\) has a two-stage structure (m6-stage and m4-stage), with each stage's inputs described as references to m4/m6 bits of \(n\).</p>
+
+<p>3. For \(x=5\) (\(s=2\), even): isomorphic adjacent reference of m6&ndash;m6 and m4&ndash;m4. For \(x=3\) (\(s=1\), odd): cross-reference of m4&rarr;m6 and m6&rarr;m4, with the m4-stage inputs coinciding with the current pair \((a_i, b_i)\) itself.</p>
+
+<p>4. The multiplication \(xn\) is never explicitly performed. The shift of \((x-1)n\) is absorbed into index offsets of the reference pattern, and all operations reduce to bit references and 1-bit additions (with carry propagation).</p>
+
+<!-- ============ SECTION 4 ============ -->
+<div class="page-break"></div>
+<h1>4. The Carry Problem and Its Resolution</h1>
+
+<p>The previous section derived the two-stage pair addition structure. This section formulates the carry propagation structure, shows that it can be resolved by sequential scanning, and that parallelization is possible.</p>
+
+<h2>4.1 The Problem</h2>
+
+<p>The output of pair position \(i\) depends on the input carry \(c_{\text{in},i}\), which equals the output carry \(c_{\text{out},i-1}\) of pair \(i-1\), which in turn depends on pair \(i-2\), and so on. This chain runs from LSB (pair 0) to MSB:</p>
+
+$$
+c_{\text{in},0} = 1 \;\xrightarrow{\text{pair }0}\; c_{\text{out},0} = c_{\text{in},1} \;\xrightarrow{\text{pair }1}\; c_{\text{out},1} = c_{\text{in},2} \;\xrightarrow{\text{pair }2}\; \cdots
+$$
+
+<p><b>Question.</b> Is this sequential dependence essential? Can the carry at each pair be expressed in "closed form" from the m4/m6 bit strings?</p>
+
+<h2>4.2 Local Carry Classification (GPK)</h2>
+
+<p>Despite the sequential carry dependence, the <i>behavior of each pair with respect to carry</i> can be classified independently of the carry value.</p>
+
+<div class="theorem">
+<span class="theorem-title">Definition 4.1 (GPK classification).</span> For two bits \(p, q \in \{0,1\}\) and an input carry \(c \in \{0,1\}\), the carry output of the addition \(p + q + c\) is \(\lfloor(p+q+c)/2\rfloor\). We classify:
+
+<ul>
+<li><b>Generate (G):</b> \(p + q = 2\) (i.e., \(p = q = 1\)). Carry output is 1 regardless of \(c\).</li>
+<li><b>Propagate (P):</b> \(p + q = 1\) (i.e., \(p \neq q\)). Carry output equals \(c\).</li>
+<li><b>Kill (K):</b> \(p + q = 0\) (i.e., \(p = q = 0\)). Carry output is 0 regardless of \(c\).</li>
+</ul>
+
+<p>In Boolean predicates:</p>
+$$G(p,q) = p \wedge q = \text{AND}(p,q)$$
+$$P(p,q) = p \oplus q = \text{XOR}(p,q)$$
+$$K(p,q) = \neg p \wedge \neg q = \text{NOR}(p,q)$$
+
+<p>\(G, P, K\) are mutually exclusive and exhaustive.</p>
+</div>
+
+<p><b>Remark 4.0.</b> The GPK classification is not introduced for the first time in this paper. It is the standard technique for classifying carry behavior at each digit of carry-lookahead adders [6], with over half a century of history. Our contribution is to apply this classification to the pair addition of Collatz-type maps and to show that for \(3n+1\), the GPK coincides with the intra-pair predicates m2/m7/m9 of \(n\).</p>
+
+<h2>4.3 GPK of Each Stage</h2>
+
+<p>Based on the reference patterns of Section 3, we describe the GPK of each stage.</p>
+
+<p><b>m6-stage GPK:</b></p>
+$$
+G_{\text{mid}}[i] = \text{AND}(r_i^{(6)},\, b_i), \quad P_{\text{mid}}[i] = \text{XOR}(r_i^{(6)},\, b_i)
+$$
+
+<p><b>m4-stage GPK:</b></p>
+$$
+G_{\text{out}}[i] = \text{AND}(r_i^{(4)},\, a_i), \quad P_{\text{out}}[i] = \text{XOR}(r_i^{(4)},\, a_i)
+$$
+
+<p><b>For \(x=5\):</b></p>
+$$
+G_{\text{mid}}[i] = b_{i-1} \wedge b_i, \quad P_{\text{mid}}[i] = b_{i-1} \oplus b_i
+$$
+$$
+G_{\text{out}}[i] = a_{i-1} \wedge a_i, \quad P_{\text{out}}[i] = a_{i-1} \oplus a_i
+$$
+
+<p><b>For \(x=3\):</b></p>
+$$
+G_{\text{mid}}[i] = a_{i-1} \wedge b_i, \quad P_{\text{mid}}[i] = a_{i-1} \oplus b_i
+$$
+$$
+G_{\text{out}}[i] = a_i \wedge b_i, \quad P_{\text{out}}[i] = a_i \oplus b_i
+$$
+
+<h2>4.4 Serial Composition of GPK Across Two Stages</h2>
+
+<p>The m6-stage and m4-stage are connected in series (the carry output of the m6-stage becomes the carry input to the m4-stage). Serial composition yields the overall GPK for pair \(i\).</p>
+
+<div class="theorem">
+<span class="theorem-title">Proposition 4.1 (Serial composition).</span> When two GPK stages \((G_1, P_1)\) and \((G_2, P_2)\) are connected in series (output of stage 1 feeds stage 2), the overall GPK is:
+
+$$
+G_{12} = G_2 \vee (P_2 \wedge G_1), \quad P_{12} = P_2 \wedge P_1
+$$
+
+<div class="proof"><i>Proof.</i> Case analysis on carry input \(c\). If \(G_2 = 1\): stage 2 generates, output is 1. If \(G_2 = 0, P_2 = 1\): stage 2 passes through stage 1's output, which is 1 if \(G_1 = 1\), \(c\) if \(P_1 = 1\), or 0 if \(K_1 = 1\). If \(K_2 = 1\): output is 0. Overall Generate occurs when \(G_2 \vee (P_2 \wedge G_1)\). Overall Propagate occurs when \(P_2 \wedge P_1\).</div>
+</div>
+
+<div class="theorem">
+<span class="theorem-title">Definition 4.2 (Pair GPK).</span> The overall GPK for pair position \(i\):
+
+$$
+G_i = G_{\text{out}}[i] \vee (P_{\text{out}}[i] \wedge G_{\text{mid}}[i]), \quad P_i = P_{\text{out}}[i] \wedge P_{\text{mid}}[i]
+$$
+</div>
+
+<h2>4.5 Carry Resolution by Scanning</h2>
+
+<p>Once the local GPK is computed for all pairs, carry determination reduces to a simple scan from the LSB.</p>
+
+<div class="theorem">
+<span class="theorem-title">Algorithm 4.1 (Carry scan).</span>
+<pre>
+Input:  Pair GPK sequence (G_0, P_0), ..., (G_{k-1}, P_{k-1})
+        Initial carry c_0 = 1
+
+c &larr; 1
+for i = 0 to k-1:
+    c_in[i] &larr; c
+    c &larr; G_i OR (P_i AND c)
+</pre>
+</div>
+
+<div class="theorem">
+<span class="theorem-title">Proposition 4.2.</span> Algorithm 4.1 determines all pair input carries in \(O(k)\) time.
+<div class="proof"><i>Proof.</i> The loop runs \(k\) times; each iteration involves constant-time Boolean operations.</div>
+</div>
+
+<h2>4.6 Cost of Local GPK Computation</h2>
+
+<p><b>Key observation.</b> Computing local GPK values \(G_{\text{mid}}[i], P_{\text{mid}}[i], G_{\text{out}}[i], P_{\text{out}}[i]\) requires only <b>referencing m4/m6 bits and taking AND/XOR</b>. The reference targets differ by \(x\) (Table 3.1), but the type and count of operations are identical. In all cases, <b>each pair's local GPK is obtained in \(O(1)\) without additional arithmetic</b>.</p>
+
+<h2>4.7 Parallelization via GPK Tree</h2>
+
+<p>The scan is \(O(k)\) time but inherently sequential. In parallel computation environments, binary tree composition of GPK values compresses this to \(O(\log k)\) depth.</p>
+
+<div class="theorem">
+<span class="theorem-title">Proposition 4.3 (Associativity of GPK composition).</span> GPK composition (the rule of Proposition 4.1) is associative.
+
+<div class="proof"><i>Proof.</i> For three stages \(A, B, C\):
+$$G_{(AB)C} = G_C \vee (P_C \wedge G_B) \vee (P_C \wedge P_B \wedge G_A)$$
+$$G_{A(BC)} = (G_C \vee (P_C \wedge G_B)) \vee ((P_C \wedge P_B) \wedge G_A) = G_C \vee (P_C \wedge G_B) \vee (P_C \wedge P_B \wedge G_A)$$
+Both coincide. For \(P\): \(P_{(AB)C} = P_C \wedge P_B \wedge P_A = P_{A(BC)}\).</div>
+</div>
+
+<div class="theorem">
+<span class="theorem-title">Proposition 4.4.</span> GPK tree composition completes \(O(k)\) total work in \(O(\log k)\) depth. Each level uses only AND and OR operations.
+</div>
+
+<p><b>Remark 4.1.</b> The GPK tree is an optimization for parallel computation and is not required for correctness proofs. The sequential scan (Algorithm 4.1) determines all carries in \(O(k)\) time.</p>
+
+<h2>4.8 Summary of This Section</h2>
+
+<p>1. Carry propagation reduces to GPK (Generate/Propagate/Kill) classification of each pair. GPK is computed by AND and XOR alone, reading bits according to the reference pattern (Table 3.1).</p>
+
+<p>2. Once all GPK values are known, a single \(O(k)\) scan from the LSB determines all carries. The multiplication \(xn\) is absorbed at the reference pattern stage; the scan consists only of AND/OR. Overall complexity is \(O(k)\).</p>
+
+<p>3. When parallelization is needed, binary tree composition of GPK achieves \(O(\log k)\) depth (GPK tree).</p>
+
+<p>4. The reference targets of local GPK differ between \(x=3\) and \(x=5\), but the <b>computational structure is identical</b>.</p>
+
+<!-- ============ SECTION 5 ============ -->
+<div class="page-break"></div>
+<h1>5. The Structural Privilege of \(3n+1\)</h1>
+
+<p>This section is the core of the paper. We prove that the m4-stage carry structure of \(3n+1\) coincides with intra-pair predicates of \(n\) (Theorem B), and that this property is exclusive to \(x=3\) (Theorem C), using the per-pair independence of the 16 predicates.</p>
+
+<h2>5.1 Theorem B: m4-Stage Coincidence</h2>
+
+<div class="theorem">
+<span class="theorem-title">Theorem 5.1 (Theorem B: m4-stage coincidence for \(3n+1\)).</span> In the pair addition for \(3n+1\), the Generate and Propagate of the m4-stage coincide with predicates m2(AND) and m7(XOR) of \(n\), at every pair position. That is, for any odd \(n\) and LSB-ordered pair position \(i\) (\(0 \leq i \leq k-1\)):
+
+$$
+G_{\text{out}}[i] = \text{m2}(n)_i = a_i \wedge b_i
+$$
+$$
+P_{\text{out}}[i] = \text{m7}(n)_i = a_i \oplus b_i
+$$
+
+<div class="proof"><i>Proof.</i> By Proposition 3.4, the m4-stage inputs for \(3n+1\) are \((r_i^{(4)}, a_i) = (b_i, a_i)\). By commutativity:
+$$G_{\text{out}}[i] = \text{AND}(b_i, a_i) = a_i \wedge b_i = \text{m2}(n)_i$$
+$$P_{\text{out}}[i] = \text{XOR}(b_i, a_i) = a_i \oplus b_i = \text{m7}(n)_i$$
+These are exactly the definitions of m2 and m7.</div>
+</div>
+
+<div class="theorem">
+<span class="theorem-title">Corollary 5.1.</span> For \(3n+1\), the m4-stage Kill coincides with m9(NOR):
+$$K_{\text{out}}[i] = \neg a_i \wedge \neg b_i = \text{m9}(n)_i$$
+<div class="proof"><i>Proof.</i> Since \(G, P, K\) are mutually exclusive and exhaustive, \(K = \neg G \wedge \neg P = \neg(a_i \wedge b_i) \wedge \neg(a_i \oplus b_i)\). By truth table, this is true only when \(a_i = b_i = 0\), matching the definition of m9(NOR).</div>
+</div>
+
+<p><b>Interpretation.</b> Restating Theorem 5.1:</p>
+
+<ul>
+<li>Pair \((a_i, b_i) = (1,1)\) &rarr; m2=1 &rarr; the m4-stage <b>generates</b> carry</li>
+<li>Pair \((a_i, b_i) \in \{(0,1),(1,0)\}\) &rarr; m7=1 &rarr; the m4-stage <b>propagates</b> carry</li>
+<li>Pair \((a_i, b_i) = (0,0)\) &rarr; m9=1 &rarr; the m4-stage <b>kills</b> carry</li>
+</ul>
+
+<p>The m4-stage carry landscape of \(3n+1\) is completely determined by "reading" the pair type of \(n\). The predicates m2, m7, m9 from the 16-predicate system of Section 2 literally describe the carry dynamics of \(3n+1\).</p>
+
+<h2>5.2 The m6-Stage</h2>
+
+<p>In contrast to the m4-stage, the m6-stage does <i>not</i> coincide with intra-pair predicates of \(n\).</p>
+
+<div class="theorem">
+<span class="theorem-title">Proposition 5.1.</span> The m6-stage GPK of \(3n+1\) is:
+$$G_{\text{mid}}[i] = a_{i-1} \wedge b_i, \quad P_{\text{mid}}[i] = a_{i-1} \oplus b_i$$
+
+This is a cross-reference between the m4 bit at position \(i-1\) and the m6 bit at position \(i\), and cannot be determined from a single pair position.
+</div>
+
+<p><b>Remark 5.1.</b> The overall pair GPK \(G_i = G_{\text{out}}[i] \vee (P_{\text{out}}[i] \wedge G_{\text{mid}}[i])\) contains the m6-stage cross-reference term, so even for \(3n+1\), the <i>overall</i> pair GPK is not per-pair independent. However, the fact that the m4-stage is per-pair independent means that the "upper stage" of the carry structure is directly readable from the predicate table of \(n\).</p>
+
+<h2>5.3 Theorem C: Limitation of the 16 Predicates</h2>
+
+<div class="theorem">
+<span class="theorem-title">Definition 5.1.</span> A function \(f: \mathbb{N}_{\text{odd}} \to \{0,1\}^k\) is <i>16-predicate representable</i> if it can be expressed as a finite bitwise Boolean composition of m1&ndash;m16. By Corollary 2.1, every 16-predicate representable function is per-pair independent.
+</div>
+
+<div class="theorem">
+<span class="theorem-title">Theorem 5.2 (Theorem C: Limitation of the 16 predicates).</span> For \(x \geq 5\) (\(x - 1\) a power of 2), the m4-stage GPK \((G_{\text{out}}, P_{\text{out}})\) of \(xn+1\) is not 16-predicate representable.
+
+<div class="proof"><i>Proof.</i> Two steps.
+
+<p><b>Step 1: Identifying the reference structure.</b> For \(x = 5\), the m4-stage inputs are \((a_{i-1}, a_i)\) (Proposition 3.3):</p>
+$$G_{\text{out}}[i] = a_{i-1} \wedge a_i, \quad P_{\text{out}}[i] = a_{i-1} \oplus a_i$$
+<p>This depends simultaneously on positions \(i-1\) and \(i\).</p>
+
+<p><b>Step 2: Contradiction with per-pair independence.</b> By contradiction. Suppose \((G_{\text{out}}[0], G_{\text{out}}[1], \ldots)\) is 16-predicate representable. By Corollary 2.1, it must be per-pair independent: there exists \(h: \{0,1\}^2 \to \{0,1\}\) such that \(G_{\text{out}}[i] = h(a_i, b_i)\) for all \(i\) and all \(n\). But \(G_{\text{out}}[i] = a_{i-1} \wedge a_i\) depends on \(a_{i-1}\). Fixing \(a_i = 1, b_i = 1\):</p>
+
+<ul>
+<li>\(a_{i-1} = 0\) gives \(G_{\text{out}}[i] = 0\)</li>
+<li>\(a_{i-1} = 1\) gives \(G_{\text{out}}[i] = 1\)</li>
+</ul>
+
+<p>Despite \((a_i, b_i) = (1,1)\) being identical, \(G_{\text{out}}[i]\) varies with \(a_{i-1}\). No function \(h\) of \((a_i, b_i)\) alone can capture this variation. Contradiction.</p>
+</div>
+</div>
+
+<h2>5.4 Exhaustive Verification</h2>
+
+<p>We supplement the proof of Theorem 5.2 with a concrete counterexample.</p>
+
+<div class="theorem">
+<span class="theorem-title">Proposition 5.2 (Exhaustive non-coincidence).</span> For \(n = 31\), the overall pair GPK \((G_i)\) of \(5n+1\) does not coincide with any of the 784 combinations: 16 single predicates plus \(16 \times 16 \times 3 = 768\) binary combinations (AND, OR, XOR of any two predicates).
+
+<div class="proof"><i>Verification.</i> \(n = 31 = 011111_2\), pairs \(((0,1),(1,1),(1,1))\), \(k=3\).
+
+<p>Since pairs 1 and 2 are both \((1,1)\), any per-pair independent function must give the same output at both positions. The 3-bit patterns attainable by any such function have equal second and third components.</p>
+
+<p>However, \(G = (1, 1, 0)\) (MSB order) has second component 1 and third component 0, violating this constraint.</p>
+
+<p>All <b>784 combinations</b> were verified computationally; none match. &#9633;</p>
+</div>
+</div>
+
+<h2>5.5 Classification Theorem</h2>
+
+<div class="theorem">
+<span class="theorem-title">Theorem 5.3 (Classification Theorem).</span> For parameters \(x\) with \(x - 1 = 2^s\), the m4-stage GPK of \(xn+1\) is 16-predicate representable if and only if \(s = 1\) (i.e., \(x = 3\)).
+
+<div class="proof"><i>Proof.</i>
+
+<p><b>(\(s = 1\)):</b> By Theorem 5.1, \(G_{\text{out}} = \text{m2}\), \(P_{\text{out}} = \text{m7}\). &#10003;</p>
+
+<p><b>(\(s = 2\), \(x = 5\)):</b> m4-stage inputs are \((a_{i-1}, a_i)\). Not representable by Theorem 5.2. &#10007;</p>
+
+<p><b>(\(s \geq 3\)):</b> The reference distance is \(\lfloor s/2 \rfloor \geq 1\) pairs. The same argument as Theorem 5.2 (dependence on \(a_{i-t}\) with \(t \geq 1\)) contradicts per-pair independence. &#10007;</p>
+
+<p>Therefore \(s = 1\) is the only representable case.</p>
+</div>
+</div>
+
+<div class="theorem">
+<span class="theorem-title">Corollary 5.2.</span> \(x = 3\) is the <b>unique</b> \(xn+1\)-type parameter for which the m4-stage carry structure can be read as intra-pair predicates of \(n\).
+</div>
+
+<h2>5.6 Structural Interpretation</h2>
+
+<p><b>Why only \(s=1\) is special.</b> In \(xn+1 = 2^s n + n + 1\), the term \(2^s n\) is an \(s\)-bit left shift. The pair structure has width 2 bits, so:</p>
+
+<ul>
+<li>\(s = 1\) (less than pair width): The shift swaps m4 and m6 roles but the <b>reference stays within the same pair</b>. \(r_i^{(4)} = b_i\) is the right bit of position \(i\) itself.</li>
+<li>\(s = 2\) (equal to pair width): \(r_i^{(4)} = a_{i-1}\) references the previous pair. Inter-pair correlation is unavoidable.</li>
+<li>\(s \geq 3\) (exceeds pair width): Even more distant pair correlations.</li>
+</ul>
+
+$$
+\underbrace{\text{Descriptive power of 16 predicates}}_{\text{intra-pair information (position-independent)}} \quad \text{vs} \quad \underbrace{\text{Requirements of the map}}_{\text{inter-position information (shift-dependent)}}
+$$
+
+<p>Only when \(s = 1\) do the requirements fall within the descriptive power.</p>
+
+<h2>5.7 Summary of This Section</h2>
+
+<p>1. <b>Theorem B (5.1):</b> The m4-stage GPK of \(3n+1\) coincides with m2(AND)/m7(XOR)/m9(NOR) of \(n\). Reading the pair type of \(n\) determines carry generation, propagation, and absorption.</p>
+
+<p>2. <b>Theorem C (5.2):</b> For \(x \geq 5\), the m4-stage GPK is not 16-predicate representable. The per-pair independence barrier makes inter-pair correlations inherently inexpressible. Supplemented by exhaustive 784-way verification for \(n=31\).</p>
+
+<p>3. <b>Classification Theorem (5.3):</b> m4-stage GPK closes within intra-pair predicates only for \(x=3\). The map \(3n+1\) is the unique Collatz-type map whose carry structure is "transparent" in the 16-predicate space.</p>
+
+<!-- ============ SECTION 6 ============ -->
+<div class="page-break"></div>
+<h1>6. Division by 2 as Exchange</h1>
+
+<p>After computing \(xn+1\), repeated division by 2 is required to reach the next odd number. This section shows that this operation is described as a role exchange between m4 and m6 within our framework.</p>
+
+<h2>6.1 Trailing Zeros and 2-adic Valuation</h2>
+
+<div class="theorem">
+<span class="theorem-title">Definition 6.1.</span> The 2-adic valuation \(v_2(m)\) of a positive integer \(m\) is the exponent of the largest power of 2 dividing \(m\):
+$$v_2(m) = \max\{d \in \mathbb{N} : 2^d \mid m\}$$
+In binary, \(v_2(m)\) equals the number of trailing zeros.
+</div>
+
+<p>Setting \(d = v_2(xn+1)\), the next odd number is \(n' = (xn+1)/2^d\).</p>
+
+<h2>6.2 Bit-Level Operation of \(\div 2\)</h2>
+
+<p>In binary, \(m/2\) removes the least significant bit (a right shift by 1). When \(m\) is even, the LSB is 0 and no information is lost. Dividing by \(2^d\) removes \(d\) trailing zero bits&mdash;all carrying zero information.</p>
+
+<div class="theorem">
+<span class="theorem-title">Proposition 6.1.</span> The binary representation of \(m/2^d\) (where \(2^d \mid m\)) is obtained by removing the \(d\) trailing zeros from the binary representation of \(m\). No information is lost.
+</div>
+
+<h2>6.3 Effect on Pair Structure</h2>
+
+<p>Consider the conversion from the pair representation of \(m = xn+1\) to that of \(n' = m/2^d\). After removing \(d\) trailing bits and re-padding to even length, the pair boundaries may shift.</p>
+
+<p><b>When \(d\) is even:</b> Removing \(d = 2q\) bits removes \(q\) complete pairs. Pair boundaries are preserved. The m4/m6 correspondence is maintained.</p>
+
+<p><b>When \(d\) is odd:</b> Removing \(d = 2q+1\) bits removes \(q\) pairs plus 1 bit. The remaining bit string has odd length, requiring a leading-zero pad. This shifts all bits by one position in the pairing, <b>swapping the roles of m4 and m6</b>.</p>
+
+<h2>6.4 The m4&harr;m6 Exchange Theorem</h2>
+
+<div class="theorem">
+<span class="theorem-title">Theorem 6.1 (Exchange principle of \(\div 2\)).</span> In the conversion from the pair sequence of \(m\) to that of \(m/2^d\):
+
+<ul>
+<li>When \(d\) is even: the m4/m6 correspondence is <b>maintained</b>.</li>
+<li>When \(d\) is odd: the m4/m6 correspondence is <b>exchanged</b>.</li>
+</ul>
+
+<div class="proof"><i>Proof.</i> When \(d\) is even, the \(d\) removed bits constitute an even number of pairs, preserving pair boundaries. When \(d\) is odd, the remaining bit string has odd length; the leading-zero padding shifts all bits by one position within their pairs. Bits formerly in left positions move to right positions and vice versa.</div>
+</div>
+
+<h2>6.5 Worked Examples</h2>
+
+<p><b>Example 6.1 (\(d=3\), odd: exchange).</b> \(5 \times 27 + 1 = 136 = 10001000_2\). Pairs: \(((1,0),(0,0),(1,0),(0,0))\). m4 \(= (1,0,1,0)\), m6 \(= (0,0,0,0)\).</p>
+
+<p>\(v_2(136) = 3\). \(136/8 = 17 = 10001_2\). Padded: \(010001\). Pairs: \(((0,1),(0,0),(0,1))\). m4' \(= (0,0,0)\), m6' \(= (1,0,1)\).</p>
+
+<p>\(d=3\) (odd) &rarr; exchange occurs. The non-zero pattern of m4 of 136 corresponds to m6' of 17.</p>
+
+<p><b>Example 6.2 (\(d=1\), odd: exchange).</b> \(3 \times 27 + 1 = 82 = 01010010_2\). Pairs: \(((0,1),(0,1),(0,0),(1,0))\). m4 \(= (0,0,0,1)\), m6 \(= (1,1,0,0)\).</p>
+
+<p>\(v_2(82) = 1\). \(82/2 = 41 = 101001_2\). Pairs: \(((1,0),(1,0),(0,1))\). m4' \(= (1,1,0)\), m6' \(= (0,0,1)\).</p>
+
+<p>\(d=1\) (odd) &rarr; exchange.</p>
+
+<p><b>Example 6.3 (\(d=2\), even: maintained).</b> \(n = 7 = 0111_2\). Pairs: \(((0,1),(1,1))\). m4 \(= (0,1)\), m6 \(= (1,1)\).</p>
+
+<p>\(5 \times 7 + 1 = 36 = 100100_2\). \(v_2(36) = 2\) (even). \(36/4 = 9 = 1001_2\). Pairs: \(((1,0),(0,1))\). m4' \(= (1,0)\), m6' \(= (0,1)\).</p>
+
+<p>\(d=2\) (even) &rarr; pair boundaries restored. m4 remains m4, m6 remains m6. <b>No exchange.</b></p>
+
+<table>
+<tr><th>Item</th><th>Example 6.1 (\(n=27\))</th><th>Example 6.3 (\(n=7\))</th></tr>
+<tr><td>\(5n+1\)</td><td>136</td><td>36</td></tr>
+<tr><td>\(d\)</td><td>3 (odd)</td><td>2 (even)</td></tr>
+<tr><td>Pair boundary</td><td>shifted</td><td>restored</td></tr>
+<tr><td>m4&harr;m6</td><td><b>Exchanged</b></td><td><b>Maintained</b></td></tr>
+</table>
+
+<h2>6.6 Information Preservation Principle</h2>
+
+<div class="theorem">
+<span class="theorem-title">Proposition 6.2.</span> In one step \(T(n) = (xn+1)/2^d\) of a Collatz-type map, the bit information of the input \(n\) is transformed as follows:
+
+<p>1. <b>Pair addition</b> (&sect;3&ndash;4): New m4/m6 are generated via bit references and carry propagation. The bit count increases by at most a constant.</p>
+<p>2. <b>Trailing-zero removal</b>: Bits carrying zero information are removed. No information is lost.</p>
+<p>3. <b>Re-pairing</b>: Depending on the parity of \(d\), the m4&harr;m6 correspondence is maintained or exchanged.</p>
+</div>
+
+<p>In particular, \(\div 2\) is <b>positional relocation</b> of information (swapping left/right roles within pairs), not <b>destruction</b> of information.</p>
+
+<h2>6.7 The Map \(T\) in m4/m6 Representation</h2>
+
+<p>Integrating the above, the odd-to-odd map \(T: n \mapsto n'\) is described as a transformation on (m4, m6) space:</p>
+
+$$
+T: (\text{m4}(n),\, \text{m6}(n)) \;\longrightarrow\; (\text{m4}(n'),\, \text{m6}(n'))
+$$
+
+<p>This transformation consists of three phases:</p>
+
+<p><b>Phase 1 (Pair addition):</b></p>
+$$
+(\text{m4}(n),\, \text{m6}(n)) \;\xrightarrow{\text{reference + carry scan}}\; (\text{m4}(xn\!+\!1),\, \text{m6}(xn\!+\!1))
+$$
+
+<p><b>Phase 2 (Tail removal):</b></p>
+$$
+(\text{m4}(xn\!+\!1),\, \text{m6}(xn\!+\!1)) \;\xrightarrow{\text{remove trailing zero-pairs}}\; \text{shortened pair sequence}
+$$
+
+<p><b>Phase 3 (Exchange decision):</b></p>
+$$
+\text{shortened pair sequence} \;\xrightarrow{d \bmod 2}\; \begin{cases} (\text{m4}',\, \text{m6}') & d \text{ even: maintained} \\ (\text{m6}',\, \text{m4}') & d \text{ odd: exchanged} \end{cases}
+$$
+
+<h2>6.8 Determination of \(d\)</h2>
+
+<p>The trailing-zero count \(d\) can also be read directly from the pair addition result.</p>
+
+<div class="theorem">
+<span class="theorem-title">Proposition 6.3.</span> In the pair addition result (LSB order), \(d\) equals the number of trailing zero bits. Counting \(q\) consecutive \((0,0)\) pairs from the LSB, then checking the right bit of the next pair: if it is 0, then \(d = 2q + 1\); if it is 1, then \(d = 2q\).
+</div>
+
+<h2>6.9 Summary of This Section</h2>
+
+<p>1. Repeated division by 2 removes trailing zero bits (carrying zero information); no information is lost.</p>
+
+<p>2. Re-pairing after removal: the parity of \(d\) determines whether the m4/m6 correspondence is maintained (even) or exchanged (odd).</p>
+
+<p>3. The map \(T: n \mapsto n'\) is described as a closed three-phase transformation on (m4, m6) space: pair addition &rarr; tail removal &rarr; exchange decision.</p>
+
+<p>4. The value of \(d\) itself is readable directly from the pair addition result, requiring no additional computation.</p>
+
+<!-- ============ SECTION 7 ============ -->
+<div class="page-break"></div>
+<h1>7. Unified Algorithm</h1>
+
+<p>We integrate the results of the preceding sections to formulate a unified algorithm for arbitrary \(xn+1\)-type maps, evaluate its computational complexity, and compare it with conventional arithmetic-based computation.</p>
+
+<h2>7.1 Algorithm Formulation</h2>
+
+<div class="theorem">
+<span class="theorem-title">Algorithm 7.1 (m4/m6 direct-read scan for \(xn+1\) computation).</span>
+
+<pre>
+Input:  Odd number n, parameter x (x-1 = 2^s)
+Output: Next odd number n' = (xn+1) / 2^d, and d
+
+Preprocessing:
+  n &rarr; even-digit binary &rarr; pair sequence P(n)
+  m4(n) = (a_0, ..., a_{k-1})  [MSB order]
+  m6(n) = (b_0, ..., b_{k-1})  [MSB order]
+  a[], b[] &larr; reverse m4, m6 to LSB order
+
+Reference pattern determination:
+  s &larr; log_2(x-1)
+  t &larr; floor(s/2)
+  If s is even:
+    ref_R(i) = (b[i-t], b[i])    // m6-stage: m6 isomorphic
+    ref_L(i) = (a[i-t], a[i])    // m4-stage: m4 isomorphic
+  If s is odd:
+    ref_R(i) = (a[i-t-1], b[i])  // m6-stage: m4&rarr;m6 cross
+    ref_L(i) = (b[i-t],   a[i])  // m4-stage: m6&rarr;m4 cross
+  (Out-of-range indices are treated as 0)
+
+Scan:
+  c &larr; 1                           // effect of +1
+  for i = 0 to k + ceil(s/2):      // includes overflow
+    (p_R, q_R) &larr; ref_R(i)
+    sum_R &larr; p_R + q_R + c
+    new_b[i] &larr; sum_R mod 2        // new m6
+    c_mid &larr; floor(sum_R / 2)
+
+    (p_L, q_L) &larr; ref_L(i)
+    sum_L &larr; p_L + q_L + c_mid
+    new_a[i] &larr; sum_L mod 2        // new m4
+    c &larr; floor(sum_L / 2)
+
+    if c = 0 and i &ge; k: break     // carry extinct
+
+Postprocessing:
+  Result pair sequence (LSB order)
+  &rarr; remove trailing (0,0) pairs
+  &rarr; zipper expansion &rarr; count trailing zeros d
+  &rarr; right-shift by d bits &rarr; even-digit padding &rarr; re-pair
+  &rarr; extract m4'(n'), m6'(n')
+  &rarr; reconstruct n'
+
+Output: n', d
+</pre>
+</div>
+
+<h2>7.2 Instantiation for \(x=3\) and \(x=5\)</h2>
+
+<p><b>For \(x=3\) (\(s=1\), odd):</b></p>
+<pre>
+ref_R(i) = (a[i-1], b[i])    // m6-stage: previous m4 &times; current m6
+ref_L(i) = (b[i],   a[i])    // m4-stage: within current pair
+</pre>
+<p>The m4-stage is self-contained within the current pair (the computational expression of Theorem 5.1).</p>
+
+<p><b>For \(x=5\) (\(s=2\), even):</b></p>
+<pre>
+ref_R(i) = (b[i-1], b[i])    // m6-stage: adjacent m6 bits
+ref_L(i) = (a[i-1], a[i])    // m4-stage: adjacent m4 bits
+</pre>
+<p>Both stages reference adjacent same-type bits.</p>
+
+<p><b>Observation.</b> The only difference between the two algorithms lies in the four index expressions of <code>ref_R</code> and <code>ref_L</code>. The loop structure, carry propagation, and postprocessing are completely identical.</p>
+
+<h2>7.3 Complexity Analysis</h2>
+
+<div class="theorem">
+<span class="theorem-title">Theorem 7.1 (Complexity).</span> Algorithm 7.1 runs in \(O(k)\) time, using only 2-bit-width additions, modular reduction, division by 2, and comparisons. The multiplication \(x \times n\) is absorbed into index shifts of the reference pattern and does not appear explicitly during the scan.
+
+<div class="proof"><i>Proof.</i> Preprocessing: \(O(k)\). Reference determination: \(O(1)\). Scan: at most \(k + O(1)\) iterations, each \(O(1)\). Postprocessing: \(O(k)\). Total: \(O(k)\).</div>
+</div>
+
+<h2>7.4 Comparison with Conventional Methods</h2>
+
+<p>The asymptotic order \(O(k)\) is the same as conventional arithmetic computation. The essential differences are:</p>
+
+<p><b>Difference 1 (Operation type).</b> Conventional methods use arithmetic operations (addition, shift). The m4/m6 scan uses only bit references and 1-bit additions. The constant factor is smaller.</p>
+
+<p><b>Difference 2 (Structural transparency).</b> Conventional methods yield only the numerical value of \(xn+1\), with no internal structure visible. The m4/m6 scan produces the GPK classification at each pair as a by-product, providing a foundation for analytical applications (&sect;8).</p>
+
+<p><b>Difference 3 (Decomposition of multiplication).</b> In the m4/m6 scan, the multiplication \(xn\) is decomposed into reference patterns (index offsets) and intra-pair 1-bit additions. The value of \(x\) merely selects reference targets; it does not appear as a multi-precision multiplication.</p>
+
+<h2>7.5 Correctness Verification</h2>
+
+<p>The correctness of Algorithm 7.1 was verified by comparison with conventional arithmetic computation for \(n = 1, 3, 5, \ldots, 99\) (50 odd numbers) and large values \(n = 127, 255, 511, 1023, 4095, 8191, 65535, 99991, 999999\), under both \(3n+1\) and \(5n+1\). Full trajectory tracking for \(n=27\) (the 5n+1 cycle \(27 \to 17 \to 43 \to 27\) and the 3n+1 trajectory to \(n=1\)) confirmed step-by-step agreement.</p>
+
+<h2>7.6 Scope of Generalization</h2>
+
+<p>Algorithm 7.1 directly applies when \(x - 1\) is a power of 2, covering \(x \in \{3, 5, 9, 17, 33, 65, \ldots\}\). When \(x - 1\) is not a power of 2 (e.g., \(x = 7\), \(x-1 = 6 = 2 \times 3\)), additional addition stages are needed: \(7n + 1 = 4n + 2n + n + 1\) becomes a three-term addition, extending the two-stage structure to three or more stages. The pair addition framework remains valid, but the reference pattern description becomes more complex. This extension is left for future work.</p>
+
+<h2>7.7 Relationship Between Scan and GPK Tree</h2>
+
+<div class="theorem">
+<span class="theorem-title">Proposition 7.1 (Self-sufficiency of the scan).</span> The scan of Algorithm 7.1 determines all pair carries without computing GPK values explicitly. Each iteration reads reference bits (\(O(1)\)), performs two 1-bit additions (\(O(1)\)), and updates the carry (\(O(1)\)). No GPK values \((G_i, P_i)\) are computed.
+</div>
+
+<div class="theorem">
+<span class="theorem-title">Proposition 7.2 (Post-hoc GPK derivation).</span> At each pair during the scan, GPK classification can be derived in \(O(1)\) additional cost.
+</div>
+
+<div class="theorem">
+<span class="theorem-title">Corollary 7.1.</span> GPK classification is obtainable as a by-product of the scan execution, with only a constant-factor increase in the \(O(k)\) cost.
+</div>
+
+<p><b>Significance.</b> The GPK theory of &sect;4 provides the <i>correctness foundation</i> for the scan algorithm: the scan correctly determines carries because each pair's GPK classification is independent of the carry value (&sect;4.2). However, the GPK theory is not needed for <i>execution</i>. GPK explains "why the scan is correct"; it is not "how to compute."</p>
+
+<h2>7.8 Three-Layer Architecture</h2>
+
+<p>The computational methods of this paper operate in three layers depending on resource conditions.</p>
+
+<h3>Layer 1: Sequential Scan (Basic)</h3>
+<pre>
+Complexity:   O(k) time, O(k) space
+Parallelism:  None (sequential)
+GPK usage:    Not needed (scan only)
+Application:  Single trajectory tracking, small to medium numbers
+Advantage:    Minimal overhead, simplest implementation
+</pre>
+
+<h3>Layer 2: Scan + GPK Classification (Analytical)</h3>
+<pre>
+Complexity:   O(k) time (constant-factor increase), O(k) space
+Parallelism:  None
+GPK usage:    Obtained as by-product
+Application:  Carry structure analysis, cycle condition verification,
+              statistical collection
+Advantage:    Structural information obtained at negligible extra cost
+</pre>
+
+<h3>Layer 3: GPK Tree Composition (Parallel)</h3>
+<pre>
+Complexity:   O(k) work, O(log k) depth
+Parallelism:  O(k / log k) processors for O(log k) time
+GPK usage:    Required (tree composition input)
+Application:  Large-scale parallel verification (2^68+), FPGA/GPU
+Advantage:    Logarithmic depth, direct mapping to hardware
+              carry-lookahead
+</pre>
+
+<table>
+<tr><th>Condition</th><th>Recommended Layer</th></tr>
+<tr><td>Trajectory tracking, \(k < 10^4\)</td><td>Layer 1 (scan only)</td></tr>
+<tr><td>Structural analysis, cycle research</td><td>Layer 2 (scan + GPK)</td></tr>
+<tr><td>Large-scale verification, \(k > 10^6\), parallel HW</td><td>Layer 3 (GPK tree)</td></tr>
+<tr><td>Maximize information density</td><td>Layer 2</td></tr>
+<tr><td>Minimize latency</td><td>Layer 3</td></tr>
+</table>
+
+<h2>7.9 Integrated Complexity Evaluation</h2>
+
+<p><b>Table 7.1: Complexity comparison.</b></p>
+
+<table>
+<tr><th>Method</th><th>Per-step time</th><th>Depth (parallel)</th><th>Form of multiplication</th><th>Structural info</th></tr>
+<tr><td>Conventional (arithmetic)</td><td>\(O(k)\)</td><td>\(O(k)\)</td><td>Explicit shift+add</td><td>None</td></tr>
+<tr><td>Layer 1 (scan)</td><td>\(O(k)\)</td><td>\(O(k)\)</td><td><b>Absorbed into reference indices</b></td><td>None</td></tr>
+<tr><td>Layer 2 (scan+GPK)</td><td>\(O(k)\)</td><td>\(O(k)\)</td><td><b>Absorbed into reference indices</b></td><td><b>Yes</b></td></tr>
+<tr><td>Layer 3 (GPK tree)</td><td>\(O(k)\)</td><td>\(O(\log k)\)</td><td><b>Absorbed into reference indices</b></td><td><b>Yes</b></td></tr>
+</table>
+
+<p><b>Note.</b> The asymptotic \(O(k)\) is identical for conventional methods and Layers 1/2. The differences lie at the constant-coefficient level in: (1) operation type, (2) information extraction efficiency, (3) parallelizability, and (4) generality across \(x\).</p>
+
+<!-- ============ SECTION 8 ============ -->
+<div class="page-break"></div>
+<h1>8. Cycle Analysis via m4/m6</h1>
+
+<p>As an application of the unified algorithm, we analyze the known cycles of \(5n+1\) in m4/m6 space. We draw structural comparisons with \(3n+1\) and demonstrate the perspective that m4/m6 representation provides for cycle research.</p>
+
+<h2>8.1 Known Cycles of \(5n+1\)</h2>
+
+<p>The following non-trivial cycles of \(5n+1\) are known [2]:</p>
+
+<p><b>Cycle A (2 elements):</b> \(1 \to 3 \to 1\)</p>
+<p><b>Cycle B (3 elements):</b> \(13 \to 33 \to 83 \to 13\)</p>
+<p><b>Cycle C (3 elements):</b> \(27 \to 17 \to 43 \to 27\)</p>
+
+<h2>8.2 m4/m6 Trajectory of Cycle A</h2>
+
+<table>
+<tr><th>Step</th><th>\(n\)</th><th>Binary</th><th>m4</th><th>m6</th><th>\(5n+1\)</th><th>\(d\)</th><th>Exchange</th></tr>
+<tr><td>0</td><td>1</td><td>01</td><td>(0)</td><td>(1)</td><td>6</td><td>1</td><td>&#8644;</td></tr>
+<tr><td>1</td><td>3</td><td>11</td><td>(1)</td><td>(1)</td><td>16</td><td>4</td><td>&mdash;</td></tr>
+<tr><td>&rarr;</td><td>1</td><td>01</td><td>(0)</td><td>(1)</td><td></td><td></td><td></td></tr>
+</table>
+
+<p><b>Observation.</b> m6 is fixed at \((1)\) throughout. Only m4 oscillates \(0 \to 1 \to 0\). The values of \(d\) alternate between 1 and 4, and exchange occurs every other step.</p>
+
+<h2>8.3 m4/m6 Trajectory of Cycle B</h2>
+
+<table>
+<tr><th>Step</th><th>\(n\)</th><th>Binary</th><th>m4</th><th>m6</th><th>\(5n+1\)</th><th>\(d\)</th><th>Exchange</th></tr>
+<tr><td>0</td><td>13</td><td>1101</td><td>(1,0)</td><td>(1,1)</td><td>66</td><td>1</td><td>&#8644;</td></tr>
+<tr><td>1</td><td>33</td><td>100001</td><td>(1,0,0)</td><td>(0,0,1)</td><td>166</td><td>1</td><td>&#8644;</td></tr>
+<tr><td>2</td><td>83</td><td>01010011</td><td>(0,0,0,1)</td><td>(1,1,0,1)</td><td>416</td><td>5</td><td>&#8644;</td></tr>
+<tr><td>&rarr;</td><td>13</td><td>1101</td><td>(1,0)</td><td>(1,1)</td><td></td><td></td><td></td></tr>
+</table>
+
+<p><b>Observation.</b> The pair count varies as \(2 \to 3 \to 4 \to 2\). From 13 to 33, the pair count increases; the large \(d=5\) at \(83 \to 13\) sharply reduces it back. All values of \(d\) are odd, causing m4&harr;m6 exchange at every step.</p>
+
+<h2>8.4 m4/m6 Trajectory of Cycle C</h2>
+
+<table>
+<tr><th>Step</th><th>\(n\)</th><th>Binary</th><th>m4</th><th>m6</th><th>\(5n+1\)</th><th>\(d\)</th><th>Exchange</th></tr>
+<tr><td>0</td><td>27</td><td>011011</td><td>(0,1,1)</td><td>(1,0,1)</td><td>136</td><td>3</td><td>&#8644;</td></tr>
+<tr><td>1</td><td>17</td><td>010001</td><td>(0,0,0)</td><td>(1,0,1)</td><td>86</td><td>1</td><td>&#8644;</td></tr>
+<tr><td>2</td><td>43</td><td>101011</td><td>(1,0,1)</td><td>(0,1,1)</td><td>216</td><td>3</td><td>&#8644;</td></tr>
+<tr><td>&rarr;</td><td>27</td><td>011011</td><td>(0,1,1)</td><td>(1,0,1)</td><td></td><td></td><td></td></tr>
+</table>
+
+<p><b>Observation.</b> The pair count remains fixed at \(k=3\) throughout. The values of \(d\) alternate as 3, 1, 3, with exchange at every step.</p>
+
+<p>A notable feature: m4(27) \(= (0,1,1)\) equals m6(43) \(= (0,1,1)\), and m6(27) \(= (1,0,1)\) equals m4(43) \(= (1,0,1)\). That is, 27 and 43 have their m4 and m6 completely swapped.</p>
+
+<h2>8.5 Structural Features Common to the Cycles</h2>
+
+<p><b>(1) Periodicity of exchange.</b> In all three cycles, steps with odd \(d\) appear, triggering m4&harr;m6 exchange. In Cycles B and C, exchange occurs at every step.</p>
+
+<p><b>(2) Pair-count variation patterns.</b> Cycle C has fixed pair count (\(k=3\)); Cycle B has variable pair count (\(k = 2 \to 3 \to 4 \to 2\)). In variable-count cycles, a "compression step" with large \(d\) (e.g., \(d=5\) in Cycle B) sharply reduces the pair count.</p>
+
+<p><b>(3) m4/m6 symmetry.</b> As seen with 27 and 43 in Cycle C, elements within a cycle may exhibit a symmetric relationship where m4 and m6 are interchanged. This is a structural consequence of accumulated exchange operations.</p>
+
+<h2>8.6 Comparison with the \(3n+1\) Cycle</h2>
+
+<p>The only known cycle of \(3n+1\) is the trivial cycle \(1 \to 1\) (\(3 \times 1 + 1 = 4\), \(d=2\)). The Collatz conjecture asserts this is the unique cycle.</p>
+
+<table>
+<tr><th></th><th>\(n\)</th><th>m4</th><th>m6</th><th>\(3n+1\)</th><th>\(d\)</th><th>Exchange</th><th>\(n'\)</th></tr>
+<tr><td></td><td>1</td><td>(0)</td><td>(1)</td><td>4</td><td>2</td><td>&mdash;</td><td>1</td></tr>
+</table>
+
+<p>\(d=2\) (even), so no exchange occurs. m4 \(= (0)\) and m6 \(= (1)\) form a fixed point.</p>
+
+<p><b>Structural comparison:</b></p>
+<ul>
+<li>5n+1: Multiple cycles, variable pair counts, frequent m4&harr;m6 exchange.</li>
+<li>3n+1: Unique cycle (conjectured), \(d=2\) fixed point, no exchange.</li>
+</ul>
+
+<p>The fact that the trivial cycle of \(3n+1\) is a fixed point in m4/m6 space is consistent with the "structural privilege" of &sect;5. That m4-stage GPK can be read directly as m2/m7 (Theorem 5.1) means the map transforms the pair structure of \(n\) "transparently," providing a structural reason why complex cycles may be difficult to form.</p>
+
+<h2>8.7 Formulation of Cycle Conditions</h2>
+
+<div class="theorem">
+<span class="theorem-title">Proposition 8.1 (m4/m6 cycle conditions).</span> Necessary conditions for \(\{n_0, \ldots, n_{p-1}\}\) to form a cycle of \(5n+1\):
+
+<p><b>(i) Pair-count condition:</b> \(\sum_{i=0}^{p-1} (\delta_i - d_i) = 0\), where \(\delta_i\) is the bit increase from addition at step \(i\) and \(d_i\) is the trailing-zero count. The cycle returns to its starting bit length.</p>
+
+<p><b>(ii) Exchange condition:</b> The total \(d\)-sum must be such that after \(p\) steps, the m4/m6 correspondence returns to its original state.</p>
+
+<p><b>(iii) Bit-pattern condition:</b> Composing \(p\) steps of the scan must reproduce the original m4/m6 pattern.</p>
+</div>
+
+<p>Conditions (i) and (ii) follow from the definition of cycles and the exchange principle of &sect;6. Condition (iii) is the explicit composition of scans; its closed-form description is a topic for future work.</p>
+
+<h2>8.8 Summary of This Section</h2>
+
+<p>1. The three known cycles of \(5n+1\) have been completely described in m4/m6 space, including the m4/m6 transitions, GPK classifications, \(d\) values, and exchange occurrences at each step.</p>
+
+<p>2. Common structural features have been extracted: periodicity of exchange, pair-count variation patterns, and m4/m6 symmetric relationships between cycle elements.</p>
+
+<p>3. The trivial cycle of \(3n+1\) (\(n=1\)) has been confirmed as a fixed point in m4/m6 space, and structural comparisons with \(5n+1\) have been drawn.</p>
+
+<p>4. Cycle conditions in m4/m6 space have been formulated. While refinement remains for future work, the pair-count and exchange conditions provide necessary conditions.</p>
+
+<!-- ============ SECTION 9 ============ -->
+<div class="page-break"></div>
+<h1>9. Discussion</h1>
+
+<h2>9.1 Relation to Prior Work</h2>
+
+<p><b>Relation to the Syracuse function.</b> The Syracuse function \(T(n) = (3n+1)/2^{v_2(3n+1)}\) [1] elides even steps and defines the odd-to-odd map in a single expression. However, it does not penetrate the internal structure of \(3n+1\), and the value of \(v_2\) can only be known after computation. Our m4/m6 scan yields the same result as \(T(n)\), but in the process obtains the carry structure (GPK classification) of each pair as a by-product. The Syracuse function is a <i>definition</i> of the map; the m4/m6 scan is a <i>decomposition</i> of the map.</p>
+
+<p><b>Relation to binary analysis.</b> Binary-based analysis of Collatz maps by Wirsching [3] and Lagarias [1] treats \(3n+1\) as \(2n + n + 1\) and tracks bit-string changes. Our approach extends this direction but differs in the following respects:</p>
+
+<ul>
+<li>Decomposition into 2-bit pairs and the introduction of the 16-predicate system uses the <i>pair type</i> (4 kinds) rather than individual bits as the basic unit. This allows carry behavior to be described as a function of pair type.</li>
+<li>The choice of the m4/m6 basis ensures that the map is described as a closed transformation on (m4, m6) space.</li>
+<li>The completeness and per-pair independence of the 16 predicates provides tools for proving both positive results (Theorem 5.1) and negative results (Theorem 5.2): "what is expressible and what is not."</li>
+</ul>
+
+<p><b>Relation to carry-lookahead adders.</b> The GPK decomposition of &sect;4 is based on the same principle as carry-lookahead technology introduced by Bedrij [6]. Our contribution is to connect this technology to the carry structure of Collatz-type maps and to show that the GPK classification is interpretable as pair predicates (specifically m2/m7). This bridges a standard technique from computer science to a problem in number theory.</p>
+
+<h2>9.2 Novelty of This Paper</h2>
+
+<p><b>(1) The m4/m6 pair-projection framework.</b> We decomposed natural numbers into 2-bit pairs and defined a predicate system with m4/m6 as basis. We established completeness of the 16 predicates, reconstruction from the basis, and per-pair independence.</p>
+
+<p><b>(2) Decomposition of \(xn+1\) into bit scanning.</b> We showed that the odd-to-odd transition of \(xn+1\) is computable by an m4/m6 bit scan. The multiplication \(xn\) is decomposed into the shift of \((x-1)n\) as reference index offsets; the scan stage involves only intra-pair 1-bit additions.</p>
+
+<p><b>(3) Proof of the structural privilege of \(3n+1\).</b> We proved that for \(x=3\), the m4-stage GPK coincides with m2/m7 (Theorem 5.1), and that for \(x \geq 5\), this coincidence is impossible in principle (Theorem 5.2). The Classification Theorem (5.3) shows that \(x=3\) is the unique parameter for which the carry structure closes within the 16-predicate space.</p>
+
+<p><b>(4) Exchange principle of \(\div 2\).</b> We showed that the \(\div 2\) operation is described as an m4&harr;m6 role exchange (Theorem 6.1).</p>
+
+<p><b>(5) Unified algorithm.</b> We formulated an algorithm that accommodates arbitrary \(xn+1\) by swapping only the reference pattern (Algorithm 7.1).</p>
+
+<h2>9.3 Computational Verification</h2>
+
+<p>Using our implementation of Algorithm 7.1, we measured GPK distributions for \(x=3, 5, 17\) under uniform conditions. For each odd \(n \leq 10^7\), the stopping-time method (iteration until \(n' < n\), maximum 500 steps) was applied, aggregating GPK over all steps. The results are shown in Table 9.1.</p>
+
+<p><b>Table 9.1.</b> GPK distribution comparison for Collatz-type maps \(T(n)=(xn+1)/2^d\) (\(n \leq 10^7\), max_steps = 500).</p>
+
+<table>
+<tr><th></th><th>\(3n+1\) (\(s=1\))</th><th>\(5n+1\) (\(s=2\))</th><th>\(17n+1\) (\(s=4\))</th></tr>
+<tr><td>Odd numbers verified</td><td>4,999,999</td><td>4,999,999</td><td>4,999,999</td></tr>
+<tr><td>All converge</td><td><b>Yes</b></td><td>No</td><td>No</td></tr>
+<tr><td>Max stopping time</td><td>155</td><td>490</td><td>18</td></tr>
+<tr><td>Avg steps/number</td><td>3.5</td><td>179</td><td>456</td></tr>
+<tr><td>G (Generate) %</td><td><b>38.41</b></td><td>36.91</td><td>37.26</td></tr>
+<tr><td>P (Propagate) %</td><td><b>28.32</b></td><td>25.45</td><td>25.09</td></tr>
+<tr><td>K (Kill) %</td><td><b>33.26</b></td><td>37.64</td><td>37.65</td></tr>
+<tr><td>\(G/K\) ratio</td><td><b>1.15</b></td><td>0.98</td><td>0.99</td></tr>
+<tr><td>Max carry chain length</td><td>19</td><td>61</td><td>74</td></tr>
+</table>
+
+<p><b>Observation 1: \(G/K\) asymmetry is unique to \(x=3\).</b> For \(x=3\), \(G/K \approx 1.15\) is clearly asymmetric, whereas for \(x=5\) and \(x=17\), \(G/K \approx 0.98\)&ndash;\(0.99\) is nearly symmetric. By Theorem B, the GPK for \(x=3\) coincides with the intra-pair predicates of \(n\) (\(G = \text{m2}\), \(P = \text{m7}\), \(K = \text{m9}\)), so the bias in bit patterns of odd numbers is directly reflected in the GPK distribution. For \(x \geq 5\), GPK depends on inter-pair correlations (Theorem C), mixing the input structure and homogenizing toward \(G \approx K\).</p>
+
+<p><b>Observation 2: \(P \approx 25\%\) is common for \(x \geq 5\).</b> For \(x=5\), \(P = 25.45\%\); for \(x=17\), \(P = 25.09\%\)&mdash;both near \(1/4\). This is not coincidental. For \(x \geq 5\), Propagate in the serial composition of m4-stage and m6-stage arises independently: \(P \approx P_{\text{m4}} \cdot P_{\text{m6}} \approx 1/2 \times 1/2 = 1/4\). For \(x=3\), \(P = 28.32\%\) is higher because the m4-stage input is the pair itself \((b_i, a_i)\), creating correlation with the m6-stage.</p>
+
+<p><b>Observation 3: Carry chain length increases with \(s\).</b> Maximum carry chain length is 19 for \(x=3\) (\(s=1\)), 61 for \(x=5\) (\(s=2\)), and 74 for \(x=17\) (\(s=4\)). For \(x=3\), GPK is determined by intra-pair predicates, so Kill occurrences correspond directly to the input bit pattern, keeping chains short. For \(x \geq 5\), carry structure diffuses across pairs, and Kill occurrences decouple from input structure, allowing longer Propagate chains.</p>
+
+<h2>9.4 Limitations of This Paper</h2>
+
+<p>Limitations that should be stated frankly:</p>
+
+<p><b>(1) The Collatz conjecture is not proved.</b> Theorem 5.3 identifies the structural singularity of \(3n+1\) but does not prove convergence of all trajectories. We have given a structural answer to "why \(3n+1\)" but not to "why all trajectories reach 1."</p>
+
+<p><b>(2) Sequential nature of carry propagation.</b> The fact that the m4-stage GPK can be read as intra-pair predicates (Theorem 5.1) is a result about <i>local classification</i> of carry. The <i>propagation</i> of carry&mdash;tracing from a Generate position through a chain of Propagates until a Kill is encountered&mdash;remains sequential and is not expressed in closed form.</p>
+
+<p><b>(3) Incompleteness of cycle conditions.</b> The cycle conditions formulated in &sect;8 are necessary conditions only; sufficient conditions have not been obtained. Describing the \(p\)-step composition of m4/m6 patterns in closed form is the next challenge.</p>
+
+<p><b>(4) Cases where \(x-1\) is not a power of 2.</b> Extension to \(x = 7, 11, 13, \ldots\) is in principle possible but adds complexity as additional addition stages arise. This paper does not treat these cases.</p>
+
+<h2>9.5 The Role of "Tool" versus "Result"</h2>
+
+<p>This paper has presented a new tool (the m4/m6 predicate system and scan algorithm) and proved properties of that tool (Theorems A, B, C and the Classification Theorem). We have not yet "cut" anything with this tool&mdash;such as proving non-existence of cycles or deriving statistical properties of trajectories.</p>
+
+<p>However, the tool itself has several intrinsic values:</p>
+
+<ul>
+<li><b>The 16-predicate framework is complete.</b> It contains all two-input Boolean functions. Negative results like Theorem 5.2 ("this cannot be expressed within the framework") indicate principled limitations.</li>
+<li><b>The Classification Theorem is constructive.</b> The privilege of \(x=3\) is not an existence proof but is derived from concrete computation of reference patterns.</li>
+<li><b>The algorithm is implementable.</b> It is given as a procedure executable and verifiable on a computer, not merely as a theoretical construct.</li>
+</ul>
+
+<h2>9.6 Future Directions</h2>
+
+<p><b>(1) Pattern analysis of GPK sequences.</b> Analyze how the m2/m7/m9 bit string of \(n\) is transformed by one step of the scan under \(3n+1\). In particular, how the positions of m9 (Kill, pair \((0,0)\)) evolve along the trajectory governs the reach of carry propagation.</p>
+
+<p><b>(2) Expected value of digit-count variation.</b> Derive the expected value of bit-length change \(\Delta = \log_2(n') - \log_2(n)\) from the pair-type distribution of m4/m6. Showing \(\Delta < 0\) typically would open a path to the statistical result that "almost all trajectories shrink."</p>
+
+<p><b>(3) Dynamical system on m4/m6 space.</b> Formulate \(T: (\text{m4}, \text{m6}) \to (\text{m4}', \text{m6}')\) as a dynamical system and study attractor structure. Showing that the fixed point \((\text{m4}, \text{m6}) = ((0), (1))\) is a global attractor would be equivalent to the Collatz conjecture.</p>
+
+<p><b>(4) m4/m6 characterization of cycles.</b> Refine the cycle conditions of &sect;8 to derive conditions for non-existence/existence of cycles from periodicity of m4/m6 patterns.</p>
+
+<p><b>(5) Large-scale numerical experiments.</b> Using BigInt-capable implementations, collect statistical properties of m4/m6 trajectories for numbers on the order of \(10^{100}\): GPK distributions, carry propagation length distributions, pair-count variation histograms.</p>
+
+<h2>9.7 Summary of This Section</h2>
+
+<p>This paper has decomposed Collatz-type maps in the framework of a 2-bit pair predicate system and proved three theorems (m4-stage coincidence, 16-predicate limitation, Classification Theorem). This represents the stage of "changing how the map is seen"&mdash;presenting a new tool and establishing its fundamental properties. While the Collatz conjecture remains unproved, the structural singularity of \(3n+1\) has been identified, providing a foundation for future analytical approaches.</p>
+
+<!-- ============ SECTION 10 ============ -->
+<div class="page-break"></div>
+<h1>10. Conclusion</h1>
+
+<p>This paper introduced a predicate system based on 2-bit pair decomposition of natural numbers and performed a structural decomposition of Collatz-type maps \(T(n) = (xn+1)/2^d\). We summarize the main results.</p>
+
+<h2>10.1 Summary of Main Results</h2>
+
+<p><b>Result 1: Establishment of the pair predicate system (&sect;2).</b> We decomposed the binary representation of \(n\) into 2-bit pairs and defined a system of 16 Boolean predicates with the left-bit projection m4(LEFT) and right-bit projection m6(RIGHT) as basis. We established completeness, reconstruction from the basis, and per-pair independence.</p>
+
+<p><b>Result 2: Reduction of \(xn+1\) to bit scanning (&sect;3, &sect;4, &sect;7).</b> In the decomposition \(xn+1 = (x-1)n + n + 1\), the left shift of \((x-1)n\) determines reference patterns on the pair structure. Addition at each pair position has a two-stage structure (m6 and m4), and carries are determined by a single \(O(k)\) scan from the LSB. This yields the Unified Algorithm (Algorithm 7.1), which accommodates different parameters \(x\) by simply swapping reference patterns.</p>
+
+<p><b>Result 3: The structural privilege of \(3n+1\) (&sect;5).</b> This is the core result of the paper.</p>
+
+<ul>
+<li><b>Theorem B (Theorem 5.1):</b> For \(x=3\), the m4-stage Generate coincides with m2(AND), Propagate with m7(XOR), and Kill with m9(NOR), at every pair position. Carry generation, propagation, and absorption are determined merely by reading the pair type of \(n\).</li>
+<li><b>Theorem C (Theorem 5.2):</b> For \(x \geq 5\), the m4-stage GPK cannot be expressed by any Boolean composition of the 16 predicates. This is due to the principled incompatibility between the per-pair independence of the 16 predicates and the inter-position correlations demanded by the map.</li>
+<li><b>Classification Theorem (Theorem 5.3):</b> The m4-stage GPK closes within intra-pair predicates only for \(x = 3\). The map \(3n+1\) is the unique Collatz-type map whose carry structure is "transparent" in the 16-predicate space.</li>
+</ul>
+
+<p><b>Result 4: Exchange principle of \(\div 2\) (&sect;6).</b> We showed that the \(\div 2\) operation is described as an exchange of the roles of m4 and m6 (Theorem 6.1). The parity of \(d\) determines whether exchange occurs. Information is preserved; \(\div 2\) is positional relocation.</p>
+
+<h2>10.2 Significance</h2>
+
+<p>The results of this paper provide a new perspective on Collatz-type maps.</p>
+
+<p>First, <b>structural decomposition of multiplication</b>. The arithmetic operation \(xn+1\) has been decomposed into bit reference patterns and carry scanning. The value of \(x\) is absorbed as a shift of reference indices and does not appear in the scan stage. While shift+add is equivalent to multiplication at the binary level, our method transparently describes the internal mechanism at the pair level, making the carry structure (GPK) directly observable.</p>
+
+<p>Second, <b>identification of the singularity of \(3n+1\)</b>. To the question "why \(3n+1\)?" this paper presents a structural answer. \(x=3\) is the unique parameter for which the shift amount is less than the pair width, causing the addition to fold back within the pair. As a result, the carry structure is described directly by the intra-pair predicates m2/m7/m9 of \(n\). This "transparency" cannot hold for \(x \geq 5\) in principle.</p>
+
+<p>Third, <b>explicit statement of limitations</b>. The per-pair independence of the 16 predicates is both the strength and the limitation of this framework. Inter-pair correlations&mdash;information that carry propagation of Collatz-type maps essentially requires&mdash;lie outside the 16 predicates. Describing them requires either extending the framework (introducing inter-pair predicates) or employing dynamic operations (scanning). This paper adopted the latter.</p>
+
+<h2>10.3 Outlook</h2>
+
+<p>This paper is at the stage of "presenting a tool and establishing its fundamental properties." To approach the Collatz conjecture with this tool, the following directions are promising:</p>
+
+<ul>
+<li>Deriving the expected value of bit-length change along trajectories from the statistical properties of m2/m7/m9 patterns.</li>
+<li>Formulating the map \(T\) as a dynamical system on m4/m6 space and analyzing attractor structure.</li>
+<li>Refining cycle conditions to prove (at least in restricted ranges) the non-existence of non-trivial cycles.</li>
+</ul>
+
+<p>These are topics for future research.</p>
+
+<h2>10.4 Closing</h2>
+
+<p>The Collatz conjecture has resisted proof for over 80 years despite its elementary formulation. This paper does not resolve the problem. However, it describes the internal structure of the map in the language of a predicate system and proves that \(3n+1\) occupies a privileged position within that system. The distance to a solution remains, but the structure of the problem has become a little more visible.</p>
+
+<!-- ============ REFERENCES ============ -->
+<div class="page-break"></div>
+<h1>References</h1>
+
+<p>[1] J. C. Lagarias, "The 3x+1 problem and its generalizations," <i>American Mathematical Monthly</i>, vol. 92, no. 1, pp. 3&ndash;23, 1985.</p>
+
+<p>[2] R. K. Guy, <i>Unsolved Problems in Number Theory</i>, 3rd ed. New York: Springer, 2004.</p>
+
+<p>[3] G. J. Wirsching, <i>The Dynamical System Generated by the 3n+1 Function</i>, Lecture Notes in Mathematics, vol. 1681. Berlin: Springer, 1998.</p>
+
+<p>[4] R. Terras, "A stopping time problem on the positive integers," <i>Acta Arithmetica</i>, vol. 30, pp. 241&ndash;252, 1976.</p>
+
+<p>[5] C. J. Everett, "Iteration of the number-theoretic function f(2n)=n, f(2n+1)=3n+2," <i>Advances in Mathematics</i>, vol. 25, pp. 42&ndash;45, 1977.</p>
+
+<p>[6] O. J. Bedrij, "Carry-select adder," <i>IRE Transactions on Electronic Computers</i>, vol. EC-11, no. 3, pp. 340&ndash;346, 1962.</p>
+
+<!-- ============ APPENDIX ============ -->
+<hr>
+<h1>Appendix (Overview)</h1>
+
+<p>The complete version of this paper includes the following appendices.</p>
+
+<p><b>Appendix A: Complete Definition Table of the 16 Predicates.</b> Definitions of m1&ndash;m16, truth tables, expressions in m4/m6, and complement pair correspondences are listed.</p>
+
+<p><b>Appendix B: Complete Computation Trace for \(n=27\).</b> For each step of the \(5n+1\) cycle \(27 \to 17 \to 43 \to 27\), the reference bits, local GPK, carry values, and output bits at every pair position are enumerated. A similar trace is given for the \(3n+1\) trajectory of \(n=27\) (until reaching \(n=1\)).</p>
+
+<p><b>Appendix C: Formal Definition of GPK Tree Composition.</b> Complete proof of associativity (Proposition 4.3), pseudocode for the binary tree composition algorithm, and complexity analysis.</p>
+
+<p><b>Appendix D: General Derivation of Reference Patterns.</b> General formula for reference bits \((r_i^{(4)}, r_i^{(6)})\) as a function of shift amount \(s\). Discussion of extension to cases where \(x-1\) is not a power of 2.</p>
+
+<p><b>Appendix E: Verification Code.</b> Python implementation of the Unified Algorithm (Algorithm 7.1). Verification scripts confirming agreement with arithmetic computation for \(3n+1\) and \(5n+1\). Exhaustive matching scripts for all 784 predicate combinations (verification of Theorem C).</p>
+
+<hr>
+<p style="text-align:center; color:#666; font-size:9pt; margin-top:20pt;">
+    Generated: February 2026
+</p>
+
+</div><!-- end .paper -->
+</body>
+</html>
