@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>collatz-m4m6 ツール仕様レポート</title>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+  body {
+    font-family: "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2rem;
+    line-height: 1.8;
+    color: #222;
+    background: #fafafa;
+  }
+  h1 {
+    font-size: 1.6rem;
+    border-bottom: 3px solid #333;
+    padding-bottom: 0.5rem;
+    margin-top: 2rem;
+  }
+  h2 {
+    font-size: 1.3rem;
+    border-left: 4px solid #2a6496;
+    padding-left: 0.8rem;
+    margin-top: 2.5rem;
+  }
+  h3 {
+    font-size: 1.1rem;
+    color: #2a6496;
+    margin-top: 2rem;
+  }
+  h4 {
+    font-size: 1rem;
+    color: #555;
+    margin-top: 1.5rem;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1.2rem 0;
+    font-size: 0.92rem;
+  }
+  th, td {
+    border: 1px solid #ccc;
+    padding: 0.5rem 0.8rem;
+    text-align: left;
+  }
+  th {
+    background: #e0e8f0;
+    font-weight: 600;
+  }
+  td.num {
+    text-align: right;
+    font-family: "Consolas", "Source Code Pro", monospace;
+  }
+  .meta {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+  }
+  code {
+    font-family: "Consolas", "Source Code Pro", monospace;
+    background: #eee;
+    padding: 0.1rem 0.3rem;
+    border-radius: 3px;
+    font-size: 0.9em;
+  }
+  pre {
+    background: #f0f4f8;
+    border: 1px solid #c8d6e5;
+    border-radius: 6px;
+    padding: 1rem 1.5rem;
+    overflow-x: auto;
+    font-family: "Consolas", "Source Code Pro", monospace;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    margin: 1rem 0;
+  }
+  .box {
+    background: #f0f4f8;
+    border: 1px solid #c8d6e5;
+    border-radius: 6px;
+    padding: 1rem 1.5rem;
+    margin: 1.2rem 0;
+  }
+  .box-warn {
+    background: #fff8f0;
+    border: 1px solid #e0c8a0;
+  }
+  footer {
+    margin-top: 3rem;
+    padding-top: 1rem;
+    border-top: 1px solid #ccc;
+    color: #888;
+    font-size: 0.85rem;
+  }
+  ul { margin: 0.5rem 0 1rem 1.5rem; }
+  li { margin-bottom: 0.4rem; }
+</style>
+</head>
+<body>
+
+<h1>collatz-m4m6 ツール仕様レポート</h1>
+<p class="meta">
+  <strong>バージョン</strong>: 0.2.0 &nbsp;|&nbsp;
+  <strong>日付</strong>: 2026-02-07 &nbsp;|&nbsp;
+  <strong>言語</strong>: Rust (edition 2021)
+</p>
+
+<!-- ========== セクション1 ========== -->
+<h2>1. 概要</h2>
+<p>
+  コラッツ型写像 \(T(n) = (xn+1)/2^d\) の m4/m6 ペア述語分解に基づく走査・解析ツール。
+  論文「コラッツ型写像 \((xn+1)/2^d\) のペア述語分解と \(3n+1\) の構造的閉鎖性」の
+  アルゴリズム 7.1 の実装であり、以下の機能を提供する。
+</p>
+<ul>
+  <li>任意の \(xn+1\) 型写像（\(x-1\) が2の冪）に対する1ステップ走査</li>
+  <li>軌道追跡（1に到達するまでの全ステップ記録）</li>
+  <li>区間検証（停止時間法による大量数値の並列検証）</li>
+  <li>GPK (Generate/Propagate/Kill) 統計の集約・可視化</li>
+  <li>GUI による対話的操作</li>
+</ul>
+
+<!-- ========== セクション2 ========== -->
+<h2>2. 対応パラメータ</h2>
+<table>
+  <tr><th>パラメータ \(x\)</th><th>\(s = \log_2(x-1)\)</th><th>参照パターン</th><th>状態</th></tr>
+  <tr><td>3</td><td>1（奇数）</td><td>ref_R=(a[i-1], b[i]), ref_L=(b[i], a[i])</td><td>専用最適化あり</td></tr>
+  <tr><td>5</td><td>2（偶数）</td><td>ref_R=(b[i-1], b[i]), ref_L=(a[i-1], a[i])</td><td>専用最適化あり</td></tr>
+  <tr><td>9</td><td>3（奇数）</td><td>汎用パターン</td><td>汎用ルーチン</td></tr>
+  <tr><td>17</td><td>4（偶数）</td><td>汎用パターン</td><td>汎用ルーチン</td></tr>
+  <tr><td>33, 65, 129, &hellip;</td><td>5, 6, 7, &hellip;</td><td>汎用パターン</td><td>汎用ルーチン</td></tr>
+</table>
+<p><strong>制約</strong>: \(x \geq 3\) かつ \(x-1\) が2の冪であること。</p>
+
+<!-- ========== セクション3 ========== -->
+<h2>3. アーキテクチャ</h2>
+
+<h3>3.1 モジュール構成</h3>
+<pre>
+src/
+├── lib.rs            # クレートルート（公開API定義）
+├── main.rs           # CLI エントリポイント
+├── gui.rs            # GUI エントリポイント（egui）
+├── pair_number.rs    # PairNumber 型（m4/m6 ビットペア表現）
+├── reference.rs      # 参照パターン（表3.1の実装）
+├── scan.rs           # 1ステップ走査（GPK分類含む）
+├── postprocess.rs    # 後処理（MSBトリミング、末尾ゼロ除去、再ペア化）
+├── trajectory.rs     # 軌道追跡・停止時間計算
+└── verify.rs         # 区間並列検証（rayon）
+</pre>
+
+<h3>3.2 データフロー</h3>
+<pre>
+入力 n (BigUint)
+    │
+    ├─ [軌道追跡パス] ─── PairNumber 変換 → scan::collatz_step → postprocess → 記録
+    │                     （各ステップの m4/m6, GPK 列, d を保持）
+    │
+    └─ [停止時間パス] ─── u128 直接演算 → BigUint フォールバック
+                          （PairNumber を経由せず高速演算、GPK はビット抽出で計算）
+</pre>
+
+<h3>3.3 二重パス設計</h3>
+<table>
+  <tr><th></th><th>軌道追跡パス</th><th>停止時間パス</th></tr>
+  <tr><td><strong>用途</strong></td><td>単発解析（GUI 単発タブ）</td><td>区間検証（GUI 区間タブ）</td></tr>
+  <tr><td><strong>内部表現</strong></td><td>PairNumber (Vec&lt;u8&gt; per bit)</td><td>u128 / BigUint 直接演算</td></tr>
+  <tr><td><strong>GPK 取得</strong></td><td>scan 関数の副産物（各ペアの GPK 列）</td><td>ビット列から直接計算（統計のみ）</td></tr>
+  <tr><td><strong>出力</strong></td><td>全ステップの n', d, GPK 列</td><td>停止時間 + GPK 集約統計</td></tr>
+  <tr><td><strong>速度</strong></td><td>遅い（研究用詳細データ）</td><td>高速（大量検証用）</td></tr>
+</table>
+
+<!-- ========== セクション4 ========== -->
+<h2>4. 停止時間高速パス</h2>
+
+<h3>4.1 <code>stopping_time_u64_fast</code></h3>
+<p>u64 入力に対する最適化パス。</p>
+
+<h4>Phase 1: u128 演算</h4>
+<ul>
+  <li><code>current * x + 1</code> を u128 で計算</li>
+  <li><code>trailing_zeros()</code> で \(d\) を取得、右シフト</li>
+  <li>GPK は u128 のビットから直接分類</li>
+  <li>オーバーフロー閾値: <code>(u128::MAX - 1) / x</code></li>
+</ul>
+
+<h4>Phase 2: BigUint フォールバック</h4>
+<ul>
+  <li>u128 オーバーフロー時に自動遷移</li>
+  <li><code>BigUint::*=</code>, <code>+=</code>, <code>&gt;&gt;=</code> によるインプレース演算</li>
+  <li>GPK は <code>to_bytes_le()</code> からビット抽出</li>
+</ul>
+
+<h3>4.2 <code>stopping_time_with_gpk</code></h3>
+<p>BigUint 入力に対する汎用パス。Phase 2 と同一ロジック。</p>
+
+<h3>4.3 安全制限</h3>
+<table>
+  <tr><th>制限</th><th>値</th><th>目的</th></tr>
+  <tr><td>MAX_PAIR_COUNT</td><td class="num">10,000 ペア</td><td>軌道追跡パスのメモリ制限</td></tr>
+  <tr><td>MAX_BIT_LENGTH</td><td class="num">20,000 ビット</td><td>停止時間パスのビット長制限</td></tr>
+  <tr><td>max_steps</td><td class="num">GUI で設定可能</td><td>発散系列の打ち切り</td></tr>
+</table>
+
+<!-- ========== セクション5 ========== -->
+<h2>5. GPK 統計</h2>
+
+<h3>5.1 分類規則</h3>
+<p>
+  各ペア位置 \(i\) について、参照パターンに基づく4ビット \((p_r, q_r, p_l, q_l)\) から：
+</p>
+<pre>
+m6段: g_mid = p_r &amp; q_r,  p_mid = p_r ^ q_r
+m4段: g_out = p_l &amp; q_l,  p_out = p_l ^ q_l
+直列合成: G_i = g_out | (p_out &amp; g_mid)
+          P_i = p_out &amp; p_mid
+          K_i = それ以外
+</pre>
+
+<h3>5.2 キャリー連鎖長</h3>
+<p>
+  初期キャリー \(c=1\) からの連鎖と、G で再生成された後の連鎖の最大長を記録。
+  ヒストグラム（距離 0&ndash;127）として集約。
+</p>
+
+<h3>5.3 実測 GPK 分布（\(n \leq 10^7\), max_steps=500）</h3>
+<table>
+  <tr><th></th><th>\(3n+1\)</th><th>\(5n+1\)</th><th>\(17n+1\)</th></tr>
+  <tr><td><strong>G%</strong></td><td class="num">38.41</td><td class="num">36.91</td><td class="num">37.26</td></tr>
+  <tr><td><strong>P%</strong></td><td class="num">28.32</td><td class="num">25.45</td><td class="num">25.09</td></tr>
+  <tr><td><strong>K%</strong></td><td class="num">33.26</td><td class="num">37.64</td><td class="num">37.65</td></tr>
+  <tr><td><strong>G/K 比</strong></td><td class="num">1.15</td><td class="num">0.98</td><td class="num">0.99</td></tr>
+</table>
+
+<!-- ========== セクション6 ========== -->
+<h2>6. GUI 仕様</h2>
+
+<h3>6.1 構成</h3>
+<ul>
+  <li><strong>フレームワーク</strong>: egui (eframe 0.29) + egui_plot 0.29</li>
+  <li><strong>日本語フォント</strong>: Yu Gothic / MS Gothic / Meiryo（自動検出）</li>
+  <li><strong>ウィンドウサイズ</strong>: 900 &times; 700</li>
+</ul>
+
+<h3>6.2 トップパネル</h3>
+<table>
+  <tr><th>要素</th><th>説明</th></tr>
+  <tr><td><code>x =</code></td><td>\(xn+1\) のパラメータ。\(x-1\) が2の冪の値のみ受理</td></tr>
+  <tr><td><code>max_steps:</code></td><td>最大反復ステップ数。デフォルト 10000</td></tr>
+  <tr><td>タブ切替</td><td>単発解析 / 区間解析 / 解析</td></tr>
+</table>
+
+<h3>6.3 単発解析タブ</h3>
+<ul>
+  <li><strong>1ステップ実行</strong>: \(n\) に対して1回の \((xn+1)/2^d\) を実行。\(n'\), \(d\), GPK 列, carry 連鎖長を表示</li>
+  <li><strong>軌道追跡</strong>: 1到達（または max_steps/ビット長上限）まで反復。バックグラウンドスレッドで実行
+    <ul>
+      <li>キャンセル可能（停止ボタン）</li>
+      <li>進捗表示（ステップ数, 桁数）200ms 間隔で更新</li>
+      <li>結果: ステップ数, \(\Sigma d\), 最大値桁数, GPK 統計, 軌道先頭100ステップ</li>
+      <li>CSV + サマリ TXT を自動保存</li>
+    </ul>
+  </li>
+</ul>
+
+<h3>6.4 区間解析タブ</h3>
+<ul>
+  <li><strong>範囲指定</strong>: 開始値&ndash;終了値の全奇数を検証</li>
+  <li><strong>並列処理</strong>: rayon による自動並列化（u64 範囲はチャンク分割）</li>
+  <li><strong>進捗バー</strong>: 100数値ごとに更新、nums/s 表示</li>
+  <li>キャンセル可能</li>
+  <li><strong>結果</strong>: 検証数, 収束判定, 最大停止時間, GPK 統計, GPK 分布グラフ, キャリー連鎖長グラフ</li>
+  <li>サマリ TXT を自動保存</li>
+</ul>
+
+<h3>6.5 解析タブ</h3>
+<ul>
+  <li><code>output/</code> ディレクトリのログファイル一覧を表示</li>
+  <li>ファイル選択でパラメータ・GPK 統計・グラフを再表示</li>
+  <li>ログファイル形式を自動パース</li>
+</ul>
+
+<!-- ========== セクション7 ========== -->
+<h2>7. 出力ファイル</h2>
+
+<h3>7.1 保存先</h3>
+<p>exe と同一ディレクトリの <code>output/</code> フォルダ（自動作成）。</p>
+
+<h3>7.2 ファイル命名規則</h3>
+<pre>
+gui_trace_{x}n1_{n}[_stopped]_{timestamp}.txt     # 軌道追跡サマリ
+gui_trace_{x}n1_{n}.csv                            # 軌道追跡 CSV
+gui_verify_{x}n1_{start}-{end}[_stopped]_{timestamp}.txt  # 区間検証サマリ
+</pre>
+
+<h3>7.3 サマリファイル形式</h3>
+<pre>
+# collatz-m4m6 verify
+range = [3, 9999999]
+x = 5
+total_checked = 4999999
+all_converged = false
+max_stopping_time = 490
+max_stopping_time_n = 4580349
+
+# GPK
+G = 17746659852
+P = 12236187544
+K = 18094218711
+total_pairs = 48077066107
+total_steps = 897149444
+G% = 36.9129
+P% = 25.4512
+K% = 37.6359
+
+# Carry chain histogram
+0: 720342
+1: 1400349
+...
+
+elapsed = 79.0672604s
+</pre>
+
+<h3>7.4 CSV 形式（軌道追跡）</h3>
+<pre>
+step,n,d,digits,gpk,G,P,K,max_carry_chain
+0,27,0,2,,0,0,0,0
+1,41,1,2,PGP,1,2,0,2
+...
+</pre>
+
+<!-- ========== セクション8 ========== -->
+<h2>8. ビルド</h2>
+
+<h3>8.1 前提条件</h3>
+<ul>
+  <li>Rust toolchain (stable)</li>
+  <li>MSYS2 MinGW64（Windows の場合、egui のネイティブ依存）</li>
+</ul>
+
+<h3>8.2 ビルドコマンド</h3>
+<pre>
+# build_gui.ps1 を使用
+$env:PATH = "C:\msys64\mingw64\bin;C:\Users\ykihi\.cargo\bin;" + $env:PATH
+cargo build --release --features gui --bin collatz-gui
+</pre>
+
+<h3>8.3 実行</h3>
+<pre>
+target\release\collatz-gui.exe
+</pre>
+
+<!-- ========== セクション9 ========== -->
+<h2>9. パフォーマンス特性</h2>
+
+<h3>9.1 ベンチマーク（\(n \leq 10^7\), max_steps=500）</h3>
+<table>
+  <tr><th>\(x\)</th><th>時間</th><th>nums/s</th><th>平均 steps/数</th></tr>
+  <tr><td>3</td><td class="num">0.49s</td><td class="num">10,200,000</td><td class="num">3.5</td></tr>
+  <tr><td>5</td><td class="num">79s</td><td class="num">63,300</td><td class="num">179</td></tr>
+  <tr><td>17</td><td class="num">1654s</td><td class="num">3,020</td><td class="num">456</td></tr>
+</table>
+
+<h3>9.2 速度のスケーリング要因</h3>
+<ol>
+  <li><strong>収束性</strong>: \(3n+1\) は全数収束（平均3.5ステップ）、\(x \geq 5\) は発散（max_steps まで実行）</li>
+  <li><strong>ビット成長</strong>: \(x\) が大きいほど1ステップでの数値成長が大きく、BigUint 演算コスト増大</li>
+  <li><strong>u128 有効範囲</strong>: 最初の約 \(128 / \log_2(x/2)\) ステップは u128 で処理、以降 BigUint</li>
+</ol>
+
+<h3>9.3 最適化履歴</h3>
+<table>
+  <tr><th>バージョン</th><th>手法</th><th>5n+1 (\(n \leq 10^6\)) 速度</th></tr>
+  <tr><td>v0.1</td><td>PairNumber + BigUint 変換/ステップ</td><td class="num">46ms/数 (92数/5.65s)</td></tr>
+  <tr><td>v0.2</td><td>BigUint 直接演算 + u128 高速パス</td><td class="num">8&mu;s/数 (499,999/4s)</td></tr>
+  <tr><td><strong>改善倍率</strong></td><td></td><td class="num"><strong>約 5,750倍</strong></td></tr>
+</table>
+
+<!-- ========== セクション10 ========== -->
+<h2>10. 既知の制限</h2>
+<ol>
+  <li><strong>\(x-1\) が2の冪でない \(x\) には非対応</strong>: \(x=7, 11, 13\) 等は加算段が複数になり、現在の2段構成では処理不可</li>
+  <li><strong>PairNumber 表現の非効率性</strong>: Vec&lt;u8&gt; per bit（8倍メモリオーバーヘッド）。軌道追跡パスでのみ使用</li>
+  <li><strong>GUI ログビューア</strong>: <code>output/</code> 内の <code>.txt</code> ファイルのみ対応。CSV の直接閲覧は未実装</li>
+  <li><strong>タイムスタンプ精度</strong>: 簡易計算のため閏年未考慮</li>
+</ol>
+
+<footer>
+  collatz-m4m6 v0.2.0 &nbsp;|&nbsp; Rust edition 2021 &nbsp;|&nbsp; 2026-02-07
+</footer>
+
+</body>
+</html>

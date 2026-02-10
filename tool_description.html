@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>collatz-m4m6 ツール説明</title>
+<style>
+  body { font-family: 'Yu Gothic', 'Meiryo', sans-serif; max-width: 860px; margin: 40px auto; padding: 0 20px; color: #222; line-height: 1.8; }
+  h1 { border-bottom: 3px solid #2a6496; padding-bottom: 8px; }
+  h2 { border-left: 4px solid #2a6496; padding-left: 12px; margin-top: 2em; }
+  h3 { color: #2a6496; }
+  .hero { background: linear-gradient(135deg, #1a3a5c, #2a6496); color: #fff; border-radius: 10px; padding: 24px 28px; margin: 20px 0 28px 0; }
+  .hero h2 { border-left: 4px solid #fff; color: #fff; margin-top: 0; }
+  .hero strong { color: #ffd966; }
+  .important-box { background: #fff3cd; border: 1px solid #e0c36a; border-radius: 6px; padding: 14px 18px; margin: 16px 0; }
+  .important-box .label { font-weight: bold; color: #856404; }
+  .warning-box { background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 6px; padding: 14px 18px; margin: 16px 0; }
+  .warning-box .label { font-weight: bold; color: #721c24; }
+  .info-box { background: #d1ecf1; border: 1px solid #bee5eb; border-radius: 6px; padding: 14px 18px; margin: 16px 0; }
+  .info-box .label { font-weight: bold; color: #0c5460; }
+  .checkbox-section { background: #f0f4f8; border-radius: 8px; padding: 18px 22px; margin: 20px 0; }
+  .checkbox-name { font-family: monospace; font-size: 1.1em; font-weight: bold; background: #dde4ec; padding: 2px 8px; border-radius: 4px; }
+  table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+  th, td { border: 1px solid #ccc; padding: 8px 12px; text-align: left; }
+  th { background: #e9ecef; }
+  code { background: #e9ecef; padding: 1px 5px; border-radius: 3px; font-size: 0.95em; }
+  .tab-desc { display: flex; gap: 16px; margin: 12px 0; }
+  .tab-card { flex: 1; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 14px; }
+  .tab-card h4 { margin: 0 0 8px 0; color: #2a6496; }
+  .record-table th { background: #2a6496; color: #fff; }
+</style>
+</head>
+<body>
+
+<h1>collatz-m4m6 &mdash; ペア述語分解に基づくコラッツ型写像解析ツール</h1>
+
+<!-- ============================== -->
+<!-- スイープ説明を最上段に -->
+<!-- ============================== -->
+
+<div class="hero">
+<h2>このツールでできること: 区間全数検証（スイープ）</h2>
+<p>
+コラッツ予想の数値検証で「<strong>2<sup>68</sup> まで検証済み</strong>」といった世界記録を
+目にしたことはありませんか？
+</p>
+<p>
+これは特定の1つの大きな数の軌道を追った結果ではありません。
+<strong>3 から 2<sup>68</sup> までの全ての奇数 &mdash; 数千兆個 &mdash; について、
+それぞれの軌道が初期値を下回ることを1つ残らず確認した</strong>という意味です。
+世界中の研究機関が計算資源を投じて達成しているのは、
+この「区間内の全数検証」です。
+</p>
+<p>
+本ツールの<strong>区間解析</strong>タブは、まさにこのスイープ機能を提供します。
+開始値と終了値を入力し「検証開始」を押すだけで、
+その範囲内の全奇数に対して並列に停止時間を計算し、
+全数の収束/非収束を判定します。
+</p>
+<p>
+検証の正当性は<strong>再現性</strong>によって担保されます。
+世界記録も同様で、コードが公開され、誰でも同じ計算を再実行して結果を照合できることが証明の根拠です。
+本ツールも同じ原則に基づいており、あなたの PC で同じ検証を実行し、同じ結果を得ることができます。
+</p>
+</div>
+
+<p>
+コラッツ型写像の計算ツールは多数存在しますが、
+その大半は「1つの数を入力して軌道を眺める」タイプです。
+<strong>指定区間の全奇数をスイープ検証する機能を備えたツールは限られています。</strong>
+</p>
+
+<p>
+さらに、従来の検証ツールが出力するのは
+「検証数・全数収束したか・最大停止時間」の3点のみです。
+構造的な情報は一切記録されません。
+本ツールは検証と同時に GPK 統計・キャリー連鎖長分布を蓄積し、
+収束の「なぜ」に迫る構造情報を提供します。
+<strong>単に「検証した」だけでなく「検証過程で何が起きていたか」を記録できる唯一のスイープツールです。</strong>
+</p>
+
+<ul>
+<li><strong>並列処理</strong>: マルチスレッドにより全 CPU コアを活用</li>
+<li><strong>3段階フォールバック</strong>: u128 → U256 → パックドscan の自動切替により、小さい数は高速に、大きい数も確実に処理</li>
+<li><strong>GPK 統計の蓄積</strong>: スイープ中に全ステップの GPK を集計し、キャリー伝播の統計的性質を大規模に観測可能</li>
+<li><strong>進捗表示と中断</strong>: プログレスバー・速度表示・停止ボタンにより、長時間の検証を制御可能</li>
+<li><strong>自動ログ保存</strong>: 検証結果が output/ フォルダに自動保存され、後から「解析」タブで再閲覧可能</li>
+</ul>
+
+<h3>スイープ実績</h3>
+
+<table class="record-table">
+<tr><th>写像</th><th>検証範囲</th><th>検証した奇数の個数</th><th>所要時間</th><th>結果</th></tr>
+<tr><td>3n+1</td><td>3 ~ 99,999,999,999 (&#8776;2<sup>37</sup>)</td><td>500億個</td><td>約2分17秒</td><td>全数収束（最大停止時間 345, n=14,500,812,391）</td></tr>
+</table>
+
+<p style="color:#666; font-size:0.9em;">
+※ Intel Core i7-12650H（デスクトップPC1台）での実測値。
+現在の世界記録は 2<sup>71</sup> 規模（2025年1月, David Barina, GPU クラスタによる分散計算）。
+スイープ範囲はマシン性能と時間が許す限り拡大でき、
+誰でも自分の環境で検証を再現できます。
+</p>
+
+<!-- ============================== -->
+<h2>ツール概要</h2>
+
+<p>
+<strong>collatz-m4m6</strong> は、コラッツ型写像 T(n) = (xn+1)/2<sup>d</sup> を
+m4/m6 ペア述語分解により解析するツールです。
+乗算を使わず、加算器のキャリー伝播（Kogge-Stone 並列プリフィックススキャン）として
+写像の1ステップを実行し、各ペア位置での GPK 分類（Generate / Propagate / Kill）を
+演算の副産物として取得します。
+</p>
+
+<p>
+対応する写像は x = 2<sup>s</sup> + 1 の形をとる全ての定数（x = 3, 5, 9, 17, 33, ...）です。
+3n+1（標準コラッツ）だけでなく、5n+1 や 9n+1 等の一般化写像も解析できます。
+</p>
+
+<!-- ============================== -->
+<h2>設定項目（上部バー）</h2>
+
+<div class="checkbox-section">
+<h3><span class="checkbox-name">&#9745; GPK統計</span> チェックボックス</h3>
+<p>
+<strong>GPK 統計収集の ON/OFF を切り替えます。</strong>
+</p>
+<p>
+ON にすると、各ステップで加算器のキャリー伝播が
+<strong>G（Generate: キャリー生成）</strong>、
+<strong>P（Propagate: キャリー伝播）</strong>、
+<strong>K（Kill: キャリー消滅）</strong>
+のいずれであるかを各ペア位置で分類し、統計を蓄積します。
+区間解析では GPK 比率、キャリー連鎖長分布、G-K バランス（発散/収束傾向）がグラフで表示されます。
+</p>
+<p>
+ペアscan（パックドビット演算）では GPK はスキャン過程の副産物として得られるため、
+追加コストは<strong>約1.3倍</strong>に留まります。
+一方、u128 直接演算パスでは GPK 取得のために別途ビット分解が必要となり、
+<strong>約20倍</strong>の速度低下が発生します。
+</p>
+<p>
+大規模な区間検証で速度を優先する場合は OFF にすることで、
+u128 パスの最大速度（約4.4億 nums/s）を引き出せます。
+</p>
+</div>
+
+<div class="checkbox-section">
+<h3><span class="checkbox-name">&#9745; u128 Phase1</span> チェックボックス</h3>
+<p>
+<strong>u128 ネイティブ高速演算パスの ON/OFF を切り替えます。</strong>
+</p>
+<p>
+ON（デフォルト）にすると、区間解析において値が 128bit に収まる間は
+CPU のネイティブ乗算命令で直接 xn+1 を計算します（4命令、レジスタ完結）。
+128bit を超えた場合は U256（256bit スタック演算）に昇格し、
+さらに溢れた場合にペア述語分解（パックドscan）にフォールバックします。
+</p>
+<p>
+3n+1 の区間検証ではほぼ全数が u128 内で完結するため、
+<strong>ON で約84倍高速</strong>になります。
+</p>
+<p>
+OFF にすると、最初からペア述語分解で全ステップを実行します。
+ペアscan の動作検証や、GPK 統計を低コストで取得したい場合に使用します。
+</p>
+<table>
+<tr><th>条件</th><th>速度（3n+1, 50M奇数）</th><th>用途</th></tr>
+<tr><td>Phase1 ON, GPK OFF</td><td>~442M nums/s</td><td>大規模区間の高速検証</td></tr>
+<tr><td>Phase1 ON, GPK ON</td><td>~22M nums/s</td><td>GPK 統計付き区間検証</td></tr>
+<tr><td>Phase1 OFF, GPK OFF</td><td>~5.3M nums/s</td><td>ペアscan の速度測定</td></tr>
+<tr><td>Phase1 OFF, GPK ON</td><td>~4.0M nums/s</td><td>ペアscan + GPK（副産物のため低オーバーヘッド）</td></tr>
+</table>
+</div>
+
+<div class="checkbox-section">
+<h3>その他の設定</h3>
+<ul>
+<li><strong>x =</strong> &mdash; 写像の定数。x-1 が 2 の冪である必要があります（3, 5, 9, 17, 33, ...）。無効な値を入力すると赤字で警告が表示され、最後の有効な値で実行されます。</li>
+<li><strong>max_steps:</strong> &mdash; 1つの数に対する最大ステップ数。この値に到達しても収束しない場合、その数の追跡を打ち切ります。</li>
+</ul>
+</div>
+
+<div class="warning-box">
+<p><span class="label">&#9888; max_steps に関する重要な注意（5n+1 等の発散系列）</span></p>
+<p>
+<strong>3n+1 以外の写像（5n+1, 9n+1, 17n+1 等）は収束が保証されません。</strong>
+多くの初期値で数値が際限なく増大（発散）し、停止時間に到達しません。
+</p>
+<p>
+発散する数に対して max_steps を大きく設定すると、
+数値のビット長が指数的に増大し、メモリ消費と計算時間が急激に増加します。
+5n+1 では 999,999,999 から出発した軌道が 3,000 桁超にまで到達する例があります。
+</p>
+<p>
+<strong>推奨:</strong>
+<ul>
+<li>3n+1: max_steps = 1,000～10,000（全数収束するため安全）</li>
+<li>5n+1: max_steps = 1,000 以下から開始し、様子を見て調整</li>
+<li>9n+1 以上: max_steps = 100～500 で慎重に探索</li>
+</ul>
+区間解析中は「停止」ボタンでいつでも中断できます。
+</p>
+</div>
+
+<!-- ============================== -->
+<h2>機能タブ</h2>
+
+<div class="tab-desc">
+<div class="tab-card">
+<h4>単発解析</h4>
+<p>
+1つの奇数 n に対して、ペア述語分解による詳細解析を行います。
+</p>
+<ul>
+<li><strong>1ステップ</strong>: T(n) の1回の適用を実行し、GPK 列・d 値・交換の有無・キャリー連鎖長を表示</li>
+<li><strong>軌道追跡</strong>: n = 1 または停止時間到達まで繰り返し適用し、全軌道を記録</li>
+</ul>
+</div>
+<div class="tab-card">
+<h4>区間解析</h4>
+<p>
+指定範囲の全奇数に対して停止時間検証（スイープ）を実行します。
+世界記録と同じ方式の全数検証を、あなたの PC で実行できます。
+</p>
+</div>
+<div class="tab-card">
+<h4>解析</h4>
+<p>
+過去の実行ログ（output/ フォルダ）を閲覧し、GPK グラフやキャリー連鎖長ヒストグラムを再表示します。
+</p>
+</div>
+</div>
+
+<!-- ============================== -->
+<h2>単発解析: 16述語 CSV 出力</h2>
+
+<p>
+単発解析の軌道追跡では、結果が <strong>CSV ファイル</strong>として自動保存されます。
+各ステップについて以下のデータが記録されます:
+</p>
+
+<table>
+<tr><th>列</th><th>内容</th></tr>
+<tr><td>step, n, d, exchanged</td><td>ステップ番号、値、÷2回数、m4/m6交換の有無</td></tr>
+<tr><td>m1 ~ m16</td><td>奇数 n' の <strong>16述語</strong>（ペアビットの全16ブール関数）のビット列</td></tr>
+<tr><td>raw_m1 ~ raw_m16</td><td>偶数 xn+1（除算前）の16述語ビット列</td></tr>
+<tr><td>gpk, G, P, K</td><td>GPK 分類列と各カウント</td></tr>
+<tr><td>max_carry_chain</td><td>最大キャリー連鎖長</td></tr>
+</table>
+
+<div class="info-box">
+<p><span class="label">CSV の活用</span></p>
+<p>
+16述語の全ビットパターンが各ステップで記録されるため、
+単一の大きな数を追跡して GPK の比率がステップごとにどう変動するかを観察したり、
+述語間の相関関係を分析したり、
+まだ知られていない構造的法則を探索するのに最適です。
+Excel や Python (pandas) で読み込んで自由に解析できます。
+</p>
+</div>
+
+<!-- ============================== -->
+<h2>3段階演算アーキテクチャ</h2>
+
+<p>
+区間解析では、数値の大きさに応じて3段階の演算パスを自動的に切り替えます。
+</p>
+
+<table>
+<tr><th>フェーズ</th><th>ビット幅</th><th>演算方式</th><th>命令数/ステップ</th><th>メモリ</th></tr>
+<tr><td>Phase 1 (u128)</td><td>~128bit</td><td>CPU ネイティブ乗算</td><td>~4</td><td>レジスタ完結</td></tr>
+<tr><td>Phase 1.5 (U256)</td><td>~256bit</td><td>スタック割当 4×u64 乗算</td><td>~8</td><td>スタック完結</td></tr>
+<tr><td>Phase 2 (パックドscan)</td><td>任意長</td><td>Kogge-Stone ペア述語分解</td><td>~25/128bit</td><td>ヒープ (Vec&lt;u64&gt;)</td></tr>
+</table>
+
+<p>
+Phase 1 / 1.5 は <code>u128 Phase1</code> チェックボックスで ON/OFF を制御します。
+OFF にすると最初から Phase 2（ペア述語分解）で全ステップを実行します。
+</p>
+
+<!-- ============================== -->
+<h2>GPK 分類とキャリー連鎖</h2>
+
+<p>
+ペア述語分解では、コラッツ写像の1ステップ xn+1 を加算器のキャリー伝播として実行します。
+各ペア位置でのキャリーの振る舞いが GPK として分類されます:
+</p>
+
+<table>
+<tr><th>分類</th><th>意味</th><th>キャリーへの影響</th></tr>
+<tr><td><strong>G</strong> (Generate)</td><td>このペアがキャリーを新たに生成する</td><td>入力キャリーに関係なく出力キャリー = 1</td></tr>
+<tr><td><strong>P</strong> (Propagate)</td><td>このペアが入力キャリーをそのまま伝播する</td><td>入力キャリーがあれば出力 = 1、なければ = 0</td></tr>
+<tr><td><strong>K</strong> (Kill)</td><td>このペアがキャリーを消滅させる</td><td>入力キャリーに関係なく出力キャリー = 0</td></tr>
+</table>
+
+<p>
+<strong>G &gt; K</strong> なら数値は成長傾向（発散方向）、
+<strong>G &lt; K</strong> なら縮小傾向（収束方向）を示します。
+3n+1 では G &#8776; 38%, K &#8776; 35% であり G &gt; K ですが、
+÷2<sup>d</sup> の効果が G の寄与を上回るため全数が収束します。
+</p>
+
+<p>
+<strong>キャリー連鎖長</strong>は、連続する P の並びの長さを示します。
+P が連続するとキャリーが長距離にわたって伝播し、
+数値の上位ビットに影響を及ぼします。
+3n+1 の 2<sup>33</sup> 規模検証では連鎖長 4-5 にピークがあり、
+最大 26 でした。長距離伝播は指数的に稀であり、
+キャリーが局所的に留まることを統計的に示しています。
+</p>
+
+<!-- ============================== -->
+<h2>出力ファイル</h2>
+
+<p>全ての結果は実行ファイルと同じディレクトリの <code>output/</code> フォルダに自動保存されます。</p>
+
+<table>
+<tr><th>種別</th><th>ファイル名例</th><th>内容</th></tr>
+<tr><td>単発 CSV</td><td><code>gui_trace_3n1_27_s10000_gpk.csv</code></td><td>全ステップの値・d・16述語・GPK（表計算で解析可能）</td></tr>
+<tr><td>単発 サマリ</td><td><code>gui_trace_3n1_27_s10000_gpk_2026051_174112.txt</code></td><td>GPK 集計・キャリー連鎖長ヒストグラム</td></tr>
+<tr><td>区間 サマリ</td><td><code>gui_verify_3n1_3-9999999999_s1000_gpk_2026051_174112.txt</code></td><td>検証結果・GPK 統計・キャリー連鎖長分布</td></tr>
+</table>
+
+<p>
+「解析」タブで過去のログファイルを選択すると、GPK グラフやキャリー連鎖長ヒストグラムを再表示できます。
+</p>
+
+</body>
+</html>
