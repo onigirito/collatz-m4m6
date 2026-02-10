@@ -14,6 +14,13 @@ use std::thread;
 use std::time::Instant;
 
 fn main() -> eframe::Result<()> {
+    #[cfg(target_arch = "x86_64")]
+    if !std::is_x86_feature_detected!("avx2") {
+        eprintln!("ERROR: This build requires a CPU with AVX2 support (Intel Haswell 2013+ / AMD Excavator 2015+).");
+        eprintln!("エラー: このビルドはAVX2対応CPU（Intel第4世代以降 / AMD 2015年以降）が必要です。");
+        std::process::exit(1);
+    }
+
     let options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
             .with_inner_size([900.0, 700.0])

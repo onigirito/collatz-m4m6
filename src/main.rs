@@ -7,6 +7,15 @@ use std::path::PathBuf;
 use std::str::FromStr;
 use std::time::Instant;
 
+fn check_avx2() {
+    #[cfg(target_arch = "x86_64")]
+    if !std::is_x86_feature_detected!("avx2") {
+        eprintln!("ERROR: This build requires a CPU with AVX2 support (Intel Haswell 2013+ / AMD Excavator 2015+).");
+        eprintln!("エラー: このビルドはAVX2対応CPU（Intel第4世代以降 / AMD 2015年以降）が必要です。");
+        std::process::exit(1);
+    }
+}
+
 fn print_usage() {
     eprintln!("コラッツ型写像 m4/m6 走査アルゴリズム (層2: GPK分類付き)");
     eprintln!();
@@ -80,6 +89,7 @@ fn enable_ansi() {
 }
 
 fn main() {
+    check_avx2();
     enable_ansi();
     let args: Vec<String> = env::args().collect();
 
