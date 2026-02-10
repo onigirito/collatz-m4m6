@@ -524,15 +524,16 @@ impl CollatzApp {
         let k_pct = gs.total_k as f64 / total as f64 * 100.0;
         let gk_diff = g_pct - k_pct;
 
-        // ── G−K 発散インジケータ ──
+        // ── GPK Heat ──
+        let heat = g_pct + p_pct;  // carry活性度: G+P = 生成+伝播
         ui.horizontal(|ui| {
-            ui.label("G−K バランス:");
-            let (label, color) = if gk_diff > 1.0 {
-                (format!("{:+.2}% 発散傾向", gk_diff), egui::Color32::from_rgb(220, 50, 50))
-            } else if gk_diff < -1.0 {
-                (format!("{:+.2}% 収束傾向", gk_diff), egui::Color32::from_rgb(50, 180, 50))
+            ui.label("GPK Heat:");
+            let (label, color) = if heat > 66.0 {
+                (format!("{:.1}% (hot)", heat), egui::Color32::from_rgb(220, 80, 50))
+            } else if heat > 60.0 {
+                (format!("{:.1}% (warm)", heat), egui::Color32::from_rgb(200, 160, 50))
             } else {
-                (format!("{:+.2}% 均衡", gk_diff), egui::Color32::from_rgb(180, 180, 50))
+                (format!("{:.1}% (cool)", heat), egui::Color32::from_rgb(80, 160, 200))
             };
             ui.colored_label(color, egui::RichText::new(label).strong());
         });
