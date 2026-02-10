@@ -202,7 +202,7 @@ fn bench_packed_vs_biguint() {
     // パックドscan で同じ数を処理
     let mut packed_results: Vec<(u64, u64)> = Vec::new();
     for n in (3..=range_end).step_by(2) {
-        let st = stopping_time_u64_fast(n, x, max_steps, None, false);
+        let st = stopping_time_u64_fast(n, x, max_steps, None, false, true);
         packed_results.push((n, st.unwrap_or(0)));
     }
 
@@ -236,7 +236,7 @@ fn bench_packed_vs_biguint() {
     // パックドscan（Phase1 OFF）
     let t1 = Instant::now();
     for n in (3..=range_end).step_by(2) {
-        stopping_time_u64_fast(n, x, max_steps, None, false);
+        stopping_time_u64_fast(n, x, max_steps, None, false, true);
     }
     let packed_elapsed = t1.elapsed();
 

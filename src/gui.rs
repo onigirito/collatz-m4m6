@@ -163,6 +163,7 @@ struct CollatzApp {
     max_steps_input: String,
     collect_gpk: bool,
     use_phase1: bool,
+    use_stopping_time: bool,
     // 単発解析
     single_n_input: String,
     single_step_result: Option<StepResultDisplay>,
@@ -188,6 +189,7 @@ impl Default for CollatzApp {
             max_steps_input: "1000".to_string(),
             collect_gpk: true,
             use_phase1: true,
+            use_stopping_time: true,
             single_n_input: "27".to_string(),
             single_step_result: None,
             single_trace_state: Arc::new(Mutex::new(SingleTraceState {
@@ -245,6 +247,7 @@ impl eframe::App for CollatzApp {
                 ui.add(egui::TextEdit::singleline(&mut self.max_steps_input).desired_width(60.0));
                 ui.checkbox(&mut self.collect_gpk, "GPK統計");
                 ui.checkbox(&mut self.use_phase1, "u128 Phase1");
+                ui.checkbox(&mut self.use_stopping_time, "停止時間判定");
                 ui.separator();
                 if ui.selectable_label(self.tab == Tab::Single, "単発解析").clicked() {
                     self.tab = Tab::Single;
@@ -681,6 +684,18 @@ impl CollatzApp {
         let max_steps = self.max_steps_input.parse::<u64>().unwrap_or(10_000);
 
         thread::spawn(move || {
+            // パニック時も running = false を保証するガード
+            let state_guard = state.clone();
+            struct TraceGuard(Arc<Mutex<SingleTraceState>>);
+            impl Drop for TraceGuard {
+                fn drop(&mut self) {
+                    if let Ok(mut s) = self.0.lock() {
+                        s.running = false;
+                    }
+                }
+            }
+            let _guard = TraceGuard(state_guard);
+
             let timer = Instant::now();
             let state_cb = state.clone();
             let last_update = Mutex::new(Instant::now());
@@ -730,6 +745,7 @@ impl CollatzApp {
         let x = self.x_val;
         let collect_gpk = self.collect_gpk;
         let use_phase1 = self.use_phase1;
+        let use_stopping_time = self.use_stopping_time;
         self.range_cancel.store(false, Ordering::Relaxed);
         {
             let mut s = self.range_state.lock().unwrap();
@@ -740,10 +756,22 @@ impl CollatzApp {
         let max_steps = self.max_steps_input.parse::<u64>().unwrap_or(10_000);
 
         thread::spawn(move || {
+            // パニック時も running = false を保証するガード
+            let state_guard = state.clone();
+            struct RunGuard(Arc<Mutex<RangeState>>);
+            impl Drop for RunGuard {
+                fn drop(&mut self) {
+                    if let Ok(mut s) = self.0.lock() {
+                        s.running = false;
+                    }
+                }
+            }
+            let _guard = RunGuard(state_guard);
+
             let timer = Instant::now();
             let state_cb = state.clone();
             let last_update = Mutex::new(Instant::now());
-            let result = verify_range_parallel_cancellable(&start, &end, x, max_steps, collect_gpk, use_phase1, &cancel, |done, total| {
+            let result = verify_range_parallel_cancellable(&start, &end, x, max_steps, collect_gpk, use_phase1, use_stopping_time, &cancel, |done, total| {
                 let now = Instant::now();
                 if let Ok(mut lu) = last_update.try_lock() {
                     if now.duration_since(*lu).as_millis() >= 200 {
@@ -758,7 +786,7 @@ impl CollatzApp {
             });
             let elapsed = timer.elapsed();
             let cancelled = cancel.load(Ordering::Relaxed);
-            let save_path = save_verify_log(&start_str, &end_str, x, max_steps, collect_gpk, use_phase1, &result, cancelled, elapsed);
+            let save_path = save_verify_log(&start_str, &end_str, x, max_steps, collect_gpk, use_phase1, use_stopping_time, &result, cancelled, elapsed);
             let mut s = state.lock().unwrap();
             s.running = false;
             s.result = Some(VerifyResultDisplay {
@@ -876,14 +904,15 @@ fn save_trace_log(
 }
 
 fn save_verify_log(
-    start_str: &str, end_str: &str, x: u64, max_steps: u64, collect_gpk: bool, use_phase1: bool,
+    start_str: &str, end_str: &str, x: u64, max_steps: u64, collect_gpk: bool, use_phase1: bool, use_stopping_time: bool,
     result: &VerifyResult, cancelled: bool, elapsed: std::time::Duration,
 ) -> Option<String> {
     let ts = timestamp();
     let tag = if cancelled { "_stopped" } else { "" };
     let gpk_tag = if collect_gpk { "_gpk" } else { "" };
     let p1_tag = if !use_phase1 { "_nop1" } else { "" };
-    let filename = format!("gui_verify_{}n1_{}-{}_s{}{}{}{}_{}.txt", x, short_n(start_str), short_n(end_str), max_steps, gpk_tag, p1_tag, tag, ts);
+    let st_tag = if !use_stopping_time { "_fullpath" } else { "" };
+    let filename = format!("gui_verify_{}n1_{}-{}_s{}{}{}{}{}_{}.txt", x, short_n(start_str), short_n(end_str), max_steps, gpk_tag, p1_tag, st_tag, tag, ts);
     let path = output_dir().join(&filename);
     if let Ok(mut f) = File::create(&path) {
         let gs = &result.gpk_stats;
@@ -893,6 +922,7 @@ fn save_verify_log(
         writeln!(f, "x = {}", x).ok();
         writeln!(f, "max_steps_per_number = {}", max_steps).ok();
         writeln!(f, "use_phase1 = {}", use_phase1).ok();
+        writeln!(f, "use_stopping_time = {}", use_stopping_time).ok();
         writeln!(f, "total_checked = {}", result.total_checked).ok();
         writeln!(f, "all_converged = {}", result.all_converged).ok();
         writeln!(f, "max_stopping_time = {}", result.max_stopping_time).ok();

@@ -440,16 +440,18 @@ fn accumulate_gpk_u256(n: &U256, x: u64, stats: &mut GpkStats) {
 /// 停止時間法: n 未満の値に到達するまでのステップ数を返す。
 /// max_steps 以内に到達しなければ None を返す。
 pub fn stopping_time(n: &BigUint, x: u64, max_steps: u64) -> Option<u64> {
-    stopping_time_with_gpk(n, x, max_steps, None)
+    stopping_time_with_gpk(n, x, max_steps, None, true)
 }
 
 /// 停止時間法（GPK 統計収集対応版）。パックドスキャンで高速化。
 /// gpk_stats が Some なら各ステップの GPK を集約する。None なら GPK 計算をスキップ。
+/// use_stopping_time が false なら n 未満判定をスキップし n=1 まで追跡する。
 pub fn stopping_time_with_gpk(
     n: &BigUint,
     x: u64,
     max_steps: u64,
     mut gpk_stats: Option<&mut GpkStats>,
+    use_stopping_time: bool,
 ) -> Option<u64> {
     if *n == BigUint::one() {
         return Some(0);
@@ -486,7 +488,7 @@ pub fn stopping_time_with_gpk(
         if next.is_one() {
             return Some(steps);
         }
-        if next < initial_pn {
+        if use_stopping_time && next < initial_pn {
             return Some(steps);
         }
         // ビット長制限: 発散防止
@@ -502,12 +504,14 @@ pub fn stopping_time_with_gpk(
 
 /// u64 入力の高速停止時間計算。u128 演算を使い、オーバーフロー時はパックドスキャンにフォールバック。
 /// use_phase1=false なら u128 フェーズをスキップし、最初からパックドスキャンで処理する。
+/// use_stopping_time=false なら n 未満判定をスキップし n=1 まで追跡する。
 pub fn stopping_time_u64_fast(
     n: u64,
     x: u64,
     max_steps: u64,
     mut gpk_stats: Option<&mut GpkStats>,
     use_phase1: bool,
+    use_stopping_time: bool,
 ) -> Option<u64> {
     if n == 1 { return Some(0); }
 
@@ -528,10 +532,10 @@ pub fn stopping_time_u64_fast(
         current = xn1 >> d;
         steps += 1;
 
-        if current < n128 {
+        if current == 1 {
             return Some(steps);
         }
-        if current == 1 {
+        if use_stopping_time && current < n128 {
             return Some(steps);
         }
     }
@@ -577,7 +581,7 @@ pub fn stopping_time_u64_fast(
                     steps += 1;
 
                     if next.is_one() { return Some(steps); }
-                    if next < initial_pn { return Some(steps); }
+                    if use_stopping_time && next < initial_pn { return Some(steps); }
                     if next.pair_count() > MAX_PAIR_COUNT { return None; }
                     pn = next;
                 }
@@ -589,7 +593,7 @@ pub fn stopping_time_u64_fast(
             steps += 1;
 
             if cur256.is_one() { return Some(steps); }
-            if cur256.lt_u128(n128) { return Some(steps); }
+            if use_stopping_time && cur256.lt_u128(n128) { return Some(steps); }
         }
         return None;
     }
@@ -627,7 +631,7 @@ pub fn stopping_time_u64_fast(
             if next.is_one() {
                 return Some(steps);
             }
-            if next < initial_pn {
+            if use_stopping_time && next < initial_pn {
                 return Some(steps);
             }
             if next.pair_count() > MAX_PAIR_COUNT {

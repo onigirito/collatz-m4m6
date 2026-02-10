@@ -57,7 +57,7 @@ pub fn verify_range(
     let mut gpk_stats = GpkStats::new();
 
     while n <= *end {
-        match trajectory::stopping_time_with_gpk(&n, x, max_steps, Some(&mut gpk_stats)) {
+        match trajectory::stopping_time_with_gpk(&n, x, max_steps, Some(&mut gpk_stats), true) {
             Some(st) => {
                 if st > max_stopping_time {
                     max_stopping_time = st;
@@ -116,7 +116,7 @@ pub fn verify_range_parallel(
     if start_u64.len() <= 1 && end_u64.len() <= 1 {
         let s = start_u64.first().copied().unwrap_or(1);
         let e = end_u64.first().copied().unwrap_or(0);
-        return verify_range_parallel_u64(s, e, x, max_steps, true, &progress_callback);
+        return verify_range_parallel_u64(s, e, x, max_steps, true, true, &progress_callback);
     }
 
     // BigUint の場合はシングルスレッド版にフォールバック
@@ -130,6 +130,7 @@ fn verify_range_parallel_u64(
     x: u64,
     max_steps: u64,
     use_phase1: bool,
+    use_stopping_time: bool,
     progress_callback: &(impl Fn(u64, u64) + Sync),
 ) -> VerifyResult {
     // start を奇数に調整
@@ -169,7 +170,7 @@ fn verify_range_parallel_u64(
 
         let mut n = chunk_start;
         while n <= chunk_end {
-            match trajectory::stopping_time_u64_fast(n, x, max_steps, Some(&mut local_gpk), use_phase1) {
+            match trajectory::stopping_time_u64_fast(n, x, max_steps, Some(&mut local_gpk), use_phase1, use_stopping_time) {
                 Some(st) => {
                     if st > local_max_st {
                         local_max_st = st;
@@ -239,6 +240,7 @@ pub fn verify_range_parallel_cancellable(
     max_steps: u64,
     collect_gpk: bool,
     use_phase1: bool,
+    use_stopping_time: bool,
     cancel: &AtomicBool,
     progress_callback: impl Fn(u64, u64) + Sync,
 ) -> VerifyResult {
@@ -256,7 +258,7 @@ pub fn verify_range_parallel_cancellable(
     if start_u64.len() <= 1 && end_u64.len() <= 1 {
         let s = start_u64.first().copied().unwrap_or(1);
         let e = end_u64.first().copied().unwrap_or(0);
-        return verify_range_parallel_u64_cancellable(s, e, x, max_steps, collect_gpk, use_phase1, cancel, &progress_callback);
+        return verify_range_parallel_u64_cancellable(s, e, x, max_steps, collect_gpk, use_phase1, use_stopping_time, cancel, &progress_callback);
     }
 
     // BigUint: シングルスレッド（キャンセル対応）
@@ -277,7 +279,7 @@ pub fn verify_range_parallel_cancellable(
             break;
         }
         let gpk_arg = if collect_gpk { Some(&mut gpk_stats) } else { None };
-        match trajectory::stopping_time_with_gpk(&n, x, max_steps, gpk_arg) {
+        match trajectory::stopping_time_with_gpk(&n, x, max_steps, gpk_arg, use_stopping_time) {
             Some(st) => {
                 if st > max_stopping_time {
                     max_stopping_time = st;
@@ -315,6 +317,7 @@ fn verify_range_parallel_u64_cancellable(
     max_steps: u64,
     collect_gpk: bool,
     use_phase1: bool,
+    use_stopping_time: bool,
     cancel: &AtomicBool,
     progress_callback: &(impl Fn(u64, u64) + Sync),
 ) -> VerifyResult {
@@ -360,7 +363,7 @@ fn verify_range_parallel_u64_cancellable(
                 break;
             }
             let gpk_arg = if collect_gpk { Some(&mut local_gpk) } else { None };
-            match trajectory::stopping_time_u64_fast(n, x, max_steps, gpk_arg, use_phase1) {
+            match trajectory::stopping_time_u64_fast(n, x, max_steps, gpk_arg, use_phase1, use_stopping_time) {
                 Some(st) => {
                     if st > local_max_st {
                         local_max_st = st;
