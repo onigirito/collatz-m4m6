@@ -38,11 +38,11 @@ Measured on Intel Core i7-12650H.
 **Pair Predicate Decomposition of Collatz-type Maps $(xn+1)/2^d$ and the Structural Closure of $3n+1$**
 
 - [English version](https://onigirito.github.io/collatz-m4m6/collatz_paper_en.html)
-- [Japanese version / 日本語版](https://onigirito.github.io/collatz-m4m6/collatz_paper_ja.html)
+- Japanese version / 日本語版 — in preparation
 
 ## Download
 
-**[collatz-gui.exe](https://github.com/onigirito/collatz-m4m6/releases)** v0.2.0 (Windows x86_64, 14.6 MB, standalone / crt-static)
+**[collatz-gui.exe](https://github.com/onigirito/collatz-m4m6/releases)** v0.3.0 (Windows x86_64, 5.4 MB, standalone / crt-static)
 
 ```
 SHA-256: 7f9e336cb1704de075923d5609773c1e62f4be7dc9e6a21150f9158aa179dee4
