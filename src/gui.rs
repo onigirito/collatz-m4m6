@@ -528,8 +528,7 @@ impl CollatzApp {
 
         let g_pct = gs.total_g as f64 / total as f64 * 100.0;
         let p_pct = gs.total_p as f64 / total as f64 * 100.0;
-        let k_pct = gs.total_k as f64 / total as f64 * 100.0;
-        let gk_diff = g_pct - k_pct;
+        let _k_pct = gs.total_k as f64 / total as f64 * 100.0;
 
         // ── GPK Heat ──
         let heat = g_pct + p_pct;  // carry活性度: G+P = 生成+伝播

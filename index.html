@@ -143,23 +143,23 @@
 <h2 id="download-ja" data-lang="ja">ダウンロード</h2>
 
 <div class="download-section">
-  <h3 data-lang="en" class="show">collatz-gui.exe v0.3.0</h3>
-  <h3 data-lang="ja">collatz-gui.exe v0.3.0</h3>
+  <h3 data-lang="en" class="show">collatz-gui.exe v0.4.0</h3>
+  <h3 data-lang="ja">collatz-gui.exe v0.4.0</h3>
 
   <p data-lang="en" class="show">Windows x86_64, 5.4 MB, standalone / crt-static — no runtime required<br>
   <a href="https://github.com/onigirito/collatz-m4m6/releases">Download from GitHub Releases</a></p>
   <p data-lang="ja">Windows x86_64, 5.4MB, 単体実行可 / crt-static — ランタイム不要<br>
   <a href="https://github.com/onigirito/collatz-m4m6/releases">GitHub Releases からダウンロード</a></p>
 
-  <p data-lang="en" class="show">SHA-256: <code>b3b3f5ab34cf4d18df3f3e5d6c9c1f6bb40644d533d7d526b35c4d35948a0e03</code><br>
+  <p data-lang="en" class="show">SHA-256: <code>78c050d11120c2a23606879a609f38f37f8267db5b8c04727933e63bdb0e9900</code><br>
   Verify: <code>certutil -hashfile collatz-gui.exe SHA256</code></p>
-  <p data-lang="ja">SHA-256: <code>b3b3f5ab34cf4d18df3f3e5d6c9c1f6bb40644d533d7d526b35c4d35948a0e03</code><br>
+  <p data-lang="ja">SHA-256: <code>78c050d11120c2a23606879a609f38f37f8267db5b8c04727933e63bdb0e9900</code><br>
   検証: <code>certutil -hashfile collatz-gui.exe SHA256</code></p>
 
-  <p data-lang="en" class="show" style="font-size:0.88em;opacity:0.8;">Requirements: Windows 10/11, OpenGL 2.0 (any GPU from 2010+). Output files are saved to <code>output/</code> in the same directory.</p>
-  <p data-lang="ja" style="font-size:0.88em;opacity:0.8;">動作要件: Windows 10/11, OpenGL 2.0（2010年以降のGPU）。結果は同ディレクトリの <code>output/</code> に自動保存。</p>
-  <p data-lang="en" class="show" style="font-size:0.88em;color:#ffd966;margin-top:8px;">&#9888; Known issue: The "G−K balance" indicator shown after computation (e.g. "divergence tendency" / "convergence tendency") is incorrect. G &gt; K does not imply divergence — in fact, x=3 has the highest G/K ratio (1.22) and is the only convergent case. This will be fixed in the next release.</p>
-  <p data-lang="ja" style="font-size:0.88em;color:#ffd966;margin-top:8px;">&#9888; 既知の問題: 計算終了後に表示される「G−Kバランス」の発散傾向・収束傾向のコメントは誤りです。G &gt; K は発散を意味しません — 実際にはx=3が最もG/K比が高く（1.22）、唯一の収束ケースです。次回リリースで修正予定です。</p>
+  <p data-lang="en" class="show" style="font-size:0.88em;opacity:0.8;">Requirements: Windows 10/11, AVX2-capable CPU (Intel Haswell 2013+ / AMD Excavator 2015+), OpenGL 2.0. Output files are saved to <code>output/</code> in the same directory.</p>
+  <p data-lang="ja" style="font-size:0.88em;opacity:0.8;">動作要件: Windows 10/11, AVX2対応CPU（Intel第4世代2013年〜 / AMD 2015年〜）, OpenGL 2.0。結果は同ディレクトリの <code>output/</code> に自動保存。</p>
+  <p data-lang="en" class="show" style="font-size:0.88em;color:#ffd966;margin-top:8px;">&#9888; Known issue (v0.3.0): The "G−K balance" indicator shown after computation (e.g. "divergence tendency" / "convergence tendency") is incorrect. G &gt; K does not imply divergence — in fact, x=3 has the highest G/K ratio (1.22) and is the only convergent case. Fixed in source (replaced with GPK Heat indicator); will be included in next release.</p>
+  <p data-lang="ja" style="font-size:0.88em;color:#ffd966;margin-top:8px;">&#9888; 既知の問題 (v0.3.0): 計算終了後に表示される「G−Kバランス」の発散傾向・収束傾向のコメントは誤りです。G &gt; K は発散を意味しません — 実際にはx=3が最もG/K比が高く（1.22）、唯一の収束ケースです。ソース修正済み（GPK Heatインジケータに置換）、次回リリースに含まれます。</p>
 </div>
 
 <!-- ===== GPK NOTE ===== -->
@@ -317,7 +317,7 @@
 <tr><td><b>P</b> (Propagate)</td><td>This pair passes the input carry through</td><td>Output = input</td></tr>
 <tr><td><b>K</b> (Kill)</td><td>This pair absorbs the carry</td><td>Output carry = 0 regardless of input</td></tr>
 </table>
-<p><b>G &gt; K</b> indicates growth tendency (divergence); <b>G &lt; K</b> indicates shrinkage (convergence). For 3n+1, G &asymp; 38.5% and K &asymp; 31.6% — G exceeds K, yet all numbers converge because division by \(2^d\) more than compensates for carry generation.</p>
+<p>For 3n+1, G &asymp; 38.5%, P &asymp; 29.9%, K &asymp; 31.6%. G exceeds K because structural closure (Theorem B) channels Kill into Propagate, elevating P above the 25% baseline seen in x &ge; 5. The G/K asymmetry is a signature of closure, not of divergence. For x &ge; 5, G &asymp; K and P &asymp; 25% — the closure breaks and non-trivial cycles appear.</p>
 </div>
 
 <div data-lang="ja">
@@ -328,7 +328,7 @@
 <tr><td><b>P</b> (Propagate)</td><td>入力キャリーをそのまま伝播</td><td>出力 = 入力</td></tr>
 <tr><td><b>K</b> (Kill)</td><td>キャリーを消滅させる</td><td>入力に関係なく出力 = 0</td></tr>
 </table>
-<p><b>G &gt; K</b> なら成長傾向、<b>G &lt; K</b> なら縮小傾向。3n+1 では G &asymp; 38.5%, K &asymp; 31.6% で G &gt; K ですが、÷2<sup>d</sup> の効果が上回るため全数収束します。</p>
+<p>3n+1 では G &asymp; 38.5%, P &asymp; 29.9%, K &asymp; 31.6%。構造的閉包（定理B）によりKillがPropagateに転換され、x &ge; 5 での基準値25%を超えてPが上昇します。G/K非対称性は発散ではなく閉包の署名です。x &ge; 5 では G &asymp; K, P &asymp; 25% となり、閉包が崩れて非自明なサイクルが出現します。</p>
 </div>
 
 <h3 data-lang="en" class="show">GPK Statistics: 3n+1 Full-Path Verification (n &le; 10<sup>9</sup>)</h3>
