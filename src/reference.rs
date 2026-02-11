@@ -7,7 +7,6 @@ use crate::pair_number::PairNumber;
 ///
 /// s偶数: ref_R(i) = (b[i-t], b[i]),  ref_L(i) = (a[i-t], a[i])
 /// s奇数: ref_R(i) = (a[i-t-1], b[i]), ref_L(i) = (b[i-t], a[i])
-
 /// 参照パターンのパラメータ
 pub struct RefPattern {
     pub s: u32,
@@ -27,7 +26,7 @@ impl RefPattern {
         RefPattern {
             s,
             t,
-            s_is_even: s % 2 == 0,
+            s_is_even: s.is_multiple_of(2),
         }
     }
 

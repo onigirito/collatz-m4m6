@@ -32,7 +32,7 @@ pub struct GpkInfo {
 
 impl GpkInfo {
     fn new(pair_count: usize) -> Self {
-        let word_count = (pair_count + 63) / 64;
+        let word_count = pair_count.div_ceil(64);
         GpkInfo {
             g_masks: vec![0u64; word_count],
             p_masks: vec![0u64; word_count],
@@ -169,6 +169,12 @@ pub struct GpkStats {
     pub carry_chain_hist: [u64; 128],
 }
 
+impl Default for GpkStats {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl GpkStats {
     pub fn new() -> Self {
         GpkStats {
@@ -236,10 +242,10 @@ pub fn collatz_step(n: &PairNumber, x: u64) -> StepResult {
     let k = n.pair_count();
 
     // オーバーフロー分を含む最大インデックス
-    let max_i = k + ((rp.s as usize + 1) / 2);
+    let max_i = k + (rp.s as usize).div_ceil(2);
 
     let out_pair_count = max_i + 1;
-    let out_word_count = (out_pair_count + 63) / 64;
+    let out_word_count = out_pair_count.div_ceil(64);
     let mut new_m4 = vec![0u64; out_word_count];
     let mut new_m6 = vec![0u64; out_word_count];
     let mut gpk_info = GpkInfo::new(k);
@@ -313,7 +319,7 @@ pub fn collatz_step_3n1(n: &PairNumber) -> StepResult {
     let max_i = k + 1;
 
     let out_pair_count = max_i + 1;
-    let out_word_count = (out_pair_count + 63) / 64;
+    let out_word_count = out_pair_count.div_ceil(64);
     let mut new_m4 = vec![0u64; out_word_count];
     let mut new_m6 = vec![0u64; out_word_count];
     let mut gpk_info = GpkInfo::new(k);
@@ -379,7 +385,7 @@ pub fn collatz_step_5n1(n: &PairNumber) -> StepResult {
     let max_i = k + 1;
 
     let out_pair_count = max_i + 1;
-    let out_word_count = (out_pair_count + 63) / 64;
+    let out_word_count = out_pair_count.div_ceil(64);
     let mut new_m4 = vec![0u64; out_word_count];
     let mut new_m6 = vec![0u64; out_word_count];
     let mut gpk_info = GpkInfo::new(k);

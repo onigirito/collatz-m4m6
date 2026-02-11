@@ -46,7 +46,7 @@ pub fn postprocess(new_m4: Vec<u64>, new_m6: Vec<u64>, raw_pair_count: usize) ->
 pub fn postprocess_legacy(new_m4_bits: Vec<u8>, new_m6_bits: Vec<u8>) -> PostprocessResult {
     // Vec<u8> → パックド変換
     let pair_count = new_m4_bits.len();
-    let word_count = (pair_count + 63) / 64;
+    let word_count = pair_count.div_ceil(64);
     let mut m4_words = vec![0u64; word_count];
     let mut m6_words = vec![0u64; word_count];
 
@@ -84,7 +84,7 @@ fn trim_pair_count(m4: &[u64], m6: &[u64], pair_count: usize) -> usize {
 /// ファスナー: bit[2i] = m6[i], bit[2i+1] = m4[i]
 /// m8 (= m4|m6, OR) のワード演算で64ペア同時にゼロ判定。O(d/64)。
 fn count_trailing_zeros_packed(m4: &[u64], m6: &[u64], pair_count: usize) -> u64 {
-    let word_count = (pair_count + 63) / 64;
+    let word_count = pair_count.div_ceil(64);
     let mut d = 0u64;
     for w in 0..word_count {
         let m4w = if w < m4.len() { m4[w] } else { 0 };
@@ -116,7 +116,7 @@ fn shift_right_bits(
 ) -> (Vec<u64>, Vec<u64>, usize) {
     if d == 0 {
         // トリミングのみ
-        let word_count = (pair_count + 63) / 64;
+        let word_count = pair_count.div_ceil(64);
         let mut rm4 = m4[..word_count].to_vec();
         let mut rm6 = m6[..word_count].to_vec();
         mask_top(&mut rm4, pair_count);
@@ -129,12 +129,12 @@ fn shift_right_bits(
     if remaining_bits == 0 {
         return (vec![0], vec![0], 1);
     }
-    let new_pair_count = ((remaining_bits + 1) / 2) as usize;
+    let new_pair_count = remaining_bits.div_ceil(2) as usize;
     if new_pair_count == 0 {
         return (vec![0], vec![0], 1);
     }
 
-    let new_word_count = (new_pair_count + 63) / 64;
+    let new_word_count = new_pair_count.div_ceil(64);
     let mut new_m4 = vec![0u64; new_word_count];
     let mut new_m6 = vec![0u64; new_word_count];
 
@@ -152,9 +152,7 @@ fn shift_right_bits(
             let b = src_pair % 64;
             if src_is_m4 {
                 if w < m4.len() { (m4[w] >> b) & 1 } else { 0 }
-            } else {
-                if w < m6.len() { (m6[w] >> b) & 1 } else { 0 }
-            }
+            } else if w < m6.len() { (m6[w] >> b) & 1 } else { 0 }
         } else {
             0
         };
@@ -183,7 +181,7 @@ fn shift_right_bits(
             break;
         }
     }
-    let final_word_count = (k + 63) / 64;
+    let final_word_count = k.div_ceil(64);
     new_m4.truncate(final_word_count);
     new_m6.truncate(final_word_count);
     mask_top(&mut new_m4, k);

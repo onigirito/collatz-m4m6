@@ -71,7 +71,7 @@ pub fn verify_range(
 
         total_checked += 1;
 
-        if total_checked % 1000 == 0 {
+        if total_checked.is_multiple_of(1000) {
             progress_callback(total_checked, total_estimate);
         }
 
@@ -134,7 +134,7 @@ fn verify_range_parallel_u64(
     progress_callback: &(impl Fn(u64, u64) + Sync),
 ) -> VerifyResult {
     // start を奇数に調整
-    let start = if start % 2 == 0 { start + 1 } else { start };
+    let start = if start.is_multiple_of(2) { start + 1 } else { start };
     if start > end {
         return VerifyResult {
             total_checked: 0,
@@ -150,7 +150,7 @@ fn verify_range_parallel_u64(
 
     // チャンク分割: 各チャンク10000個の奇数
     let chunk_size: u64 = 10000;
-    let num_chunks = (total_odd + chunk_size - 1) / chunk_size;
+    let num_chunks = total_odd.div_ceil(chunk_size);
 
     let global_done = AtomicU64::new(0);
     let global_max_st = AtomicU64::new(0);
@@ -233,6 +233,7 @@ fn verify_range_parallel_u64(
 
 /// キャンセル可能な並列検証。cancel が true になると途中結果を返す。
 /// collect_gpk が false なら GPK 統計の収集をスキップして高速化。
+#[allow(clippy::too_many_arguments)]
 pub fn verify_range_parallel_cancellable(
     start: &BigUint,
     end: &BigUint,
@@ -291,7 +292,7 @@ pub fn verify_range_parallel_cancellable(
             }
         }
         total_checked += 1;
-        if total_checked % 1000 == 0 {
+        if total_checked.is_multiple_of(1000) {
             progress_callback(total_checked, total_estimate);
         }
         n += &two;
@@ -310,6 +311,7 @@ pub fn verify_range_parallel_cancellable(
 }
 
 /// u64 範囲のキャンセル可能な並列検証
+#[allow(clippy::too_many_arguments)]
 fn verify_range_parallel_u64_cancellable(
     start: u64,
     end: u64,
@@ -321,7 +323,7 @@ fn verify_range_parallel_u64_cancellable(
     cancel: &AtomicBool,
     progress_callback: &(impl Fn(u64, u64) + Sync),
 ) -> VerifyResult {
-    let start = if start % 2 == 0 { start + 1 } else { start };
+    let start = if start.is_multiple_of(2) { start + 1 } else { start };
     if start > end {
         return VerifyResult {
             total_checked: 0,
@@ -335,7 +337,7 @@ fn verify_range_parallel_u64_cancellable(
 
     let total_odd = (end - start) / 2 + 1;
     let chunk_size: u64 = 10000;
-    let num_chunks = (total_odd + chunk_size - 1) / chunk_size;
+    let num_chunks = total_odd.div_ceil(chunk_size);
 
     let global_done = AtomicU64::new(0);
     let global_max_st = AtomicU64::new(0);

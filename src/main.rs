@@ -299,7 +299,7 @@ fn cmd_trace(args: &[String]) {
         writeln!(f, "max_value = {}", result.max_value).ok();
         writeln!(f, "max_value_digits = {}", result.max_value.to_string().len()).ok();
         writeln!(f, "reached_one = {}", result.reached_one).ok();
-        writeln!(f, "").ok();
+        writeln!(f).ok();
         writeln!(f, "# GPK Statistics").ok();
         writeln!(f, "total_G = {}", gs.total_g).ok();
         writeln!(f, "total_P = {}", gs.total_p).ok();
@@ -310,14 +310,14 @@ fn cmd_trace(args: &[String]) {
             writeln!(f, "P% = {:.2}", gs.total_p as f64 / total_gpk as f64 * 100.0).ok();
             writeln!(f, "K% = {:.2}", gs.total_k as f64 / total_gpk as f64 * 100.0).ok();
         }
-        writeln!(f, "").ok();
+        writeln!(f).ok();
         writeln!(f, "# Carry chain histogram (distance: count)").ok();
         for (dist, &count) in gs.carry_chain_hist.iter().enumerate() {
             if count > 0 {
                 writeln!(f, "{}: {}", dist, count).ok();
             }
         }
-        writeln!(f, "").ok();
+        writeln!(f).ok();
         writeln!(f, "elapsed = {:?}", elapsed).ok();
         println!("サマリー保存: {}", summary_path.display());
     }
@@ -420,7 +420,7 @@ fn cmd_verify(args: &[String]) {
         writeln!(f, "max_stopping_time = {}", result.max_stopping_time).ok();
         writeln!(f, "max_stopping_time_number = {}", result.max_stopping_time_number).ok();
         writeln!(f, "failures = {}", result.failures.len()).ok();
-        writeln!(f, "").ok();
+        writeln!(f).ok();
         writeln!(f, "# GPK Statistics").ok();
         writeln!(f, "total_G = {}", gs.total_g).ok();
         writeln!(f, "total_P = {}", gs.total_p).ok();
@@ -432,14 +432,14 @@ fn cmd_verify(args: &[String]) {
             writeln!(f, "P% = {:.4}", gs.total_p as f64 / total_gpk as f64 * 100.0).ok();
             writeln!(f, "K% = {:.4}", gs.total_k as f64 / total_gpk as f64 * 100.0).ok();
         }
-        writeln!(f, "").ok();
+        writeln!(f).ok();
         writeln!(f, "# Carry chain histogram (distance: count)").ok();
         for (dist, &count) in gs.carry_chain_hist.iter().enumerate() {
             if count > 0 {
                 writeln!(f, "{}: {}", dist, count).ok();
             }
         }
-        writeln!(f, "").ok();
+        writeln!(f).ok();
         writeln!(f, "elapsed = {:?}", elapsed).ok();
         if !result.failures.is_empty() {
             writeln!(f, "\n# 収束しなかった数:").ok();

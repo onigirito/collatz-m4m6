@@ -20,6 +20,7 @@ impl U256 {
 
     /// x (小定数) との乗算。オーバーフローなら None。
     #[inline]
+    #[allow(clippy::needless_range_loop)]
     fn mul_small_checked(self, x: u64) -> Option<Self> {
         let mut result = [0u64; 4];
         let mut carry = 0u128;
@@ -54,6 +55,7 @@ impl U256 {
     }
 
     #[inline]
+    #[allow(clippy::needless_range_loop)]
     fn shr(self, d: u32) -> Self {
         if d == 0 { return self; }
         if d >= 256 { return U256([0; 4]); }
@@ -293,12 +295,12 @@ const MAX_PAIR_COUNT: usize = 10_000;
 fn accumulate_gpk_u128(n: u128, x: u64, stats: &mut GpkStats) {
     if n == 0 { return; }
     let bit_len = 128 - n.leading_zeros() as usize;
-    let pair_count = (bit_len + 1) / 2;
+    let pair_count = bit_len.div_ceil(2);
 
     let xm1 = x - 1;
     let s = xm1.trailing_zeros();
     let t = (s / 2) as isize;
-    let s_is_even = s % 2 == 0;
+    let s_is_even = s.is_multiple_of(2);
 
     let get_a = |i: isize| -> u8 {
         if i < 0 || (i as usize) >= pair_count { return 0; }
@@ -364,12 +366,12 @@ fn accumulate_gpk_u256(n: &U256, x: u64, stats: &mut GpkStats) {
     let bl = n.bit_len();
     if bl == 0 { return; }
     let bit_len = bl as usize;
-    let pair_count = (bit_len + 1) / 2;
+    let pair_count = bit_len.div_ceil(2);
 
     let xm1 = x - 1;
     let s = xm1.trailing_zeros();
     let t = (s / 2) as isize;
-    let s_is_even = s % 2 == 0;
+    let s_is_even = s.is_multiple_of(2);
 
     // U256 からビット取得
     let get_bit = |pos: usize| -> u8 {

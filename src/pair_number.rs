@@ -79,9 +79,9 @@ impl PairNumber {
         let bytes = n.to_bytes_le();
         let bit_len = n.bits() as usize;
         // 偶数ビット長にする
-        let padded_bit_len = if bit_len % 2 != 0 { bit_len + 1 } else { bit_len };
+        let padded_bit_len = if !bit_len.is_multiple_of(2) { bit_len + 1 } else { bit_len };
         let pair_count = padded_bit_len / 2;
-        let word_count = (pair_count + 63) / 64;
+        let word_count = pair_count.div_ceil(64);
 
         let mut m4_words = vec![0u64; word_count];
         let mut m6_words = vec![0u64; word_count];
@@ -120,7 +120,7 @@ impl PairNumber {
 
         // ビット長 = 2k
         let total_bits = 2 * k;
-        let byte_count = (total_bits + 7) / 8;
+        let byte_count = total_bits.div_ceil(8);
         let mut bytes = vec![0u8; byte_count];
 
         for i in 0..k {
@@ -234,12 +234,12 @@ impl PairNumber {
 
         let mut bits = bits.to_vec();
         // 偶数長に調整
-        if bits.len() % 2 != 0 {
+        if !bits.len().is_multiple_of(2) {
             bits.push(0);
         }
 
         let mut k = bits.len() / 2;
-        let word_count = (k + 63) / 64;
+        let word_count = k.div_ceil(64);
         let mut m4_words = vec![0u64; word_count];
         let mut m6_words = vec![0u64; word_count];
 
@@ -265,7 +265,7 @@ impl PairNumber {
         }
 
         // ワード数を再調整
-        let new_word_count = (k + 63) / 64;
+        let new_word_count = k.div_ceil(64);
         m4_words.truncate(new_word_count);
         m6_words.truncate(new_word_count);
 

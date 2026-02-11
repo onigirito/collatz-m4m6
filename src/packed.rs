@@ -56,8 +56,8 @@ fn kogge_stone_prefix(mut g: u64, mut p: u64) -> (u64, u64) {
         let g_shifted = g << shift;  // 位置 i-shift の generate を位置 i に配置
         // p_shifted の下位 shift ビットを 1 で埋める（単位元のp=1）
         let p_shifted = (p << shift) | ((1u64 << shift) - 1);
-        g = g | (p & g_shifted);
-        p = p & p_shifted;
+        g |= p & g_shifted;
+        p &= p_shifted;
     }
     (g, p)
 }
@@ -200,8 +200,8 @@ pub fn packed_step_3n1_opt(pn: &PairNumber, collect_gpk: bool) -> PackedStepResu
     let m6 = pn.m6_words();
 
     let out_pairs = k + 2;
-    let out_words = (out_pairs + 63) / 64;
-    let gpk_word_count = if collect_gpk { (k + 63) / 64 } else { 0 };
+    let out_words = out_pairs.div_ceil(64);
+    let gpk_word_count = if collect_gpk { k.div_ceil(64) } else { 0 };
 
     let mut new_m4 = vec![0u64; out_words];
     let mut new_m6 = vec![0u64; out_words];
@@ -278,8 +278,8 @@ pub fn packed_step_5n1_opt(pn: &PairNumber, collect_gpk: bool) -> PackedStepResu
     let m6 = pn.m6_words();
 
     let out_pairs = k + 2;
-    let out_words = (out_pairs + 63) / 64;
-    let gpk_word_count = if collect_gpk { (k + 63) / 64 } else { 0 };
+    let out_words = out_pairs.div_ceil(64);
+    let gpk_word_count = if collect_gpk { k.div_ceil(64) } else { 0 };
 
     let mut new_m4 = vec![0u64; out_words];
     let mut new_m6 = vec![0u64; out_words];
@@ -355,16 +355,16 @@ pub fn packed_step_generic_opt(pn: &PairNumber, x: u64, collect_gpk: bool) -> Pa
     assert!(xm1.is_power_of_two(), "x-1 must be a power of 2");
     let s = xm1.trailing_zeros();
     let t = (s / 2) as isize;
-    let s_is_even = s % 2 == 0;
+    let s_is_even = s.is_multiple_of(2);
 
     let k = pn.pair_count();
     let m4 = pn.m4_words();
     let m6 = pn.m6_words();
 
-    let extra_pairs = ((s as usize + 1) / 2) + 1;
+    let extra_pairs = (s as usize).div_ceil(2) + 1;
     let out_pairs = k + extra_pairs;
-    let out_words = (out_pairs + 63) / 64;
-    let gpk_word_count = if collect_gpk { (k + 63) / 64 } else { 0 };
+    let out_words = out_pairs.div_ceil(64);
+    let gpk_word_count = if collect_gpk { k.div_ceil(64) } else { 0 };
 
     let mut new_m4 = vec![0u64; out_words];
     let mut new_m6 = vec![0u64; out_words];
