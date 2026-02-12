@@ -1,3 +1,8 @@
 *.exe
 output/
 target/
+nul
+tmp_*.txt
+clean_html.py
+convert_to_html.py
+verify_structural.py
