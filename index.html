@@ -147,9 +147,9 @@
   <h3 data-lang="ja">collatz-gui.exe v0.4.0</h3>
 
   <p data-lang="en" class="show">Windows x86_64, 5.4 MB, standalone / crt-static — no runtime required<br>
-  <a href="https://github.com/onigirito/collatz-m4m6/releases">Download from GitHub Releases</a></p>
+  <a href="https://github.com/onigirito/collatz-m4m6/releases/download/v0.4.0/collatz-gui.exe">Download (direct)</a> | <a href="https://github.com/onigirito/collatz-m4m6/releases">Releases page</a></p>
   <p data-lang="ja">Windows x86_64, 5.4MB, 単体実行可 / crt-static — ランタイム不要<br>
-  <a href="https://github.com/onigirito/collatz-m4m6/releases">GitHub Releases からダウンロード</a></p>
+  <a href="https://github.com/onigirito/collatz-m4m6/releases/download/v0.4.0/collatz-gui.exe">ダウンロード (直接)</a> | <a href="https://github.com/onigirito/collatz-m4m6/releases">Releases ページ</a></p>
 
   <p data-lang="en" class="show">SHA-256: <code>78c050d11120c2a23606879a609f38f37f8267db5b8c04727933e63bdb0e9900</code><br>
   Verify: <code>certutil -hashfile collatz-gui.exe SHA256</code></p>
@@ -158,8 +158,9 @@
 
   <p data-lang="en" class="show" style="font-size:0.88em;opacity:0.8;">Requirements: Windows 10/11, AVX2-capable CPU (Intel Haswell 2013+ / AMD Excavator 2015+), OpenGL 2.0. Output files are saved to <code>output/</code> in the same directory.</p>
   <p data-lang="ja" style="font-size:0.88em;opacity:0.8;">動作要件: Windows 10/11, AVX2対応CPU（Intel第4世代2013年〜 / AMD 2015年〜）, OpenGL 2.0。結果は同ディレクトリの <code>output/</code> に自動保存。</p>
-  <p data-lang="en" class="show" style="font-size:0.88em;color:#ffd966;margin-top:8px;">&#9888; Known issue (v0.3.0): The "G−K balance" indicator shown after computation (e.g. "divergence tendency" / "convergence tendency") is incorrect. G &gt; K does not imply divergence — in fact, x=3 has the highest G/K ratio (1.22) and is the only convergent case. Fixed in source (replaced with GPK Heat indicator); will be included in next release.</p>
-  <p data-lang="ja" style="font-size:0.88em;color:#ffd966;margin-top:8px;">&#9888; 既知の問題 (v0.3.0): 計算終了後に表示される「G−Kバランス」の発散傾向・収束傾向のコメントは誤りです。G &gt; K は発散を意味しません — 実際にはx=3が最もG/K比が高く（1.22）、唯一の収束ケースです。ソース修正済み（GPK Heatインジケータに置換）、次回リリースに含まれます。</p>
+
+  <p data-lang="en" class="show">Paper: <a href="m4m6_xn.html">English version (HTML)</a></p>
+  <p data-lang="ja">論文: <a href="m4m6_xn.html">英語版 (HTML)</a></p>
 </div>
 
 <!-- ===== GPK NOTE ===== -->
@@ -188,25 +189,6 @@
 </table>
 <p style="font-size:0.88em;color:#666;">3n+1: 奇数5億個, 3.50&times;10<sup>10</sup>ステップ。5n+1: 奇数3500万個, 各1000ステップ。9n+1: 奇数3500万個, 各500ステップ。</p>
 </div>
-
-<!-- ===== PAPER ===== -->
-<h2 id="paper" data-lang="en" class="show">Paper</h2>
-<h2 id="paper-ja" data-lang="ja">論文</h2>
-
-<div style="background:#d4edda;border:2px solid #28a745;border-radius:8px;padding:16px;margin:16px 0;text-align:center;font-weight:600;">
-  <span data-lang="en" class="show">DOI: <a href="https://doi.org/10.5281/zenodo.18521822" style="color:#155724;">10.5281/zenodo.18521822</a></span>
-  <span data-lang="ja">DOI: <a href="https://doi.org/10.5281/zenodo.18521822" style="color:#155724;">10.5281/zenodo.18521822</a></span>
-</div>
-
-<p data-lang="en" class="show"><b>Pair Predicate Decomposition of Collatz-type Maps \((xn+1)/2^d\) and the Structural Closure of \(3n+1\)</b></p>
-<p data-lang="ja"><b>コラッツ型写像 \((xn+1)/2^d\) のペア述語分解と \(3n+1\) の構造的閉鎖性</b></p>
-
-<ul>
-  <li data-lang="en" class="show"><a href="m4m6_xn.html">English version (HTML)</a></li>
-  <li data-lang="ja"><a href="m4m6_xn.html">English version (HTML)</a></li>
-  <li data-lang="en" class="show">Japanese version / 日本語版 — in preparation</li>
-  <li data-lang="ja">日本語版 — 準備中</li>
-</ul>
 
 <!-- ===== DOCUMENTS ===== -->
 <h2 id="docs" data-lang="en" class="show">Documents</h2>
@@ -244,6 +226,28 @@
       <p>ベンチマーク・最適化履歴・FPGA検討</p>
     </a>
   </div>
+</div>
+
+<!-- ===== PAPER ===== -->
+<h2 id="paper" data-lang="en" class="show">Paper</h2>
+<h2 id="paper-ja" data-lang="ja">論文</h2>
+
+<p data-lang="en" class="show"><b>Pair Predicate Decomposition of Collatz-type Maps \((xn+1)/2^d\) and the Structural Closure of \(3n+1\)</b></p>
+<p data-lang="ja"><b>コラッツ型写像 \((xn+1)/2^d\) のペア述語分解と \(3n+1\) の構造的閉鎖性</b></p>
+
+<p data-lang="en" class="show">We decompose the binary representation of a natural number <i>n</i> into 2-bit pairs and introduce a system of 16 Boolean predicates. Within this framework, the additive structure of Collatz-type maps T(<i>n</i>) = (<i>xn</i>+1)/2<sup><i>d</i></sup> is decomposed and the carry behavior at each pair position is classified as Generate/Propagate/Kill (GPK). For <i>x</i>=3, the carry structure of 3<i>n</i>+1 can be read directly from the encoding of <i>n</i> itself (structural closure). We prove this closure fails for all <i>x</i> &ge; 5, and show that the resulting finite-state system renders divergence of 3<i>n</i>+1 trajectories structurally impossible.</p>
+<p data-lang="ja">自然数 <i>n</i> の2進表現を2ビットペアに分解し、各ペア上に定義される16個のブール述語系を導入する。この枠組みでコラッツ型写像 T(<i>n</i>) = (<i>xn</i>+1)/2<sup><i>d</i></sup> の加算構造を分解し、各ペア位置でのキャリー挙動を Generate/Propagate/Kill (GPK) に分類する。<i>x</i>=3 の場合、3<i>n</i>+1 のキャリー構造は <i>n</i> 自身の符号化から直接読み取れる（構造的閉鎖性）。この閉鎖性が <i>x</i> &ge; 5 の全てで成立しないことを証明し、結果として得られる決定性有限状態系が 3<i>n</i>+1 軌道の発散を構造的に不可能にすることを示す。</p>
+
+<ul>
+  <li data-lang="en" class="show"><a href="m4m6_xn.html">English version (HTML)</a> | <a href="https://zenodo.org/records/18613436/files/m4m6_xn.pdf">PDF</a></li>
+  <li data-lang="ja"><a href="m4m6_xn.html">英語版 (HTML)</a> | <a href="https://zenodo.org/records/18613436/files/m4m6_xn.pdf">PDF</a></li>
+  <li data-lang="en" class="show">Japanese version / 日本語版 — in preparation</li>
+  <li data-lang="ja">日本語版 — 準備中</li>
+</ul>
+
+<div style="background:#d4edda;border:2px solid #28a745;border-radius:8px;padding:16px;margin:16px 0;text-align:center;font-weight:600;">
+  <span data-lang="en" class="show">DOI: <a href="https://doi.org/10.5281/zenodo.18521822" style="color:#155724;">10.5281/zenodo.18521822</a></span>
+  <span data-lang="ja">DOI: <a href="https://doi.org/10.5281/zenodo.18521822" style="color:#155724;">10.5281/zenodo.18521822</a></span>
 </div>
 
 </div><!-- end page-home -->
