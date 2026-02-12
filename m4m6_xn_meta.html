@@ -358,7 +358,7 @@ The term (x−1)n corresponds to a left shift of the binary representation of n.
 <div class="math-block">r<sub>i</sub><sup>(4)</sup>=a<sub>i−t</sub>, r<sub>i</sub><sup>(6)</sup>=b<sub>i−t</sub></div>
 <p>The m6-stage references m6 bits and the m4-stage references m4 bits (<b>isomorphic reference</b>).</p>
 <p><b>When s is odd (s=2t+1):</b> The shift is t pairs plus 1 bit, and pair boundaries shift by 1 bit.</p>
-<div class="math-block">r<sub>i</sub><sup>(4)</sup>=b<sub>i−t−1</sub>, r<sub>i</sub><sup>(6)</sup>=a<sub>i−t</sub></div>
+<div class="math-block">r<sub>i</sub><sup>(4)</sup>=b<sub>i−t</sub>, r<sub>i</sub><sup>(6)</sup>=a<sub>i−t−1</sub></div>
 <p>The m6-stage references m4-derived bits and the m4-stage references m6-derived bits (<b>cross-reference</b>).</p>
 </div>
 <p><b>Table 3.1: Principal reference patterns.</b></p>
@@ -705,7 +705,7 @@ This is a cross-reference between the m4 bit at position i−1 and the m6 bit at
 <tr><td>16</td><td>(1,1)</td><td>G</td><td>1</td><td>1</td><td>3</td><td>1</td><td>1</td><td>3</td><td>1</td><td>1</td><td><b>(1,1)</b></td><td><b>G</b></td></tr>
 </tbody></table>
 <p>All 16 entries are derived from the five-line arithmetic above, which is itself a direct consequence of the algebraic identity 3n+1=2n+n+1.</p>
-<p><b>Remark.</b> The scan defines a <i>deterministic finite state transducer</i> (DFST) with state (c<sub>in</sub>,a<sub>i−1</sub>)∈{0,1}<sup>2</sup> (4 states), input alphabet {(0,0),(0,1),(1,0),(1,1)} (4 symbols), and deterministic output. The initial state is (c<sub>in</sub>,a<sub>i−1</sub>)=(1,0) (the +1 effect and boundary condition). Each output (c<sub>out</sub>,new_m4) uniquely determines the next state.</p>
+<p><b>Remark.</b> The scan defines a <i>deterministic finite state transducer</i> (DFST) with state (c<sub>in</sub>,a<sub>i−1</sub>)∈{0,1}<sup>2</sup> (4 states), input alphabet {(0,0),(0,1),(1,0),(1,1)} (4 symbols), and deterministic output. The initial state is (c<sub>in</sub>,a<sub>i−1</sub>)=(1,0) (the +1 effect and boundary condition). Each output (c<sub>out</sub>,a<sub>i</sub>) — where a<sub>i</sub> is the m4 bit of the current input pair — uniquely determines the next state.</p>
 <p><b>Remark (DFST permutation property).</b> For each of the four DFST states, the map from input pair type to output pair type is a <i>permutation</i> of {K,P(0,1),P(1,0),G}:</p>
 <table>
 <tbody><tr><th>State (c<sub>in</sub>,a<sub>i−1</sub>)</th><th>K→</th><th>P(0,1)→</th><th>P(1,0)→</th><th>G→</th></tr>
@@ -1007,15 +1007,15 @@ In binary, v<sub>2</sub>(m) equals the number of trailing zeros.
 <tbody><tr><th>Step</th><th>n</th><th>Binary</th><th>m4</th><th>m6</th><th>5n+1</th><th>d</th><th>Exchange</th></tr>
 <tr><td>0</td><td>27</td><td>011011</td><td>(0,1,1)</td><td>(1,0,1)</td><td>136</td><td>3</td><td>⇄</td></tr>
 <tr><td>1</td><td>17</td><td>010001</td><td>(0,0,0)</td><td>(1,0,1)</td><td>86</td><td>1</td><td>⇄</td></tr>
-<tr><td>2</td><td>43</td><td>101011</td><td>(1,0,1)</td><td>(0,1,1)</td><td>216</td><td>3</td><td>⇄</td></tr>
+<tr><td>2</td><td>43</td><td>101011</td><td>(1,1,1)</td><td>(0,0,1)</td><td>216</td><td>3</td><td>⇄</td></tr>
 <tr><td>→</td><td>27</td><td>011011</td><td>(0,1,1)</td><td>(1,0,1)</td><td></td><td></td><td></td></tr>
 </tbody></table>
 <p><b>Observation.</b> The pair count remains fixed at k=3 throughout. The values of d alternate as 3, 1, 3, with exchange at every step.</p>
-<p>A notable feature: m4(27) =(0,1,1) equals m6(43) =(0,1,1), and m6(27) =(1,0,1) equals m4(43) =(1,0,1). That is, 27 and 43 have their m4 and m6 completely swapped.</p>
+<p>A notable feature: comparing m4(27)=(0,1,1) with m4(43)=(1,1,1) and m6(27)=(1,0,1) with m6(43)=(0,0,1), the two elements differ in exactly one pair position (position 0), and the difference is identical in both m4 and m6. This reflects the structural coupling induced by repeated exchange operations within a fixed-pair-count cycle.</p>
 <h2>8.5 Structural Features Common to the Cycles</h2>
 <p><b>(1) Periodicity of exchange.</b> In all three cycles, steps with odd d appear, triggering m4↔m6 exchange. In Cycles B and C, exchange occurs at every step.</p>
 <p><b>(2) Pair-count variation patterns.</b> Cycle C has fixed pair count (k=3); Cycle B has variable pair count (k=2→3→4→2). In variable-count cycles, a "compression step" with large d (e.g., d=5 in Cycle B) sharply reduces the pair count.</p>
-<p><b>(3) m4/m6 symmetry.</b> As seen with 27 and 43 in Cycle C, elements within a cycle may exhibit a symmetric relationship where m4 and m6 are interchanged. This is a structural consequence of accumulated exchange operations.</p>
+<p><b>(3) m4/m6 structural coupling.</b> As seen with 27 and 43 in Cycle C, elements within a cycle may exhibit correlated m4/m6 patterns — differing in the same pair positions — as a structural consequence of accumulated exchange operations.</p>
 <h2>8.6 Comparison with the 3n+1 Cycle</h2>
 <p>The only known cycle of 3n+1 is the trivial cycle 1→1 (3×1+1=4, d=2). The Collatz conjecture asserts this is the unique cycle.</p>
 <table>
