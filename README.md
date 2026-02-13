@@ -2,7 +2,7 @@
 
 Pair Predicate Decomposition Tool for Collatz-type Maps $(xn+1)/2^d$
 
-**[Website / Documentation](https://onigirito.github.io/collatz-m4m6/)** | **[Download](https://github.com/onigirito/collatz-m4m6/releases)**
+**[Website / Documentation](https://onigirito.github.io/collatz-m4m6/)** | **[Zenodo](https://doi.org/10.5281/zenodo.18627192)**
 
 ---
 
@@ -37,19 +37,20 @@ Measured on Intel Core i7-12650H.
 
 **Pair Predicate Decomposition of Collatz-type Maps $(xn+1)/2^d$ and the Structural Closure of $3n+1$**
 
-- [English version](https://onigirito.github.io/collatz-m4m6/collatz_paper_en.html)
+- [PDF](https://onigirito.github.io/collatz-m4m6/m4m6_xn.pdf) | [LaTeX source](https://onigirito.github.io/collatz-m4m6/m4m6_xn.tex) | [Zenodo](https://doi.org/10.5281/zenodo.18627192)
+- DOI: [10.5281/zenodo.18521822](https://doi.org/10.5281/zenodo.18521822) (concept DOI, always resolves to latest version)
 - Japanese version / 日本語版 — in preparation
 
 ## Download
 
-**[collatz-gui.exe](https://github.com/onigirito/collatz-m4m6/releases)** v0.3.0 (Windows x86_64, 5.4 MB, standalone / crt-static)
+**[collatz-gui.exe](https://github.com/onigirito/collatz-m4m6/releases/download/v0.4.0/collatz-gui.exe)** v0.4.0 (Windows x86_64, 5.4 MB, standalone / crt-static)
 
 ```
-SHA-256: 7f9e336cb1704de075923d5609773c1e62f4be7dc9e6a21150f9158aa179dee4
+SHA-256: 78c050d11120c2a23606879a609f38f37f8267db5b8c04727933e63bdb0e9900
 ```
 Verify: `certutil -hashfile collatz-gui.exe SHA256`
 
-Requirements: Windows 10/11, OpenGL 2.0
+Requirements: Windows 10/11, AVX2-capable CPU (Intel Haswell 2013+ / AMD Excavator 2015+), OpenGL 2.0
 
 ## License
 
@@ -65,6 +66,6 @@ If you use this software or the accompanying paper in academic publications or c
 
 - **単発解析** — 1つの奇数のペア述語分解（GPK列・d値・キャリー連鎖長）
 - **区間解析（スイープ）** — 指定範囲の全奇数を並列検証、GPK統計を蓄積
-- **解析** — 過去の検証ログの閲覧・可視化
+- **ログ解析** — 過去の検証ログの閲覧・可視化
 
 詳細は **[サイト](https://onigirito.github.io/collatz-m4m6/)** をご覧ください。
