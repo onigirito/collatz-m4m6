@@ -159,8 +159,8 @@
   <p data-lang="en" class="show" style="font-size:0.88em;opacity:0.8;">Requirements: Windows 10/11, AVX2-capable CPU (Intel Haswell 2013+ / AMD Excavator 2015+), OpenGL 2.0. Output files are saved to <code>output/</code> in the same directory.</p>
   <p data-lang="ja" style="font-size:0.88em;opacity:0.8;">動作要件: Windows 10/11, AVX2対応CPU（Intel第4世代2013年〜 / AMD 2015年〜）, OpenGL 2.0。結果は同ディレクトリの <code>output/</code> に自動保存。</p>
 
-  <p data-lang="en" class="show">Paper: <a href="m4m6_xn.pdf">PDF</a> | <a href="m4m6_xn.tex">LaTeX source</a> | <a href="https://doi.org/10.5281/zenodo.18627192">Zenodo</a></p>
-  <p data-lang="ja">論文: <a href="m4m6_xn.pdf">PDF</a> | <a href="m4m6_xn.tex">LaTeX ソース</a> | <a href="https://doi.org/10.5281/zenodo.18627192">Zenodo</a></p>
+  <p data-lang="en" class="show">Paper: <a href="paper/m4m6_xn.pdf">PDF</a> | <a href="paper/m4m6_xn.tex">LaTeX source</a> | <a href="https://doi.org/10.5281/zenodo.18627192">Zenodo</a></p>
+  <p data-lang="ja">論文: <a href="paper/m4m6_xn.pdf">PDF</a> | <a href="paper/m4m6_xn.tex">LaTeX ソース</a> | <a href="https://doi.org/10.5281/zenodo.18627192">Zenodo</a></p>
   <p data-lang="en" class="show" style="font-size:0.88em;opacity:0.8;margin-top:4pt;">Japanese version / 日本語版 — in preparation</p>
   <p data-lang="ja" style="font-size:0.88em;opacity:0.8;margin-top:4pt;">日本語版 — 準備中</p>
 </div>
@@ -209,15 +209,15 @@
 
 <div data-lang="en" class="show">
   <div class="doc-cards">
-    <a class="doc-card" href="tool_description_en.html">
+    <a class="doc-card" href="docs/tool_description_en.html">
       <h4>Tool Guide</h4>
       <p>Usage instructions, settings, and tab descriptions for the tool.</p>
     </a>
-    <a class="doc-card" href="TOOL_SPEC_en.html">
+    <a class="doc-card" href="docs/TOOL_SPEC_en.html">
       <h4>Tool Specification</h4>
       <p>Module architecture, data flow, and GPK classification rules.</p>
     </a>
-    <a class="doc-card" href="performance_report_en.html">
+    <a class="doc-card" href="docs/performance_report_en.html">
       <h4>Performance Report</h4>
       <p>Benchmarks, optimization history, and FPGA considerations.</p>
     </a>
@@ -226,15 +226,15 @@
 
 <div data-lang="ja">
   <div class="doc-cards">
-    <a class="doc-card" href="tool_description.html">
+    <a class="doc-card" href="docs/tool_description.html">
       <h4>ツール説明</h4>
       <p>ツールの使い方・設定項目・タブの解説</p>
     </a>
-    <a class="doc-card" href="TOOL_SPEC.html">
+    <a class="doc-card" href="docs/TOOL_SPEC.html">
       <h4>ツール仕様書</h4>
       <p>モジュール構成・データフロー・GPK分類規則</p>
     </a>
-    <a class="doc-card" href="performance_report.html">
+    <a class="doc-card" href="docs/performance_report.html">
       <h4>パフォーマンス分析</h4>
       <p>ベンチマーク・最適化履歴・FPGA検討</p>
     </a>
@@ -256,21 +256,21 @@
     <h4 data-lang="ja">単発解析</h4>
     <p data-lang="en" class="show">Analyze a single odd number via pair predicate decomposition. One-step or full trajectory tracking with GPK string, d-value, exchange status, and carry chain length at each step.</p>
     <p data-lang="ja">1つの奇数に対して、ペア述語分解による詳細解析。1ステップまたは軌道追跡で、GPK列・d値・交換の有無・キャリー連鎖長を表示。</p>
-    <img src="screenshot_single.png" alt="Single Analysis — trajectory tracking with GPK strings" class="screenshot" onclick="window.open(this.src)">
+    <img src="images/screenshot_single.png" alt="Single Analysis — trajectory tracking with GPK strings" class="screenshot" onclick="window.open(this.src)">
   </div>
   <div class="card">
     <h4 data-lang="en" class="show">Range Analysis (Sweep)</h4>
     <h4 data-lang="ja">区間解析（スイープ）</h4>
     <p data-lang="en" class="show">Verify all odd numbers in a range using parallel threads. The same exhaustive method used in world-record verification — on your own PC.</p>
     <p data-lang="ja">指定範囲の全奇数を並列検証。世界記録と同じ全数検証方式をあなたのPCで実行。</p>
-    <img src="screenshot_sweep.png" alt="Range Analysis — GPK statistics and carry chain histogram" class="screenshot" onclick="window.open(this.src)">
+    <img src="images/screenshot_sweep.png" alt="Range Analysis — GPK statistics and carry chain histogram" class="screenshot" onclick="window.open(this.src)">
   </div>
   <div class="card">
     <h4 data-lang="en" class="show">Log Analysis</h4>
     <h4 data-lang="ja">解析</h4>
     <p data-lang="en" class="show">Browse past run logs from the <code>output/</code> folder. Re-display GPK graphs and carry chain histograms.</p>
     <p data-lang="ja">過去の実行ログ（<code>output/</code>）を閲覧。GPKグラフやキャリー連鎖長ヒストグラムを再表示。</p>
-    <img src="screenshot_log.png" alt="Log Analysis — browse and visualize past results" class="screenshot" onclick="window.open(this.src)">
+    <img src="images/screenshot_log.png" alt="Log Analysis — browse and visualize past results" class="screenshot" onclick="window.open(this.src)">
   </div>
 </div>
 

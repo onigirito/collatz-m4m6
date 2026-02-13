@@ -14,9 +14,9 @@ This tool analyzes Collatz-type maps not as multiplication, but as **carry propa
 - **Range Analysis (Sweep)** — Verify all odd numbers in a range using parallel threads, with GPK statistics accumulation
 - **Log Analysis** — Browse and visualize past verification results
 
-![Single Analysis](screenshot_single.png)
-![Range Analysis](screenshot_sweep.png)
-![Log Analysis](screenshot_log.png)
+![Single Analysis](images/screenshot_single.png)
+![Range Analysis](images/screenshot_sweep.png)
+![Log Analysis](images/screenshot_log.png)
 
 ## Key Features
 
@@ -37,7 +37,7 @@ Measured on Intel Core i7-12650H.
 
 **Pair Predicate Decomposition of Collatz-type Maps $(xn+1)/2^d$ and the Structural Closure of $3n+1$**
 
-- [PDF](https://onigirito.github.io/collatz-m4m6/m4m6_xn.pdf) | [LaTeX source](https://onigirito.github.io/collatz-m4m6/m4m6_xn.tex) | [Zenodo](https://doi.org/10.5281/zenodo.18627192)
+- [PDF](https://onigirito.github.io/collatz-m4m6/paper/m4m6_xn.pdf) | [LaTeX source](https://onigirito.github.io/collatz-m4m6/paper/m4m6_xn.tex) | [Zenodo](https://doi.org/10.5281/zenodo.18627192)
 - DOI: [10.5281/zenodo.18521822](https://doi.org/10.5281/zenodo.18521822) (concept DOI, always resolves to latest version)
 - Japanese version / 日本語版 — in preparation
 
