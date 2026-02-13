@@ -1136,6 +1136,7 @@ Total: $4 \times 2 \times 2 = 16$ patterns. For each pattern, the output is uniq
 
 
 \begin{center}
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|}
 \hline
 \textbf{\#} & \textbf{Input (a,b)} & \textbf{GPK} & \textbf{$c_{\mathrm{in}}$} & \textbf{$a_{i-1}$} & \textbf{$\mathrm{sum}_{R}$} & \textbf{new m6} & \textbf{$c_{\mathrm{mid}}$} & \textbf{$\mathrm{sum}_{L}$} & \textbf{new m4} & \textbf{$c_{\mathrm{out}}$} & \textbf{Output} & \textbf{Out GPK} \\
@@ -1157,7 +1158,8 @@ Total: $4 \times 2 \times 2 = 16$ patterns. For each pattern, the output is uniq
 15 & (1,1) & G & 1 & 0 & 2 & 0 & 1 & 3 & 1 & 1 & (1,0) & P \\
 16 & (1,1) & G & 1 & 1 & 3 & 1 & 1 & 3 & 1 & 1 & \textbf{(1,1)} & \textbf{G} \\
 \hline
-\end{tabular}
+\end{tabular}%
+}
 \end{center}
 
 All 16 entries are derived from the five-line arithmetic above, which is itself a direct consequence of the algebraic identity $3n+1 = 2n+n+1$.
@@ -1242,6 +1244,7 @@ where A and B are adjacent pairs in the scan output. (When d is even, pairs are 
 
 
 \begin{center}
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{|c|c|c|c|c|c|c|c|c|}
 \hline
 \textbf{\#} & \textbf{Pair A} & \textbf{A GPK} & \textbf{Pair B} & \textbf{B GPK} & \textbf{new m6'} & \textbf{new m4'} & \textbf{New pair} & \textbf{New GPK} \\
@@ -1263,7 +1266,8 @@ R14 & (1,1) & G & (0,1) & P & 1 & 1 & \textbf{(1,1)} & \textbf{G} \\
 R15 & (1,1) & G & (1,0) & P & 1 & 0 & (0,1) & P \\
 R16 & (1,1) & G & (1,1) & G & 1 & 1 & \textbf{(1,1)} & \textbf{G} \\
 \hline
-\end{tabular}
+\end{tabular}%
+}
 \end{center}
 
 New G is produced if and only if $m4_{A}=1$ and $m6_{B}=1$ (Cases R10, R12, R14, R16). Note that this requires pair A to have left bit 1 (i.e., A is P(1,0) or G(1,1)) and pair B to have right bit 1 (i.e., B is P(0,1) or G(1,1)).
