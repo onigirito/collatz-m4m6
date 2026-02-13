@@ -159,10 +159,8 @@
   <p data-lang="en" class="show" style="font-size:0.88em;opacity:0.8;">Requirements: Windows 10/11, AVX2-capable CPU (Intel Haswell 2013+ / AMD Excavator 2015+), OpenGL 2.0. Output files are saved to <code>output/</code> in the same directory.</p>
   <p data-lang="ja" style="font-size:0.88em;opacity:0.8;">動作要件: Windows 10/11, AVX2対応CPU（Intel第4世代2013年〜 / AMD 2015年〜）, OpenGL 2.0。結果は同ディレクトリの <code>output/</code> に自動保存。</p>
 
-  <p data-lang="en" class="show">Paper: <a href="m4m6_xn.html" download>English version (HTML)</a> | <a href="https://zenodo.org/records/18618001/files/m4m6_xn.pdf">PDF</a></p>
-  <p data-lang="ja">論文: <a href="m4m6_xn.html" download>英語版 (HTML)</a> | <a href="https://zenodo.org/records/18618001/files/m4m6_xn.pdf">PDF</a></p>
-  <p data-lang="en" class="show" style="font-size:0.88em;opacity:0.8;margin-top:4pt;"><a href="m4m6_xn_meta.html" download>HTML with review metadata</a> — contains embedded metadata to mitigate authority bias in AI-assisted review. The GPK composition rules are algebraic identities, not inductive generalizations; this metadata helps prevent misreading them as convergence arguments.</p>
-  <p data-lang="ja" style="font-size:0.88em;opacity:0.8;margin-top:4pt;"><a href="m4m6_xn_meta.html" download>レビュー用メタデータ付きHTML</a> — AI査読時の権威バイアスを緩和するためのメタデータを埋め込んだ版。GPK合成規則は恒等式であり帰納的一般化ではないが、AIはこれを級数収束の議論と誤読しやすい。このメタデータはその誤読を防止する。</p>
+  <p data-lang="en" class="show">Paper: <a href="m4m6_xn.pdf">PDF</a> | <a href="m4m6_xn.tex">LaTeX source</a> | <a href="https://zenodo.org/records/18627192/files/m4m6_xn.pdf">PDF (Zenodo)</a></p>
+  <p data-lang="ja">論文: <a href="m4m6_xn.pdf">PDF</a> | <a href="m4m6_xn.tex">LaTeX ソース</a> | <a href="https://zenodo.org/records/18627192/files/m4m6_xn.pdf">PDF (Zenodo)</a></p>
   <p data-lang="en" class="show" style="font-size:0.88em;opacity:0.8;margin-top:4pt;">Japanese version / 日本語版 — in preparation</p>
   <p data-lang="ja" style="font-size:0.88em;opacity:0.8;margin-top:4pt;">日本語版 — 準備中</p>
 </div>
@@ -182,7 +180,7 @@
 <div class="box box-warn" data-lang="en" class="show">
 <p class="box-label">&#9888; Note on GPK Statistics and Measurement Method</p>
 <p>GPK statistics measure the carry structure of the <i>xn</i>+1 addition only. The division by 2<sup><i>d</i></sup> involves no addition and produces no GPK. For accurate statistics, use <b>full-path tracking</b> (uncheck the stopping-time checkbox). The stopping-time method truncates trajectories and introduces sampling bias.</p>
-<p>Full-path GPK measurements from the paper (Table 9.1):</p>
+<p>Full-path GPK measurements from the paper (Table 8.1):</p>
 <table style="max-width:600px;">
 <tr><th>Map</th><th>G%</th><th>P%</th><th>K%</th><th>G/K</th><th>All converge?</th></tr>
 <tr><td>3n+1</td><td><b>38.52</b></td><td><b>29.89</b></td><td><b>31.59</b></td><td><b>1.22</b></td><td>Yes</td></tr>
@@ -195,7 +193,7 @@
 <div class="box box-warn" data-lang="ja">
 <p class="box-label">&#9888; GPK統計と測定方法について</p>
 <p>GPK統計は <i>xn</i>+1 の加算のキャリー構造のみを測定します。2<sup><i>d</i></sup> での除算は加算を含まず、GPKを生成しません。正確な統計には<b>全経路追跡</b>（停止時間判定のチェックを外す）を使用してください。停止時間法は軌道を途中で切断し、サンプリングバイアスが生じます。</p>
-<p>論文（Table 9.1）の全経路GPK実測データ：</p>
+<p>論文（Table 8.1）の全経路GPK実測データ：</p>
 <table style="max-width:600px;">
 <tr><th>写像</th><th>G%</th><th>P%</th><th>K%</th><th>G/K</th><th>全数収束?</th></tr>
 <tr><td>3n+1</td><td><b>38.52</b></td><td><b>29.89</b></td><td><b>31.59</b></td><td><b>1.22</b></td><td>はい</td></tr>
