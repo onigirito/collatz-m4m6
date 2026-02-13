@@ -69,6 +69,14 @@ From these results it follows that the m4-stage carry structure of the map close
 
 \end{abstract}
 
+\medskip
+\noindent\textbf{Keywords:} Collatz conjecture, $3n+1$ problem, binary pair decomposition, carry-lookahead, Generate-Propagate-Kill, structural closure.
+
+\smallskip
+\noindent\textbf{2020 Mathematics Subject Classification:} 11B83, 37P99, 68R01.
+
+\tableofcontents
+
 \section{Introduction}
 \label{sec:1}
 
@@ -82,16 +90,16 @@ n \mapsto \begin{cases} n/2 & \text{if } n \text{ is even} \\
 3n+1 & \text{if } n \text{ is odd} \end{cases}
 \]
 
-eventually reaches 1 in finitely many steps. Since its formulation in 1937, it has resisted resolution, famously prompting Erd\H{o}s to remark that "mathematics is not yet ready for such problems" [1].
+eventually reaches 1 in finitely many steps. Since its formulation in 1937, it has resisted resolution, famously prompting Erd\H{o}s to remark that ``mathematics is not yet ready for such problems'' \cite{Lagarias1985}.
 
 The focus of this paper is not the resolution of the Collatz conjecture itself, but a more fundamental question: \textbf{What is the internal structure of the map $T(n) = (xn+1)/2^{d}$}, and \textbf{what is special about the parameter $x=3$}?
 
-The variant $5n+1$ is a well-studied counterpart. Unlike $3n+1$, it does not exhibit convergence to 1 and possesses multiple non-trivial cycles, such as $13 	o 33 	o 83 	o 13$ and $27 	o 17 	o 43 	o 27$ [2]. Why the dynamical behavior differs so sharply as a function of x is not well understood.
+The variant $5n+1$ is a well-studied counterpart. Unlike $3n+1$, it does not exhibit convergence to 1 and possesses multiple non-trivial cycles, such as $13 	o 33 	o 83 	o 13$ and $27 	o 17 	o 43 	o 27$ \cite{Guy2004}. Why the dynamical behavior differs so sharply as a function of x is not well understood.
 
 \subsection{Prior Work}
 \label{subsec:1.2}
 
-The analysis of Collatz-type maps has a long history. Lagarias [1] provides a comprehensive survey of the problem's breadth and difficulty. Wirsching [3] developed binary-representation-based analysis and studied the statistical properties of the Collatz map.
+The analysis of Collatz-type maps has a long history. Lagarias \cite{Lagarias1985} provides a comprehensive survey of the problem's breadth and difficulty. Wirsching \cite{Wirsching1998} developed binary-representation-based analysis and studied the statistical properties of the Collatz map.
 
 In practice, the odd-to-odd transition is captured by the Syracuse function
 
@@ -99,7 +107,7 @@ In practice, the odd-to-odd transition is captured by the Syracuse function
 
 where $v_{2}(m)$ denotes the 2-adic valuation (number of trailing zeros) of $m$. The Syracuse function streamlines trajectory tracking by eliding even steps, but it does not penetrate the internal structure of the map. The arithmetic operation $3n+1$ remains a black box, and the trailing-zero count can only be determined after computation.
 
-Binary-based approaches include Terras's stopping time analysis [4] and Everett's binary-operation description [5], but both presuppose the arithmetic execution of $3 \times n$.
+Binary-based approaches include Terras's stopping time analysis \cite{Terras1976} and Everett's binary-operation description \cite{Everett1977}, but both presuppose the arithmetic execution of $3 \times n$.
 
 \subsection{Our Approach}
 \label{subsec:1.3}
@@ -134,7 +142,6 @@ For $x \geq 5$, the overall carry structure (G,P) of $xn+1$ cannot be expressed 
 Combining Theorems B and C, $x=3$ is the \textbf{unique} parameter for which the m4-stage carry structure of the map closes within the complete space of 16 predicates. This m4-stage closure serves as the foundation: the four pair types (G, P, P, K) determined by m2/m7/m9 become the input alphabet of a deterministic finite-state transducer (DFST) that captures the complete scan dynamics (\S5.7).
 
 \begin{proposition}[Self-annihilation of G-dominance]
-\label{proposition:5.4}
 In the closed GPK system of $3n+1$, the activation condition for carry generation (G-dominance) and the activation result (carry-induced destruction of G-blocks) are inseparably coupled within the same algebraic identity $3n+1 = 2n+n+1$. No configuration can maintain G-dominance indefinitely. Exhaustive finite case analysis of scan transitions (Table 5.1, 16 patterns) and re-pairing transitions (Table 5.2, 16 patterns) yields Lemmas 5.1--5.8, which collectively establish that divergence of $3n+1$ trajectories is structurally impossible (Remark 5.3).
 \end{proposition}
 
@@ -192,9 +199,10 @@ We call this interleaving the \textit{zipper structure}. Reconstruction is uniqu
 \label{definition:2.4}
 For the pair sequence $P(n)=((a_{0},b_{0}), \ldots ,(a_{k-1},b_{k-1})),$ define two bit strings:
 
-\[ m4(n)=(a_{0},a_{1},\ldots ,a_{k-1}) \]
-
-\[ m6(n)=(b_{0},b_{1},\ldots ,b_{k-1}) \]
+\begin{align*}
+m4(n) &= (a_{0},a_{1},\ldots ,a_{k-1}), \\
+m6(n) &= (b_{0},b_{1},\ldots ,b_{k-1}).
+\end{align*}
 
 m4 is the left-bit projection (LEFT) and m6 is the right-bit projection (RIGHT) of each pair.
 \end{definition}
@@ -255,8 +263,9 @@ Each predicate is applied bitwise to the pair sequence of $n$:
 \begin{theorem}[m4/m6 basis]
 \label{theorem:2.1}
 All 16 predicates m1--m16 can be expressed by bitwise Boolean operations on m4 and m6.
-
-\textit{Derivation.} We give the expression for each predicate directly:
+\end{theorem}
+\begin{proof}[Derivation]
+We give the expression for each predicate directly:
 
 \begin{center}
 \begin{tabular}{|c|l|}
@@ -283,8 +292,8 @@ m16 & $1$ (constant one) \\
 \end{tabular}
 \end{center}
 
-All operations are applied bitwise. $\square$
-\end{theorem}
+All operations are applied bitwise.
+\end{proof}
 
 \textbf{Remark 2.1.} The choice of basis is not unique. For instance, $\{m3(a \land \neg b), m6(b)\}$ or $\{m4(a), m8(a \lor b)\}$ also generate all 16 predicates. However, m4/m6 is the unique basis pair that directly preserves the numerical information of $n$, requiring only the zipper structure to reconstruct n with no additional operations (direct reconstructibility). Other basis pairs can also reconstruct n---for example, the complement pair (m13,m11)=$(\neg a, \neg b)$ recovers n via bitwise negation, and (m13,m6)=$(\neg a, b)$ via negation of the left bits alone---but all such pairs require additional logical operations.
 
@@ -407,9 +416,10 @@ Let $P(n)=((a_{0},b_{0}), \ldots ,(a_{k-1},b_{k-1}))$ be the pair sequence of $n
 
 A zero pair (0,0) is appended. \textbf{Pair boundaries are preserved.}
 
-\[ m4(4n)=(a_{0},a_{1},\ldots ,a_{k-1},0)=m4(n)\|0 \]
-
-\[ m6(4n)=(b_{0},b_{1},\ldots ,b_{k-1},0)=m6(n)\|0 \]
+\begin{align*}
+m4(4n) &= (a_{0},a_{1},\ldots ,a_{k-1},0) = m4(n)\|0, \\
+m6(4n) &= (b_{0},b_{1},\ldots ,b_{k-1},0) = m6(n)\|0,
+\end{align*}
 
 where $\|$ denotes bit-string concatenation.
 
@@ -427,9 +437,10 @@ Grouping into pairs:
 
 \textbf{Pair boundaries shift by 1 bit.} As a result:
 
-\[ m4(2n)=(0,b_{0},b_{1},\ldots ,b_{k-1})=0\|m6(n) \]
-
-\[ m6(2n)=(a_{0},a_{1},\ldots ,a_{k-1},0)=m4(n)\|0 \]
+\begin{align*}
+m4(2n) &= (0,b_{0},b_{1},\ldots ,b_{k-1}) = 0\|m6(n), \\
+m6(2n) &= (a_{0},a_{1},\ldots ,a_{k-1},0) = m4(n)\|0.
+\end{align*}
 
 \begin{proposition}[m4/m6 crossover under 2n]
 \label{proposition:3.2}
@@ -449,21 +460,27 @@ At pair position i:
 
 \textbf{m6-stage (right bit):}
 
-\[ sum_{R,i}=r_{i}^{(6)}+b_{i}+c_{in,i} \]
+\[ \mathrm{sum}_{R,i}=r_{i}^{(6)}+b_{i}+c_{\mathrm{in},i} \]
 
-where $r_{i}^{(6)}$ is the right bit of $2^{s}n$ at pair position i, and $c_{in,i}$ is the input carry to pair i.
+where $r_{i}^{(6)}$ is the right bit of $2^{s}n$ at pair position i, and $c_{\mathrm{in},i}$ is the input carry to pair i.
 
-\[ new\_m6_{i}=sum_{R,i} \bmod 2, c_{mid,i}=\lfloor sum_{R,i}/2\rfloor \]
+\begin{align*}
+\mathrm{new\_m6}_{i} &= \mathrm{sum}_{R,i} \bmod 2, \\
+c_{\mathrm{mid},i} &= \lfloor \mathrm{sum}_{R,i}/2\rfloor.
+\end{align*}
 
 \textbf{m4-stage (left bit):}
 
-\[ sum_{L,i}=r_{i}^{(4)}+a_{i}+c_{mid,i} \]
+\[ \mathrm{sum}_{L,i}=r_{i}^{(4)}+a_{i}+c_{\mathrm{mid},i} \]
 
 where $r_{i}^{(4)}$ is the left bit of $2^{s}n$ at pair position i.
 
-\[ new\_m4_{i}=sum_{L,i} \bmod 2, c_{out,i}=\lfloor sum_{L,i}/2\rfloor \]
+\begin{align*}
+\mathrm{new\_m4}_{i} &= \mathrm{sum}_{L,i} \bmod 2, \\
+c_{\mathrm{out},i} &= \lfloor \mathrm{sum}_{L,i}/2\rfloor.
+\end{align*}
 
-\textbf{Carry propagation:} $c_{in,0}=1$ (effect of +1), $c_{in,i+1}=c_{out,i}.$
+\textbf{Carry propagation:} $c_{\mathrm{in},0}=1$ (effect of +1), $c_{\mathrm{in},i+1}=c_{\mathrm{out},i}.$
 \end{definition}
 
 \subsection{Reference Pattern for $x=5$}
@@ -482,7 +499,7 @@ In the pair addition for $5n+1$:
 \[ \text{m4-stage inputs: } (a_{i-1}, a_{i}) \quad \text{--- adjacent m4 bits} \]
 \end{proposition}
 \begin{proof}
-Substitute $r_{i}^{(6)}=b_{i-1}$ into the m6-stage: $sum_{R,i}=b_{i-1}+b_{i}+c_{in,i}.$ Substitute $r_{i}^{(4)}=a_{i-1}$ into the m4-stage: $sum_{L,i}=a_{i-1}+a_{i}+c_{mid,i}.$
+Substitute $r_{i}^{(6)}=b_{i-1}$ into the m6-stage: $\mathrm{sum}_{R,i}=b_{i-1}+b_{i}+c_{\mathrm{in},i}.$ Substitute $r_{i}^{(4)}=a_{i-1}$ into the m4-stage: $\mathrm{sum}_{L,i}=a_{i-1}+a_{i}+c_{\mathrm{mid},i}.$
 \end{proof}
 
 \textbf{Remark 3.2.} For $5n+1$, both the m6-stage and the m4-stage have isomorphic reference patterns (adjacent same-type reference). This is because $s=2$ is even (\S3.6 generalizes).
@@ -503,7 +520,7 @@ In the pair addition for $3n+1$:
 \[ \text{m4-stage inputs: } (b_{i}, a_{i})=(a_{i}, b_{i}) \quad \text{--- within current pair (commutative)} \]
 \end{proposition}
 \begin{proof}
-Substitute $r_{i}^{(6)}=a_{i-1}$ into the m6-stage: $sum_{R,i}=a_{i-1}+b_{i}+c_{in,i}.$ Substitute $r_{i}^{(4)}=b_{i}$ into the m4-stage: $sum_{L,i}=b_{i}+a_{i}+c_{mid,i}=a_{i}+b_{i}+c_{mid,i}.$
+Substitute $r_{i}^{(6)}=a_{i-1}$ into the m6-stage: $\mathrm{sum}_{R,i}=a_{i-1}+b_{i}+c_{\mathrm{in},i}.$ Substitute $r_{i}^{(4)}=b_{i}$ into the m4-stage: $\mathrm{sum}_{L,i}=b_{i}+a_{i}+c_{\mathrm{mid},i}=a_{i}+b_{i}+c_{\mathrm{mid},i}.$
 \end{proof}
 
 \textbf{Key observation.} The m4-stage inputs $(a_{i},b_{i})$ are precisely pair i of $n$ itself. This coincidence is the foundation of Theorem B in Section 5.
@@ -553,27 +570,27 @@ $n=27$: m4 =(0,1,1), m6 =(1,0,1). LSB order: a=(1,1,0), b=(1,0,1).
 
 \textbf{Pair 0 (LSB, i=0):}
 
-\[ m6-stage:b_{-1}+b_{0}+c_{in}=0+1+1=2 \Rightarrow  new\_m6_{0}=0, c_{mid}=1 \]
+\[ \text{m6-stage:}\quadb_{-1}+b_{0}+c_{\mathrm{in}}=0+1+1=2 \Rightarrow  \mathrm{new\_m6}_{0}=0, c_{\mathrm{mid}}=1 \]
 
-\[ m4-stage:a_{-1}+a_{0}+c_{mid}=0+1+1=2 \Rightarrow  new\_m4_{0}=0, c_{out}=1 \]
+\[ \text{m4-stage:}\quada_{-1}+a_{0}+c_{\mathrm{mid}}=0+1+1=2 \Rightarrow  \mathrm{new\_m4}_{0}=0, c_{\mathrm{out}}=1 \]
 
 \textbf{Pair 1 (i=1):}
 
-\[ m6-stage:b_{0}+b_{1}+1=1+0+1=2 \Rightarrow  new\_m6_{1}=0, c_{mid}=1 \]
+\[ \text{m6-stage:}\quadb_{0}+b_{1}+1=1+0+1=2 \Rightarrow  \mathrm{new\_m6}_{1}=0, c_{\mathrm{mid}}=1 \]
 
-\[ m4-stage:a_{0}+a_{1}+1=1+1+1=3 \Rightarrow  new\_m4_{1}=1, c_{out}=1 \]
+\[ \text{m4-stage:}\quada_{0}+a_{1}+1=1+1+1=3 \Rightarrow  \mathrm{new\_m4}_{1}=1, c_{\mathrm{out}}=1 \]
 
 \textbf{Pair 2 (i=2):}
 
-\[ m6-stage:b_{1}+b_{2}+1=0+1+1=2 \Rightarrow  new\_m6_{2}=0, c_{mid}=1 \]
+\[ \text{m6-stage:}\quadb_{1}+b_{2}+1=0+1+1=2 \Rightarrow  \mathrm{new\_m6}_{2}=0, c_{\mathrm{mid}}=1 \]
 
-\[ m4-stage:a_{1}+a_{2}+1=1+0+1=2 \Rightarrow  new\_m4_{2}=0, c_{out}=1 \]
+\[ \text{m4-stage:}\quada_{1}+a_{2}+1=1+0+1=2 \Rightarrow  \mathrm{new\_m4}_{2}=0, c_{\mathrm{out}}=1 \]
 
 \textbf{Overflow pair (i=3):}
 
-\[ m6-stage:b_{2}+0+1=1+0+1=2 \Rightarrow  new\_m6_{3}=0, c_{mid}=1 \]
+\[ \text{m6-stage:}\quadb_{2}+0+1=1+0+1=2 \Rightarrow  \mathrm{new\_m6}_{3}=0, c_{\mathrm{mid}}=1 \]
 
-\[ m4-stage:a_{2}+0+1=0+0+1=1 \Rightarrow  new\_m4_{3}=1, c_{out}=0 \]
+\[ \text{m4-stage:}\quada_{2}+0+1=0+0+1=1 \Rightarrow  \mathrm{new\_m4}_{3}=1, c_{\mathrm{out}}=0 \]
 
 Result (LSB order): ((0,0),(1,0),(0,0),(1,0)) $\to$  MSB order: ((1,0),(0,0),(1,0),(0,0))
 
@@ -586,27 +603,27 @@ Same $n=27$: LSB order: a=(1,1,0), b=(1,0,1).
 
 \textbf{Pair 0 (i=0):}
 
-\[ m6-stage:a_{-1}+b_{0}+c_{in}=0+1+1=2 \Rightarrow  new\_m6_{0}=0, c_{mid}=1 \]
+\[ \text{m6-stage:}\quada_{-1}+b_{0}+c_{\mathrm{in}}=0+1+1=2 \Rightarrow  \mathrm{new\_m6}_{0}=0, c_{\mathrm{mid}}=1 \]
 
-\[ m4-stage:a_{0}+b_{0}+c_{mid}=1+1+1=3 \Rightarrow  new\_m4_{0}=1, c_{out}=1 \]
+\[ \text{m4-stage:}\quada_{0}+b_{0}+c_{\mathrm{mid}}=1+1+1=3 \Rightarrow  \mathrm{new\_m4}_{0}=1, c_{\mathrm{out}}=1 \]
 
 \textbf{Pair 1 (i=1):}
 
-\[ m6-stage:a_{0}+b_{1}+1=1+0+1=2 \Rightarrow  new\_m6_{1}=0, c_{mid}=1 \]
+\[ \text{m6-stage:}\quada_{0}+b_{1}+1=1+0+1=2 \Rightarrow  \mathrm{new\_m6}_{1}=0, c_{\mathrm{mid}}=1 \]
 
-\[ m4-stage:a_{1}+b_{1}+1=1+0+1=2 \Rightarrow  new\_m4_{1}=0, c_{out}=1 \]
+\[ \text{m4-stage:}\quada_{1}+b_{1}+1=1+0+1=2 \Rightarrow  \mathrm{new\_m4}_{1}=0, c_{\mathrm{out}}=1 \]
 
 \textbf{Pair 2 (i=2):}
 
-\[ m6-stage:a_{1}+b_{2}+1=1+1+1=3 \Rightarrow  new\_m6_{2}=1, c_{mid}=1 \]
+\[ \text{m6-stage:}\quada_{1}+b_{2}+1=1+1+1=3 \Rightarrow  \mathrm{new\_m6}_{2}=1, c_{\mathrm{mid}}=1 \]
 
-\[ m4-stage:a_{2}+b_{2}+1=0+1+1=2 \Rightarrow  new\_m4_{2}=0, c_{out}=1 \]
+\[ \text{m4-stage:}\quada_{2}+b_{2}+1=0+1+1=2 \Rightarrow  \mathrm{new\_m4}_{2}=0, c_{\mathrm{out}}=1 \]
 
 \textbf{Overflow pair (i=3):}
 
-\[ m6-stage:a_{2}+0+1=0+0+1=1 \Rightarrow  new\_m6_{3}=1, c_{mid}=0 \]
+\[ \text{m6-stage:}\quada_{2}+0+1=0+0+1=1 \Rightarrow  \mathrm{new\_m6}_{3}=1, c_{\mathrm{mid}}=0 \]
 
-\[ m4-stage:0+0+0=0 \Rightarrow  new\_m4_{3}=0, c_{out}=0 \]
+\[ \text{m4-stage:}\quad0+0+0=0 \Rightarrow  \mathrm{new\_m4}_{3}=0, c_{\mathrm{out}}=0 \]
 
 Result (LSB order): ((1,0),(0,0),(0,1),(0,1)) $\to$  MSB order: ((0,1),(0,1),(0,0),(1,0))
 
@@ -631,13 +648,13 @@ The previous section derived the two-stage pair addition structure. This section
 \subsection{The Problem}
 \label{subsec:4.1}
 
-The output of pair position i depends on the input carry $c_{in,i},$ which equals the output carry $c_{out,i-1}$ of pair i-1, which in turn depends on pair i-2, and so on. This chain runs from LSB (pair 0) to MSB:
+The output of pair position i depends on the input carry $c_{\mathrm{in},i},$ which equals the output carry $c_{\mathrm{out},i-1}$ of pair i-1, which in turn depends on pair i-2, and so on. This chain runs from LSB (pair 0) to MSB:
 
-\[ c_{in,0}=1 \to  c_{out,0}=c_{in,1} \to  c_{out,1}=c_{in,2} \to  \cdots \]
+\[ c_{\mathrm{in},0}=1 \to  c_{\mathrm{out},0}=c_{\mathrm{in},1} \to  c_{\mathrm{out},1}=c_{\mathrm{in},2} \to  \cdots \]
 
 Within each pair, two stages of carry exist:
 
-\[ c_{in,i} \to  c_{mid,i} \to  c_{out,i} \]
+\[ c_{\mathrm{in},i} \to  c_{\mathrm{mid},i} \to  c_{\mathrm{out},i} \]
 
 Therefore, to determine the output bits (new $m4_{i},$ new $m6_{i})$ of pair i, in principle all carries from pair 0 through pair i-1 must be settled.
 
@@ -664,16 +681,16 @@ For two bits $p, q \in \{0,1\}$ and an input carry $c \in \{0,1\}$, the carry ou
 
 In Boolean predicates:
 
-\[ G(p,q)=p\land q=AND(p,q) \]
-
-\[ P(p,q)=p\oplus q=XOR(p,q) \]
-
-\[ K(p,q)=\neg p\land \neg q=NOR(p,q) \]
+\begin{align*}
+G(p,q) &= p\land q = \mathrm{AND}(p,q), \\
+P(p,q) &= p\oplus q = \mathrm{XOR}(p,q), \\
+K(p,q) &= \neg p\land \neg q = \mathrm{NOR}(p,q).
+\end{align*}
 
 G,P,K are mutually exclusive and exhaustive.
 \end{definition}
 
-\textbf{Remark 4.0.} The GPK classification is not introduced for the first time in this paper. It is the standard technique for classifying carry behavior at each digit of carry-lookahead adders [6], with over half a century of history. Our contribution is to apply this classification to the pair addition of Collatz-type maps and to show that for $3n+1$, the GPK coincides with the intra-pair predicates m2/m7/m9 of $n$.
+\textbf{Remark 4.0.} The GPK classification is not introduced for the first time in this paper. It is the standard technique for classifying carry behavior at each digit of carry-lookahead adders \cite{Bedrij1962}, with over half a century of history. Our contribution is to apply this classification to the pair addition of Collatz-type maps and to show that for $3n+1$, the GPK coincides with the intra-pair predicates m2/m7/m9 of $n$.
 
 \subsection{GPK of Each Stage}
 \label{subsec:4.3}
@@ -682,23 +699,25 @@ Based on the reference patterns of Section 3, we describe the GPK of each stage.
 
 \textbf{m6-stage GPK:}
 
-\[ G_{mid}[i]=AND(r_{i}^{(6)}, b_{i}), P_{mid}[i]=XOR(r_{i}^{(6)}, b_{i}) \]
+\[ G_{\mathrm{mid}}[i]=AND(r_{i}^{(6)}, b_{i}), P_{\mathrm{mid}}[i]=XOR(r_{i}^{(6)}, b_{i}) \]
 
 \textbf{m4-stage GPK:}
 
-\[ G_{out}[i]=AND(r_{i}^{(4)}, a_{i}), P_{out}[i]=XOR(r_{i}^{(4)}, a_{i}) \]
+\[ G_{\mathrm{out}}[i]=AND(r_{i}^{(4)}, a_{i}), P_{\mathrm{out}}[i]=XOR(r_{i}^{(4)}, a_{i}) \]
 
 \textbf{For $x=5$:}
 
-\[ G_{mid}[i]=b_{i-1}\land b_{i}, P_{mid}[i]=b_{i-1}\oplus b_{i} \]
-
-\[ G_{out}[i]=a_{i-1}\land a_{i}, P_{out}[i]=a_{i-1}\oplus a_{i} \]
+\begin{align*}
+G_{\mathrm{mid}}[i] &= b_{i-1}\land b_{i}, &\quad P_{\mathrm{mid}}[i] &= b_{i-1}\oplus b_{i}, \\
+G_{\mathrm{out}}[i] &= a_{i-1}\land a_{i}, &\quad P_{\mathrm{out}}[i] &= a_{i-1}\oplus a_{i}.
+\end{align*}
 
 \textbf{For $x=3$:}
 
-\[ G_{mid}[i]=a_{i-1}\land b_{i}, P_{mid}[i]=a_{i-1}\oplus b_{i} \]
-
-\[ G_{out}[i]=a_{i}\land b_{i}, P_{out}[i]=a_{i}\oplus b_{i} \]
+\begin{align*}
+G_{\mathrm{mid}}[i] &= a_{i-1}\land b_{i}, &\quad P_{\mathrm{mid}}[i] &= a_{i-1}\oplus b_{i}, \\
+G_{\mathrm{out}}[i] &= a_{i}\land b_{i}, &\quad P_{\mathrm{out}}[i] &= a_{i}\oplus b_{i}.
+\end{align*}
 
 \subsection{Serial Composition of GPK Across Two Stages}
 \label{subsec:4.4}
@@ -719,7 +738,7 @@ Case analysis on carry input c. If $G_{2}=1$: stage 2 generates, output is 1. If
 \label{definition:4.2}
 The overall GPK for pair position i:
 
-\[ G_{i}=G_{out}[i]\lor (P_{out}[i]\land G_{mid}[i]), P_{i}=P_{out}[i]\land P_{mid}[i] \]
+\[ G_{i}=G_{\mathrm{out}}[i]\lor (P_{\mathrm{out}}[i]\land G_{\mathrm{mid}}[i]), P_{i}=P_{\mathrm{out}}[i]\land P_{\mathrm{mid}}[i] \]
 \end{definition}
 
 \subsection{Carry Resolution by Scanning}
@@ -749,20 +768,20 @@ The loop runs k times; each iteration involves constant-time Boolean operations.
 
 \textbf{Output computation after carry determination:}
 
-For each pair i, once $c_{in,i}$ is known:
+For each pair i, once $c_{\mathrm{in},i}$ is known:
 
-\[ c_{mid,i}=G_{mid}[i]\lor (P_{mid}[i]\land c_{in,i}) \]
-
-\[ new\_m6_{i}=r_{i}^{(6)}\oplus b_{i}\oplus c_{in,i} \]
-
-\[ new\_m4_{i}=r_{i}^{(4)}\oplus a_{i}\oplus c_{mid,i} \]
+\begin{align*}
+c_{\mathrm{mid},i} &= G_{\mathrm{mid}}[i]\lor (P_{\mathrm{mid}}[i]\land c_{\mathrm{in},i}), \\
+\mathrm{new\_m6}_{i} &= r_{i}^{(6)}\oplus b_{i}\oplus c_{\mathrm{in},i}, \\
+\mathrm{new\_m4}_{i} &= r_{i}^{(4)}\oplus a_{i}\oplus c_{\mathrm{mid},i}.
+\end{align*}
 
 This is also computed independently per pair in $O(1)$.
 
 \subsection{Cost of Local GPK Computation}
 \label{subsec:4.6}
 
-\textbf{Key observation.} Computing local GPK values $G_{mid}[i],P_{mid}[i],G_{out}[i],P_{out}[i]$ requires only \textbf{referencing m4/m6 bits and taking AND/XOR}. The reference targets differ by x (Table 3.1), but the type and count of operations are identical.
+\textbf{Key observation.} Computing local GPK values $G_{\mathrm{mid}}[i],P_{\mathrm{mid}}[i],G_{\mathrm{out}}[i],P_{\mathrm{out}}[i]$ requires only \textbf{referencing m4/m6 bits and taking AND/XOR}. The reference targets differ by x (Table 3.1), but the type and count of operations are identical.
 
 \begin{itemize}
 \item $x=3$: References m4 bits at positions i and i-1, and m4/m6 bits at position i.
@@ -830,7 +849,7 @@ $n=27$, m4 =(0,1,1), m6 =(1,0,1). LSB order: a=(1,1,0), b=(1,0,1).
 \begin{center}
 \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
 \hline
-\textbf{Pair i} & \textbf{$b_{i-1}$} & \textbf{$b_{i}$} & \textbf{$G_{mid}$} & \textbf{$P_{mid}$} & \textbf{$a_{i-1}$} & \textbf{$a_{i}$} & \textbf{$G_{out}$} & \textbf{$P_{out}$} & \textbf{$G_{i}$} & \textbf{$P_{i}$} \\
+\textbf{Pair i} & \textbf{$b_{i-1}$} & \textbf{$b_{i}$} & \textbf{$G_{\mathrm{mid}}$} & \textbf{$P_{\mathrm{mid}}$} & \textbf{$a_{i-1}$} & \textbf{$a_{i}$} & \textbf{$G_{\mathrm{out}}$} & \textbf{$P_{\mathrm{out}}$} & \textbf{$G_{i}$} & \textbf{$P_{i}$} \\
 \hline
 0 & 0 & 1 & 0 & 1 & 0 & 1 & 0 & 1 & 0 & 1 \\
 1 & 1 & 0 & 0 & 1 & 1 & 1 & 1 & 0 & 1 & 0 \\
@@ -847,16 +866,16 @@ GPK sequence (from LSB): \textbf{P, G, P}
 \begin{center}
 \begin{tabular}{|c|c|c|c|c|}
 \hline
-\textbf{Step} & \textbf{$c_{in}$} & \textbf{GPK} & \textbf{$c_{out}$} & \textbf{Interpretation} \\
+\textbf{Step} & \textbf{$c_{\mathrm{in}}$} & \textbf{GPK} & \textbf{$c_{\mathrm{out}}$} & \textbf{Interpretation} \\
 \hline
 i=0 & 1 & P & 1 & Propagates initial carry 1 \\
-i=1 & 1 & G & 1 & Self-generates (independent of $c_{in})$ \\
+i=1 & 1 & G & 1 & Self-generates (independent of $c_{\mathrm{in}})$ \\
 i=2 & 1 & P & 1 & Propagates carry 1 \\
 \hline
 \end{tabular}
 \end{center}
 
-All pairs have $c_{in}=1.$ Consistent with the step-by-step computation of \S3.7.
+All pairs have $c_{\mathrm{in}}=1.$ Consistent with the step-by-step computation of \S3.7.
 
 \textbf{Structural interpretation.} Since pair 1 is Generate, even if pair 0 had killed the carry, carry would still reach pair 2. GPK describes the "terrain" of carry propagation, and the initial value $c_{0}=1$ flows over this terrain.
 
@@ -871,7 +890,7 @@ $n=27$, LSB order: a=(1,1,0), b=(1,0,1).
 \begin{center}
 \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
 \hline
-\textbf{Pair i} & \textbf{$a_{i-1}$} & \textbf{$b_{i}$} & \textbf{$G_{mid}$} & \textbf{$P_{mid}$} & \textbf{$a_{i}$} & \textbf{$b_{i}$} & \textbf{$G_{out}$} & \textbf{$P_{out}$} & \textbf{$G_{i}$} & \textbf{$P_{i}$} \\
+\textbf{Pair i} & \textbf{$a_{i-1}$} & \textbf{$b_{i}$} & \textbf{$G_{\mathrm{mid}}$} & \textbf{$P_{\mathrm{mid}}$} & \textbf{$a_{i}$} & \textbf{$b_{i}$} & \textbf{$G_{\mathrm{out}}$} & \textbf{$P_{\mathrm{out}}$} & \textbf{$G_{i}$} & \textbf{$P_{i}$} \\
 \hline
 0 & 0 & 1 & 0 & 1 & 1 & 1 & 1 & 0 & 1 & 0 \\
 1 & 1 & 0 & 0 & 1 & 1 & 0 & 0 & 1 & 0 & 1 \\
@@ -880,13 +899,13 @@ $n=27$, LSB order: a=(1,1,0), b=(1,0,1).
 \end{tabular}
 \end{center}
 
-Note: The m4-stage $G_{out},P_{out}$ are AND, XOR of $(a_{i},b_{i}),$ which is none other than m2, m7 of $n$.
+Note: The m4-stage $G_{\mathrm{out}},P_{\mathrm{out}}$ are AND, XOR of $(a_{i},b_{i}),$ which is none other than m2, m7 of $n$.
 
 $n=27$ pairs (LSB order): (1,1),(1,0),(0,1)
 
 \begin{itemize}
-\item m2(AND): 1,0,0 $\to G_{out}=1,0,0 \checkmark$
-\item m7(XOR): 0,1,1 $\to P_{out}=0,1,1 \checkmark$
+\item m2(AND): 1,0,0 $\to G_{\mathrm{out}}=1,0,0 \checkmark$
+\item m7(XOR): 0,1,1 $\to P_{\mathrm{out}}=0,1,1 \checkmark$
 \end{itemize}
 
 GPK sequence (from LSB): \textbf{G, P, G}
@@ -897,7 +916,7 @@ GPK sequence (from LSB): \textbf{G, P, G}
 \begin{center}
 \begin{tabular}{|c|c|c|c|}
 \hline
-\textbf{Step} & \textbf{$c_{in}$} & \textbf{GPK} & \textbf{$c_{out}$} \\
+\textbf{Step} & \textbf{$c_{\mathrm{in}}$} & \textbf{GPK} & \textbf{$c_{\mathrm{out}}$} \\
 \hline
 i=0 & 1 & G & 1 \\
 i=1 & 1 & P & 1 \\
@@ -906,7 +925,7 @@ i=2 & 1 & G & 1 \\
 \end{tabular}
 \end{center}
 
-All pairs have $c_{in}=1.$ Consistent with the step-by-step computation of \S3.8.
+All pairs have $c_{\mathrm{in}}=1.$ Consistent with the step-by-step computation of \S3.8.
 
 \subsection{Answer to the Question of \S4.1}
 \label{subsec:4.10}
@@ -917,7 +936,7 @@ We organize the answer to the question posed in \S4.1: "Is the sequential depend
 
 \textbf{Answer 2 (Structural).} While the carry \textit{values} are determined sequentially, each pair's \textit{behavior} with respect to carry (whether G, P, or K) is independent of the carry value. Thus, "what the carry does" is determined locally; only "how far the carry reaches" is a global question.
 
-\textbf{Answer 3 (Parallelization).} The global propagation can also be compressed to $O(\log k)$ depth via GPK tree composition. This is the same principle as carry-lookahead adders [6], and associativity (Proposition 4.3) guarantees its correctness.
+\textbf{Answer 3 (Parallelization).} The global propagation can also be compressed to $O(\log k)$ depth via GPK tree composition. This is the same principle as carry-lookahead adders \cite{Bedrij1962}, and associativity (Proposition 4.3) guarantees its correctness.
 
 \subsection{Summary of This Section}
 \label{subsec:4.11}
@@ -942,24 +961,25 @@ This section is the core of the paper. We establish that the m4-stage carry stru
 \label{theorem:5.1}
 In the pair addition for $3n+1$, the Generate and Propagate of the m4-stage coincide with predicates m2(AND) and m7(XOR) of $n$, at every pair position. That is, for any odd $n$ and LSB-ordered pair position $i$ ($0 \leq i \leq k-1$):
 
-\[ G_{out}[i]=m2(n)_{i}=a_{i}\land b_{i} \]
-
-\[ P_{out}[i]=m7(n)_{i}=a_{i}\oplus b_{i} \]
+\begin{align}
+G_{\mathrm{out}}[i] &= m2(n)_{i} = a_{i}\land b_{i}, \label{eq:theoremB-G} \\
+P_{\mathrm{out}}[i] &= m7(n)_{i} = a_{i}\oplus b_{i}. \label{eq:theoremB-P}
+\end{align}
 
 These are exactly the definitions of m2 and m7.
 \end{theorem}
 \begin{proof}
 By Proposition 3.4, the m4-stage inputs for $3n+1$ are $(r_{i}^{(4)},a_{i})=(b_{i},a_{i}).$ By commutativity:
-$G_{out}[i]=AND(b_{i},a_{i})=a_{i} \land b_{i}=m2(n)_{i}$
+$G_{\mathrm{out}}[i]=AND(b_{i},a_{i})=a_{i} \land b_{i}=m2(n)_{i}$
 
-Similarly, $P_{out}[i]=XOR(b_{i},a_{i})=a_{i}\oplus b_{i}=m7(n)_{i}.$
+Similarly, $P_{\mathrm{out}}[i]=XOR(b_{i},a_{i})=a_{i}\oplus b_{i}=m7(n)_{i}.$
 \end{proof}
 
 \begin{corollary}
 \label{corollary:5.1}
 For $3n+1$, the m4-stage Kill coincides with m9(NOR):
 
-\[ K_{out}[i]=\neg a_{i}\land \neg b_{i}=m9(n)_{i} \]
+\[ K_{\mathrm{out}}[i]=\neg a_{i}\land \neg b_{i}=m9(n)_{i} \]
 \end{corollary}
 \begin{proof}
 Since G,P,K are mutually exclusive and exhaustive, $K = \neg G \land \neg P = \neg(a_{i} \land b_{i}) \land \neg(a_{i} \oplus b_{i}).$ By truth table, this is true only when $a_{i}=b_{i}=0,$ matching the definition of m9(NOR).
@@ -984,12 +1004,12 @@ In contrast to the m4-stage, the m6-stage does \textit{not} coincide with intra-
 \label{proposition:5.1}
 The m6-stage GPK of $3n+1$ is:
 
-\[ G_{mid}[i]=a_{i-1}\land b_{i}, P_{mid}[i]=a_{i-1}\oplus b_{i} \]
+\[ G_{\mathrm{mid}}[i]=a_{i-1}\land b_{i}, P_{\mathrm{mid}}[i]=a_{i-1}\oplus b_{i} \]
 
 This is a cross-reference between the m4 bit at position i-1 and the m6 bit at position i, and cannot be determined from a single pair position.
 \end{proposition}
 
-\textbf{Remark 5.1.} The overall pair GPK $G_{i}=G_{out}[i] \lor (P_{out}[i] \land G_{mid}[i])$ contains the m6-stage cross-reference term, so even for $3n+1$, the \textit{overall} pair GPK is not per-pair independent. However, the fact that the m4-stage is per-pair independent means that the "upper stage" of the carry structure is directly readable from the predicate table of $n$.
+\textbf{Remark 5.1.} The overall pair GPK $G_{i}=G_{\mathrm{out}}[i] \lor (P_{\mathrm{out}}[i] \land G_{\mathrm{mid}}[i])$ contains the m6-stage cross-reference term, so even for $3n+1$, the \textit{overall} pair GPK is not per-pair independent. However, the fact that the m4-stage is per-pair independent means that the "upper stage" of the carry structure is directly readable from the predicate table of $n$.
 
 \subsection{Theorem C: Limitation of the 16 Predicates}
 \label{subsec:5.3}
@@ -1001,25 +1021,25 @@ A function $f: \N_{\text{odd}} \to \{0,1\}^{k}$ is \textit{16-predicate represen
 
 \begin{theorem}[Theorem C: Limitation of the 16 predicates]
 \label{theorem:5.2}
-For $x \geq 5$ ($x-1$ a power of 2), the m4-stage GPK $(G_{out},P_{out})$ of $xn+1$ is not 16-predicate representable.
+For $x \geq 5$ ($x-1$ a power of 2), the m4-stage GPK $(G_{\mathrm{out}},P_{\mathrm{out}})$ of $xn+1$ is not 16-predicate representable.
 \end{theorem}
 \begin{proof}
 Two steps.
 
 \textbf{Step 1: Identifying the reference structure.} For $x=5$, the m4-stage inputs are $(a_{i-1},a_{i})$ (Proposition 3.3):
 
-$G_{out}[i]=a_{i-1} \land a_{i},\quad P_{out}[i]=a_{i-1} \oplus a_{i}$
+$G_{\mathrm{out}}[i]=a_{i-1} \land a_{i},\quad P_{\mathrm{out}}[i]=a_{i-1} \oplus a_{i}$
 
 This depends simultaneously on positions $i-1$ and $i$.
 
-\textbf{Step 2: Contradiction with per-pair independence.} By contradiction. Suppose $(G_{out}[0],G_{out}[1], \ldots)$ is 16-predicate representable. By Corollary 2.1, it must be per-pair independent: there exists $h:\{0,1\}^{2} \to \{0,1\}$ such that $G_{out}[i]=h(a_{i},b_{i})$ for all $i$ and all $n$. But $G_{out}[i]=a_{i-1} \land a_{i}$ depends on $a_{i-1}.$ Fixing $a_{i}=1,b_{i}=1$:
+\textbf{Step 2: Contradiction with per-pair independence.} By contradiction. Suppose $(G_{\mathrm{out}}[0],G_{\mathrm{out}}[1], \ldots)$ is 16-predicate representable. By Corollary 2.1, it must be per-pair independent: there exists $h:\{0,1\}^{2} \to \{0,1\}$ such that $G_{\mathrm{out}}[i]=h(a_{i},b_{i})$ for all $i$ and all $n$. But $G_{\mathrm{out}}[i]=a_{i-1} \land a_{i}$ depends on $a_{i-1}.$ Fixing $a_{i}=1,b_{i}=1$:
 
 \begin{itemize}
-\item $a_{i-1}=0$ gives $G_{out}[i]=0$
-\item $a_{i-1}=1$ gives $G_{out}[i]=1$
+\item $a_{i-1}=0$ gives $G_{\mathrm{out}}[i]=0$
+\item $a_{i-1}=1$ gives $G_{\mathrm{out}}[i]=1$
 \end{itemize}
 
-Despite $(a_{i},b_{i})=(1,1)$ being identical, $G_{out}[i]$ varies with $a_{i-1}.$ No function $h$ of $(a_{i},b_{i})$ alone can capture this variation. Contradiction.
+Despite $(a_{i},b_{i})=(1,1)$ being identical, $G_{\mathrm{out}}[i]$ varies with $a_{i-1}.$ No function $h$ of $(a_{i},b_{i})$ alone can capture this variation. Contradiction.
 \end{proof}
 
 \subsection{Exhaustive Verification}
@@ -1035,7 +1055,7 @@ Since pairs 1 and 2 are both (1,1), any per-pair independent function must give 
 
 However, G=(1,1,0) has second component 1 and third component 0, violating this constraint.
 
-All \textbf{784 combinations} were verified computationally; none match. $\square$
+All \textbf{784 combinations} were verified computationally; none match.
 \end{proposition}
 \begin{proof}
 $n=31=011111_{2},$ pairs ((0,1),(1,1),(1,1)), $k=3$.
@@ -1059,7 +1079,7 @@ The 16-predicate values for $n=31$ (MSB order, duplicates removed):
 For parameters x with $x-1 = 2^{s},$ the m4-stage GPK of $xn+1$ is 16-predicate representable if and only if $s=1$ (i.e., $x=3$).
 \end{theorem}
 \begin{proof}
-\textbf{($s=1$):} By Theorem 5.1, $G_{out}=m2,P_{out}=m7. \checkmark$
+\textbf{($s=1$):} By Theorem 5.1, $G_{\mathrm{out}}=m2,P_{\mathrm{out}}=m7. \checkmark$
 
 \textbf{($s=2$, $x=5$):} m4-stage inputs are $(a_{i-1},a_{i}).$ Not representable by Theorem 5.2. $\times$
 
@@ -1093,7 +1113,7 @@ Only when $s=1$ do the requirements fall within the descriptive power.
 \subsection{Structural Consequence: Complete Finite Case Analysis}
 \label{subsec:5.7}
 
-The structural closure established in Theorem 5.1 has a direct deterministic consequence for the trajectory behavior of $3n+1$. In this section, we derive this consequence through a \textbf{complete finite case analysis} of the scan transition and re-pairing operations, using the standard GPK (Generate/Propagate/Kill) classification that has been the foundation of carry-lookahead adder design for over half a century [6, 7, 8].
+The structural closure established in Theorem 5.1 has a direct deterministic consequence for the trajectory behavior of $3n+1$. In this section, we derive this consequence through a \textbf{complete finite case analysis} of the scan transition and re-pairing operations, using the standard GPK (Generate/Propagate/Kill) classification that has been the foundation of carry-lookahead adder design for over half a century \cite{Bedrij1962, Kogge1973, Brent1982}.
 
 \subsubsection{Complete Scan Transition Table}
 
@@ -1101,15 +1121,16 @@ For $x=3$ ($s=1$, odd), at pair position i in LSB order, the input state is comp
 
 \begin{itemize}
 \item \textbf{Pair type} $(a_{i},b_{i}) \in \{(0,0),(0,1),(1,0),(1,1)\}$ --- 4 values
-\item \textbf{Input carry} $c_{in} \in \{0,1\}$ --- 2 values
+\item \textbf{Input carry} $c_{\mathrm{in}} \in \{0,1\}$ --- 2 values
 \item \textbf{Previous left bit} $a_{i-1} \in \{0,1\}$ --- 2 values (with $a_{-1}=0)$
 \end{itemize}
 
 Total: $4 \times 2 \times 2 = 16$ patterns. For each pattern, the output is uniquely determined by the reference pattern of $3n+1$ (Proposition 3.4):
 
-\[ sum_{R}=a_{i-1}+b_{i}+c_{in}, new\_m6_{i}=sum_{R} \bmod 2, c_{mid}=\lfloor sum_{R}/2\rfloor \]
-
-\[ sum_{L}=b_{i}+a_{i}+c_{mid}, new\_m4_{i}=sum_{L} \bmod 2, c_{out}=\lfloor sum_{L}/2\rfloor \]
+\begin{align*}
+\mathrm{sum}_{R} &= a_{i-1}+b_{i}+c_{\mathrm{in}}, &\quad \mathrm{new\_m6}_{i} &= \mathrm{sum}_{R} \bmod 2, &\quad c_{\mathrm{mid}} &= \lfloor \mathrm{sum}_{R}/2\rfloor, \\
+\mathrm{sum}_{L} &= b_{i}+a_{i}+c_{\mathrm{mid}}, &\quad \mathrm{new\_m4}_{i} &= \mathrm{sum}_{L} \bmod 2, &\quad c_{\mathrm{out}} &= \lfloor \mathrm{sum}_{L}/2\rfloor.
+\end{align*}
 
 \textbf{Table 5.1: Complete scan transition table for $3n+1$.}
 
@@ -1117,7 +1138,7 @@ Total: $4 \times 2 \times 2 = 16$ patterns. For each pattern, the output is uniq
 \begin{center}
 \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|}
 \hline
-\textbf{\#} & \textbf{Input (a,b)} & \textbf{GPK} & \textbf{$c_{in}$} & \textbf{$a_{i-1}$} & \textbf{$sum_{R}$} & \textbf{new m6} & \textbf{$c_{mid}$} & \textbf{$sum_{L}$} & \textbf{new m4} & \textbf{$c_{out}$} & \textbf{Output} & \textbf{Out GPK} \\
+\textbf{\#} & \textbf{Input (a,b)} & \textbf{GPK} & \textbf{$c_{\mathrm{in}}$} & \textbf{$a_{i-1}$} & \textbf{$\mathrm{sum}_{R}$} & \textbf{new m6} & \textbf{$c_{\mathrm{mid}}$} & \textbf{$\mathrm{sum}_{L}$} & \textbf{new m4} & \textbf{$c_{\mathrm{out}}$} & \textbf{Output} & \textbf{Out GPK} \\
 \hline
 1 & (0,0) & K & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & (0,0) & K \\
 2 & (0,0) & K & 0 & 1 & 1 & 1 & 0 & 0 & 0 & 0 & (0,1) & P \\
@@ -1141,7 +1162,7 @@ Total: $4 \times 2 \times 2 = 16$ patterns. For each pattern, the output is uniq
 
 All 16 entries are derived from the five-line arithmetic above, which is itself a direct consequence of the algebraic identity $3n+1 = 2n+n+1$.
 
-\textbf{Remark.} The scan defines a \textit{deterministic finite state transducer} (DFST) with state $(c_{in},a_{i-1}) \in \{0,1\}^{2}$ (4 states), input alphabet $\{(0,0),(0,1),(1,0),(1,1)\}$ (4 symbols), and deterministic output. The initial state is $(c_{in},a_{i-1})=(1,0)$ (the +1 effect and boundary condition). Each output $(c_{out},a_{i})$ --- where $a_{i}$ is the m4 bit of the current input pair --- uniquely determines the next state.
+\textbf{Remark.} The scan defines a \textit{deterministic finite state transducer} (DFST) with state $(c_{\mathrm{in}},a_{i-1}) \in \{0,1\}^{2}$ (4 states), input alphabet $\{(0,0),(0,1),(1,0),(1,1)\}$ (4 symbols), and deterministic output. The initial state is $(c_{\mathrm{in}},a_{i-1})=(1,0)$ (the +1 effect and boundary condition). Each output $(c_{\mathrm{out}},a_{i})$ --- where $a_{i}$ is the m4 bit of the current input pair --- uniquely determines the next state.
 
 \textbf{Remark (DFST permutation property).} For each of the four DFST states, the map from input pair type to output pair type is a \textit{permutation} of $\{$K, P(0,1), P(1,0), G$\}$:
 
@@ -1149,7 +1170,7 @@ All 16 entries are derived from the five-line arithmetic above, which is itself 
 \begin{center}
 \begin{tabular}{|c|c|c|c|c|}
 \hline
-\textbf{State $(c_{in},a_{i-1})$} & \textbf{K$\to$} & \textbf{P(0,1)$\to$} & \textbf{P(1,0)$\to$} & \textbf{G$\to$} \\
+\textbf{State $(c_{\mathrm{in}},a_{i-1})$} & \textbf{K$\to$} & \textbf{P(0,1)$\to$} & \textbf{P(1,0)$\to$} & \textbf{G$\to$} \\
 \hline
 (0, 0) & K & G & P(1,0) & P(0,1) \\
 (0, 1) & P(0,1) & K & G & P(1,0) \\
@@ -1165,18 +1186,18 @@ Each row contains exactly one occurrence of each pair type. This is not assumed 
 
 \begin{lemma}[G-block entry elimination]
 \label{lemma:5.1}
-(a) The only scan case where a G-input produces a G-output is Case 16, which requires $c_{in}=1$ and $a_{i-1}=1.$
+(a) The only scan case where a G-input produces a G-output is Case 16, which requires $c_{\mathrm{in}}=1$ and $a_{i-1}=1.$
 
 (b) The \textbf{leftmost} G-block's leading G-position is always converted to P in the scan output.
 
 (c) When carry from a G-block propagates rightward through a P(1,0) bridge, each P(1,0) position is converted to K(0,0) (Case 12), destroying the bridge.
 \end{lemma}
 \begin{proof}
-(a) Direct inspection of Table 5.1: only Case 16 maps G-input to G-output, requiring both $c_{in}=1$ and $a_{i-1}=1.$
+(a) Direct inspection of Table 5.1: only Case 16 maps G-input to G-output, requiring both $c_{\mathrm{in}}=1$ and $a_{i-1}=1.$
 
-(b) At the leading position of the leftmost G-block, the predecessor is either the boundary $(a_{-1}=0,$ Case 16 fails), K $(c_{out}=0,$ Case 16 fails), or P(0,1) $(a_{i-1}=0,$ Case 16 fails). If the predecessor is P(1,0) with $c_{in}=1,$ the carry must originate from an earlier G-block---but no earlier G-block exists. Therefore, the leftmost G-block's leading G is converted to P (Cases 13, 14, or 15).
+(b) At the leading position of the leftmost G-block, the predecessor is either the boundary $(a_{-1}=0,$ Case 16 fails), K $(c_{\mathrm{out}}=0,$ Case 16 fails), or P(0,1) $(a_{i-1}=0,$ Case 16 fails). If the predecessor is P(1,0) with $c_{\mathrm{in}}=1,$ the carry must originate from an earlier G-block---but no earlier G-block exists. Therefore, the leftmost G-block's leading G is converted to P (Cases 13, 14, or 15).
 
-(c) P(1,0) with $c_{in}=1$ and $a_{i-1}=1$ (from a preceding G or P(1,0)) triggers Case 12: output K(0,0), $c_{out}=1.$ The carry passes through, but the bridge position is destroyed.
+(c) P(1,0) with $c_{\mathrm{in}}=1$ and $a_{i-1}=1$ (from a preceding G or P(1,0)) triggers Case 12: output K(0,0), $c_{\mathrm{out}}=1.$ The carry passes through, but the bridge position is destroyed.
 \end{proof}
 
 \textbf{Consequence (left-to-right consumption).} A non-leftmost G-block may temporarily retain its leading G if an unbroken P(1,0) bridge delivers carry from a preceding G-block (Case 16 at the entry). However, such a bridge is simultaneously converted to K(0,0) by part (c). By Lemma 5.5 (below), the K barrier persists through re-pairing. Therefore, when the leftmost G-block is fully consumed, the carry supply to the next G-block is severed, and that block becomes the new leftmost---its leading G then subject to part (b). G-blocks are consumed sequentially from left to right.
@@ -1193,27 +1214,27 @@ Cases 1--4 of Table 5.1 cover all four contexts for K-input (0,0). The outputs a
 
 \begin{lemma}[P→G constraint]
 \label{lemma:5.3}
-The only cases producing G-output from P-input are Cases 5, 10, and 11. In all three cases, $c_{out}=0.$
+The only cases producing G-output from P-input are Cases 5, 10, and 11. In all three cases, $c_{\mathrm{out}}=0.$
 \end{lemma}
 \begin{proof}
-Inspection of P-input rows (Cases 5--12) in Table 5.1. Cases producing G-output: Case 5 (P(0,1), $c_{in}=0,a_{i-1}=0),$ Case 10 (P(1,0), $c_{in}=0,a_{i-1}=1),$ Case 11 (P(1,0), $c_{in}=1,a_{i-1}=0).$ All have $c_{out}=0.$
+Inspection of P-input rows (Cases 5--12) in Table 5.1. Cases producing G-output: Case 5 (P(0,1), $c_{\mathrm{in}}=0,a_{i-1}=0),$ Case 10 (P(1,0), $c_{\mathrm{in}}=0,a_{i-1}=1),$ Case 11 (P(1,0), $c_{\mathrm{in}}=1,a_{i-1}=0).$ All have $c_{\mathrm{out}}=0.$
 \end{proof}
 
-\textbf{Remark (Case 10 chaining).} A consecutive run of P(1,0) inputs can trigger a chain of Case 10 applications: each produces G-output with $c_{out}=0$ and new\_m4=1, providing $a_{i-1}=1$ and $c_{in}=0$ for the next position. Thus P(1,0) runs of length M can produce G-blocks of length M in the output. However: (i) this consumes M P-positions from the input, (ii) all generated G-positions have $c_{out}=0,$ so the resulting G-block carries no internal carry chain, and (iii) at the next scan step, Lemma 5.1(b) applies when this new G-block is the leftmost, or the left-to-right consumption mechanism governs its lifetime.
+\textbf{Remark (Case 10 chaining).} A consecutive run of P(1,0) inputs can trigger a chain of Case 10 applications: each produces G-output with $c_{\mathrm{out}}=0$ and $\mathrm{new\_m4}=1$, providing $a_{i-1}=1$ and $c_{\mathrm{in}}=0$ for the next position. Thus P(1,0) runs of length M can produce G-blocks of length M in the output. However: (i) this consumes M P-positions from the input, (ii) all generated G-positions have $c_{\mathrm{out}}=0,$ so the resulting G-block carries no internal carry chain, and (iii) at the next scan step, Lemma 5.1(b) applies when this new G-block is the leftmost, or the left-to-right consumption mechanism governs its lifetime.
 
 \begin{lemma}[Carry output of G-positions]
 \label{lemma:5.4}
-For all four G-input cases (Cases 13--16), $c_{out}=1.$
+For all four G-input cases (Cases 13--16), $c_{\mathrm{out}}=1.$
 \end{lemma}
 \begin{proof}
-Direct inspection of Table 5.1, Cases 13--16. This is a computational confirmation of the Generate property: $G_{out}=a_{i} \land b_{i}=1 \land 1=1$, which produces $c_{out}=1$ unconditionally, regardless of $c_{in}$ or $a_{i-1}.$
+Direct inspection of Table 5.1, Cases 13--16. This is a computational confirmation of the Generate property: $G_{\mathrm{out}}=a_{i} \land b_{i}=1 \land 1=1$, which produces $c_{\mathrm{out}}=1$ unconditionally, regardless of $c_{\mathrm{in}}$ or $a_{i-1}.$
 \end{proof}
 
 \subsubsection{Re-pairing Transition Table}
 
 After computing $3n+1$, the division by $2^{d}$ removes d trailing zeros. When d is odd, the remaining bit string requires re-pairing with a 1-bit boundary shift (\S6). Each new pair is formed from the left bit of one old pair and the right bit of the adjacent old pair:
 
-\[ new\_m6_{i}'=old_m4_{A}, new\_m4_{i}'=old_m6_{B} \]
+\[ \mathrm{new\_m6}_{i}'=\mathrm{old\_m4}_{A}, \mathrm{new\_m4}_{i}'=\mathrm{old\_m6}_{B} \]
 
 where A and B are adjacent pairs in the scan output. (When d is even, pairs are preserved and no re-pairing occurs.)
 
@@ -1286,11 +1307,11 @@ An isolated G consists entirely of its leading position. When the conditions for
 \textbf{Remark ($P \to G$ products under re-pairing).} When d is odd, an isolated G (length 1) produced by a $P\to G$ transition (Lemma 5.3) undergoes re-pairing with its neighbors. Let A be the predecessor pair and C the successor pair in the scan output. The re-pairing creates two new boundary pairs:
 
 \begin{itemize}
-\item A--G boundary: $new\_m4'=m6_{G}=1,new\_m6'=m4_{A}.$ New pair is G iff $m4_{A}=1$ (A is P(1,0) or G).
-\item G--C boundary: $new\_m6'=m4_{G}=1,new\_m4'=m6_{C}.$ New pair is G iff $m6_{C}=1$ (C is P(0,1) or G).
+\item A--G boundary: $\mathrm{new\_m4}'=m6_{G}=1,\mathrm{new\_m6}'=m4_{A}.$ New pair is G iff $m4_{A}=1$ (A is P(1,0) or G).
+\item G--C boundary: $\mathrm{new\_m6}'=m4_{G}=1,\mathrm{new\_m4}'=m6_{C}.$ New pair is G iff $m6_{C}=1$ (C is P(0,1) or G).
 \end{itemize}
 
-An isolated G can thus expand to at most 2 G-positions under re-pairing, or vanish entirely, depending on the neighbor pair types. Crucially, all $P\to G$ outputs have $c_{out}=0$ (Lemma 5.3), so the successor pair is computed with $c_{in}=0.$ This carry severance prevents $P\to G$ products from initiating new carry chains, structurally limiting their ability to seed large G-blocks.
+An isolated G can thus expand to at most 2 G-positions under re-pairing, or vanish entirely, depending on the neighbor pair types. Crucially, all $P\to G$ outputs have $c_{\mathrm{out}}=0$ (Lemma 5.3), so the successor pair is computed with $c_{\mathrm{in}}=0.$ This carry severance prevents $P\to G$ products from initiating new carry chains, structurally limiting their ability to seed large G-blocks.
 
 \subsubsection{The Division Exponent and Growth}
 
@@ -1299,7 +1320,7 @@ An isolated G can thus expand to at most 2 G-positions under re-pairing, or vani
 For odd $n$, in the scan output (LSB order), $d=1$ if and only if the input pair at position 0 is G(1,1).
 \end{lemma}
 \begin{proof}
-For odd $n$, $b_{0}=1$ (the least significant bit is 1), so pair 0 is either G(1,1) or P(0,1). The scan initial state is $(c_{in},a_{i-1})=(1,0).$ If pair 0 = G(1,1): Case 15 applies, output = (1,0), trailing bits = $\ldots$ 10, so $d=1$. If pair 0 = P(0,1): Case 7 applies, output = (0,0), trailing bits = $\ldots$ 00, so $d \geq 2$.
+For odd $n$, $b_{0}=1$ (the least significant bit is 1), so pair 0 is either G(1,1) or P(0,1). The scan initial state is $(c_{\mathrm{in}},a_{i-1})=(1,0).$ If pair 0 = G(1,1): Case 15 applies, output = (1,0), trailing bits = $\ldots$ 10, so $d=1$. If pair 0 = P(0,1): Case 7 applies, output = (0,0), trailing bits = $\ldots$ 00, so $d \geq 2$.
 \end{proof}
 
 \textbf{Remark (General division exponent formula).} For odd $n$, the full division exponent d is determined by the input pair sequence as follows. Let $j \geq 0$ be the number of leading P(0,1) pairs (i.e., pairs 0 through j-1 are all P(0,1), and pair j is the first non-P(0,1) pair). Then:
@@ -1309,11 +1330,11 @@ For odd $n$, $b_{0}=1$ (the least significant bit is 1), so pair 0 is either G(1
 \item If pair j is K(0,0) or P(1,0): d=2j (even, with $j \geq 1$)
 \end{itemize}
 
-\textit{Derivation.} By the DFST initial state $(c_{in},a_{i-1})=(1,0)$: input P(0,1) at pair 0 triggers Case 7, producing output K(0,0) with $(c_{out},new\_m4)=(1,0),$ maintaining the DFST in state (1,0). Each subsequent P(0,1) repeats Case 7, extending the trailing-zero output by two bits per pair. When the first non-P(0,1) pair is reached at position j in DFST state (1,0): K(0,0) triggers Case 3 (output P(0,1), first non-zero bit at position 2j, so d=2j); P(1,0) triggers Case 11 (output G(1,1), first non-zero bit at position 2j, so d=2j); G(1,1) triggers Case 15 (output P(1,0) with bits (m6,m4)=(0,1), first non-zero bit at position 2j+1, so d=2j+1). For j=0 with pair 0 = G: Case 15 gives $d=1$, recovering Lemma 5.8.
+\textit{Derivation.} By the DFST initial state $(c_{\mathrm{in}},a_{i-1})=(1,0)$: input P(0,1) at pair 0 triggers Case 7, producing output K(0,0) with $(c_{\mathrm{out}},\mathrm{new\_m4})=(1,0),$ maintaining the DFST in state (1,0). Each subsequent P(0,1) repeats Case 7, extending the trailing-zero output by two bits per pair. When the first non-P(0,1) pair is reached at position j in DFST state (1,0): K(0,0) triggers Case 3 (output P(0,1), first non-zero bit at position 2j, so d=2j); P(1,0) triggers Case 11 (output G(1,1), first non-zero bit at position 2j, so d=2j); G(1,1) triggers Case 15 (output P(1,0) with bits (m6,m4)=(0,1), first non-zero bit at position 2j+1, so d=2j+1). For j=0 with pair 0 = G: Case 15 gives $d=1$, recovering Lemma 5.8.
 
 \textbf{Remark (Expected division exponent under uniform distribution).} If pair types are independently and uniformly distributed (each of $\{$K, P(0,1), P(1,0), G$\}$ with probability 1/4, subject to the constraint that pair 0 of odd n has $b_{0}=1,$ giving equal probability 1/2 to G and P(0,1) at pair 0), the d-formula yields $E[d]=2$ by geometric series evaluation. The net expected bit change per step is $\log_2 3 - E[d] \approx 1.585 - 2 = -0.415$ bits, consistent with the known contraction rate of Collatz trajectories. By the DFST permutation property, the scan does not structurally bias the output toward any particular pair type, so the uniform distribution assumption is self-consistent at the single-step level.
 
-\textbf{Remark ($d=1$ re-pairing lifecycle).} When $d=1$ (pair 0 = G, Case 15 output = P(1,0)), the division removes only bit 0, and re-pairing produces new pairs: new pair $i=(old_m6_{i+1},old_m4_{i}).$ Since the scan output has $m4_{0}=1$ (from Case 15), new pair $0=(old_m6_{1},$ 1). If the original pair 1 was also G (within the same G-block), then $old_m6_{1}=1,$ giving new pair 0 = G(1,1). Thus $d=1$ can recur at the next step. However, the G-block loses at least 1 G per step (integrated lifecycle above), so $d=1$ persists for at most L consecutive steps, where L is the initial G-block length containing pair 0. When $old_m6_{1} \neq$ 1 (pair 1 is K or P(1,0)), new pair 0 = P(0,1), and $d \geq 2$ at the next step. This is consistent with the arithmetic bound of Corollary 5.3.
+\textbf{Remark ($d=1$ re-pairing lifecycle).} When $d=1$ (pair 0 = G, Case 15 output = P(1,0)), the division removes only bit 0, and re-pairing produces new pairs: new pair $i=(\mathrm{old\_m6}_{i+1},\mathrm{old\_m4}_{i}).$ Since the scan output has $m4_{0}=1$ (from Case 15), new pair $0=(\mathrm{old\_m6}_{1},$ 1). If the original pair 1 was also G (within the same G-block), then $\mathrm{old\_m6}_{1}=1,$ giving new pair 0 = G(1,1). Thus $d=1$ can recur at the next step. However, the G-block loses at least 1 G per step (integrated lifecycle above), so $d=1$ persists for at most L consecutive steps, where L is the initial G-block length containing pair 0. When $\mathrm{old\_m6}_{1} \neq$ 1 (pair 1 is K or P(1,0)), new pair 0 = P(0,1), and $d \geq 2$ at the next step. This is consistent with the arithmetic bound of Corollary 5.3.
 
 \textbf{Growth condition.} Each step of $3n+1$ adds $\log_2 3 \approx 1.585$ bits and removes d bits. Net bit growth is positive only when $d=1$. By Lemma 5.8, sustained growth requires pair 0 to be G(1,1) at every step. Pair 0, as the leftmost pair, is always in or to the left of the leftmost G-block. By Lemma 5.1(b), the leftmost G-block's leading G is eliminated at each scan step; by Lemma 5.6, its net length change is at most 0. The leftmost G-block containing pair 0 is therefore consumed in finite time, after which $d \geq 2$ and the trajectory contracts.
 
@@ -1333,9 +1354,10 @@ Let n be odd and let $n_{0}=n, n_{j+1}=(3n_{j}+1)/2^{d_{j}}$ be the odd-to-odd t
 In the GPK system of $3n+1$, the \textbf{activation condition} for carry generation (G-dominance, i.e., high concentration of (1,1)-pairs) and the \textbf{activation result} (carry-induced destruction of G-blocks) are inseparably coupled within the same algebraic identity. No configuration can maintain G-dominance indefinitely.
 \end{proposition}
 
-\textit{Derivation.} The result follows from Lemmas 5.1--5.8, which are derived exhaustively from Tables 5.1 and 5.2.
+\begin{proof}[Derivation]
+The result follows from Lemmas 5.1--5.8, which are derived exhaustively from Tables 5.1 and 5.2.
 
-\textbf{Step 1: Inseparable coupling.} Maintaining G-dominance requires a high concentration of (1,1)-pairs. By Theorem 5.1, each (1,1)-pair is assigned Generate. By Lemma 5.4, every G-position outputs $c_{out}=1$ unconditionally (all four G-cases in Table 5.1 confirm this). This carry enters the output bit formula as an XOR operand, deterministically transforming the output pair types at G-block boundaries. By Lemma 5.1(b), the leftmost G-block's leading G is always converted to P. By Lemma 5.1(c), any P(1,0) bridge carrying this carry to subsequent G-blocks is simultaneously destroyed (converted to K). This coupling---(1,1)-pairs produce G, G produces carry, carry destroys G and the bridges connecting G-blocks---is a direct consequence of the identity $3n+1 = 2n+n+1$ and cannot be circumvented within the closed system.
+\textbf{Step 1: Inseparable coupling.} Maintaining G-dominance requires a high concentration of (1,1)-pairs. By Theorem 5.1, each (1,1)-pair is assigned Generate. By Lemma 5.4, every G-position outputs $c_{\mathrm{out}}=1$ unconditionally (all four G-cases in Table 5.1 confirm this). This carry enters the output bit formula as an XOR operand, deterministically transforming the output pair types at G-block boundaries. By Lemma 5.1(b), the leftmost G-block's leading G is always converted to P. By Lemma 5.1(c), any P(1,0) bridge carrying this carry to subsequent G-blocks is simultaneously destroyed (converted to K). This coupling---(1,1)-pairs produce G, G produces carry, carry destroys G and the bridges connecting G-blocks---is a direct consequence of the identity $3n+1 = 2n+n+1$ and cannot be circumvented within the closed system.
 
 \textbf{Step 2: Left-to-right G-block consumption.} G-blocks are consumed sequentially from left to right:
 
@@ -1351,15 +1373,15 @@ The leftmost G-block of initial length L has a finite lifetime bounded by L (net
 
 \textbf{Carry asymmetry bridge.} A natural question arises: even though each individual G-block has a finite lifetime, could $P\to G$ transitions continuously replenish the G supply, maintaining G-dominance indefinitely? The carry structure of Table 5.1 rules this out through an asymmetry between destruction and creation.
 
-\textit{Destruction chains.} When the leftmost G-block's leading G is consumed (Lemma 5.1(b)), the output carry is $c_{out}=1$ (Lemma 5.4: all four G-input cases produce $c_{out}=1).$ This carry does not stop at the consumed position. It flows rightward into the next position as $c_{in}=1.$ If that next position is a P(1,0) bridge connecting two G-blocks, the carry converts it to K(0,0) (Lemma 5.1(c), Table 5.1 Case 12), producing another $c_{out}=1$ that propagates further. The newly created K barrier then permanently severs the carry connection to subsequent G-blocks (Lemma 5.5). In this way, a single consumption event at the G-block head cascades rightward: it eliminates one G, destroys the bridge, and isolates the next G-block---all from one carry chain.
+\textit{Destruction chains.} When the leftmost G-block's leading G is consumed (Lemma 5.1(b)), the output carry is $c_{\mathrm{out}}=1$ (Lemma 5.4: all four G-input cases produce $c_{\mathrm{out}}=1).$ This carry does not stop at the consumed position. It flows rightward into the next position as $c_{\mathrm{in}}=1.$ If that next position is a P(1,0) bridge connecting two G-blocks, the carry converts it to K(0,0) (Lemma 5.1(c), Table 5.1 Case 12), producing another $c_{\mathrm{out}}=1$ that propagates further. The newly created K barrier then permanently severs the carry connection to subsequent G-blocks (Lemma 5.5). In this way, a single consumption event at the G-block head cascades rightward: it eliminates one G, destroys the bridge, and isolates the next G-block---all from one carry chain.
 
-\textit{Creation does not chain.} In contrast, when a P position is converted to G (Cases 5, 10, 11), the output carry is $c_{out}=0$ (Lemma 5.3). This means the newly created G produces no carry that flows to its right neighbor. The next position receives $c_{in}=0$ from this event and is structurally unaffected by it. The creation is a local, one-position event with no rightward propagation. Furthermore, Case 10 chaining---the only mechanism that creates a G-block of length M from M consecutive P(1,0) positions---consumes those M P-positions as fuel. This fuel is removed from the pair sequence in the same step and is not regenerated.
+\textit{Creation does not chain.} In contrast, when a P position is converted to G (Cases 5, 10, 11), the output carry is $c_{\mathrm{out}}=0$ (Lemma 5.3). This means the newly created G produces no carry that flows to its right neighbor. The next position receives $c_{\mathrm{in}}=0$ from this event and is structurally unaffected by it. The creation is a local, one-position event with no rightward propagation. Furthermore, Case 10 chaining---the only mechanism that creates a G-block of length M from M consecutive P(1,0) positions---consumes those M P-positions as fuel. This fuel is removed from the pair sequence in the same step and is not regenerated.
 
-This asymmetry is summarized as follows: each G-destruction event produces $c_{out}=1,$ which cascades into bridge destruction and carry severance affecting multiple downstream positions. Each G-creation event produces $c_{out}=0,$ affecting only the single position where the creation occurs and consuming P-fuel in the process. Both facts are per-case readings from Table 5.1, not quantitative estimates. Since destruction cascades while creation does not, $P\to G$ generation cannot systematically compensate for the left-to-right consumption process.
+This asymmetry is summarized as follows: each G-destruction event produces $c_{\mathrm{out}}=1,$ which cascades into bridge destruction and carry severance affecting multiple downstream positions. Each G-creation event produces $c_{\mathrm{out}}=0,$ affecting only the single position where the creation occurs and consuming P-fuel in the process. Both facts are per-case readings from Table 5.1, not quantitative estimates. Since destruction cascades while creation does not, $P\to G$ generation cannot systematically compensate for the left-to-right consumption process.
 
-\textbf{Step 3: New G-generation is structurally bounded.} Given this carry asymmetry, new G-positions arise only from $P\to G$ transitions (Lemma 5.3: Cases 5, 10, 11) and re-pairing (Table 5.2: Cases R10, R12, R14, R16). By Lemma 5.2, $K\to G$ is impossible. The $P\to G$ transitions all produce $c_{out}=0$ (Lemma 5.3), meaning newly generated G-blocks carry no internal carry chain. Case 10 chaining can convert a P(1,0) run of length M into a G-block of length M, but this consumes M P-positions from the input. The same Lemmas 5.1--5.7 apply to these newly created G-blocks: they have finite lifetime and cannot merge with existing blocks.
+\textbf{Step 3: New G-generation is structurally bounded.} Given this carry asymmetry, new G-positions arise only from $P\to G$ transitions (Lemma 5.3: Cases 5, 10, 11) and re-pairing (Table 5.2: Cases R10, R12, R14, R16). By Lemma 5.2, $K\to G$ is impossible. The $P\to G$ transitions all produce $c_{\mathrm{out}}=0$ (Lemma 5.3), meaning newly generated G-blocks carry no internal carry chain. Case 10 chaining can convert a P(1,0) run of length M into a G-block of length M, but this consumes M P-positions from the input. The same Lemmas 5.1--5.7 apply to these newly created G-blocks: they have finite lifetime and cannot merge with existing blocks.
 
-\textbf{Dimensional separation.} The DFST permutation property (\S5.7.1) ensures that for each fixed DFST state, the map from input pair type to output pair type is a bijection on $\{$K, P(0,1), P(1,0), G$\}$. However, the DFST state $(c_{in},a_{i-1})$ varies by position, determined by the carry chain and the preceding input. Different positions therefore undergo different permutations, and global type counts are \textit{not} preserved. For example, two consecutive G-inputs at positions 0 and 1 yield P(1,0) and G respectively (states (1,0) and (1,1)), reducing the G-count from 2 to 1. This is precisely the mechanism of Lemma 5.1(b): the leftmost G-block's leading G is systematically converted to P.
+\textbf{Dimensional separation.} The DFST permutation property (\S5.7.1) ensures that for each fixed DFST state, the map from input pair type to output pair type is a bijection on $\{$K, P(0,1), P(1,0), G$\}$. However, the DFST state $(c_{\mathrm{in}},a_{i-1})$ varies by position, determined by the carry chain and the preceding input. Different positions therefore undergo different permutations, and global type counts are \textit{not} preserved. For example, two consecutive G-inputs at positions 0 and 1 yield P(1,0) and G respectively (states (1,0) and (1,1)), reducing the G-count from 2 to 1. This is precisely the mechanism of Lemma 5.1(b): the leftmost G-block's leading G is systematically converted to P.
 
 A natural question remains: even though G-blocks are consumed at the left, could $P\to G$ transitions elsewhere sustain enough G-positions to continually replenish pair 0 = G? The growth condition $d=1$ requires pair 0 = G(1,1) (Lemma 5.8)---a \textit{positional} condition on a specific location, not a condition on aggregate G-count. The G-block degradation established by Lemmas 5.1--5.7 operates in this positional dimension: head elimination, bridge destruction, non-mergeability, and tail growth bounds concern the spatial structure of consecutive G-positions. The aggregate number of G-positions elsewhere is structurally irrelevant to whether pair 0 is G. Once the leftmost G-block containing pair 0 is consumed, the condition pair 0 = G is lost regardless of how many G-positions exist at other locations.
 
@@ -1371,14 +1393,15 @@ A natural question remains: even though G-blocks are consumed at the left, could
 \item \textbf{Scan} (carry propagation): A deterministic finite-state transducer with 4 states, governed by Table 5.1 (16 cases). The DFST permutation property ensures that each state maps the four input types to a permutation of the four output types.
 \item \textbf{Division exponent determination}: The value d is a deterministic function of the scan output pair sequence, given by the formula in \S5.7.5 (the number of leading P(0,1) pairs and the type of the first non-P(0,1) pair).
 \item \textbf{Trailing zero removal} ($\div 2^{d})$: Removes $\lfloor d/2 \rfloor$  trailing K(0,0) pairs and, when d is odd, one additional bit that triggers re-pairing. The removed pairs are all K(0,0) (trailing zeros); the remaining pair types are preserved.
-\item \textbf{Re-pairing} (when d is odd): Governed by Table 5.2 (16 cases). New pair types are determined by adjacent old pairs through the formula $new\_m6'=m4_{A},new\_m4'=m6_{B}.$
+\item \textbf{Re-pairing} (when d is odd): Governed by Table 5.2 (16 cases). New pair types are determined by adjacent old pairs through the formula $\mathrm{new\_m6}'=m4_{A},\mathrm{new\_m4}'=m6_{B}.$
 \end{enumerate}
 
-No phase introduces pair types or GPK classes outside the established sets. The associative composition rule $G \circ X=G$, $K \circ X=K$, $P \circ X=X$ [6, 7, 8] is preserved throughout. The output $n'$ has a new pair sequence from the same four types, and its GPK is determined by the same algebraic identity (Theorem 5.1). Both finite tables (16 + 16 cases) are exhaustive enumerations derived from the identity $3n+1 = 2n+n+1$ and the exchange principle of \S6, requiring no assumptions beyond elementary arithmetic.
+No phase introduces pair types or GPK classes outside the established sets. The associative composition rule $G \circ X=G$, $K \circ X=K$, $P \circ X=X$ \cite{Bedrij1962, Kogge1973, Brent1982} is preserved throughout. The output $n'$ has a new pair sequence from the same four types, and its GPK is determined by the same algebraic identity (Theorem 5.1). Both finite tables (16 + 16 cases) are exhaustive enumerations derived from the identity $3n+1 = 2n+n+1$ and the exchange principle of \S6, requiring no assumptions beyond elementary arithmetic.
 
 \textbf{Step 5: Scale invariance.} The per-pair determination of the m4-stage GPK (Theorem 5.1) is an algebraic identity, not a finite verification. It holds for all $n \in \mathbb{N}$, at every bit-length. The 16-pattern scan table (Table 5.1) and the 16-pattern re-pairing table (Table 5.2) are exhaustive: they cover every possible input state. Lemmas 5.1--5.8 are logical consequences of these tables and therefore hold universally. A divergent trajectory passes through numbers of unbounded bit-length; at every such number, the same inseparable coupling applies. For $x \geq 5$, per-pair determination fails (Theorem 5.3), and the above coupling is not guaranteed.
 
-\textbf{Conclusion.} G-dominance requires (1,1)-pairs; (1,1)-pairs unconditionally generate carry; carry eliminates the leftmost G-block's leading position and destroys the P-bridges connecting G-blocks. G-blocks are consumed left-to-right within this closed algebraic structure, at every scale. No configuration within this closed system can maintain G-dominance indefinitely. $\square$
+\textbf{Conclusion.} G-dominance requires (1,1)-pairs; (1,1)-pairs unconditionally generate carry; carry eliminates the leftmost G-block's leading position and destroys the P-bridges connecting G-blocks. G-blocks are consumed left-to-right within this closed algebraic structure, at every scale. No configuration within this closed system can maintain G-dominance indefinitely.
+\end{proof}
 
 \begin{remark}[Structural impossibility of divergence]
 \label{remark:5.3}
@@ -1396,13 +1419,13 @@ The $P\to G$ transitions (Cases 5, 10, 11) can temporarily increase the G-count 
 
 \begin{remark}[Contrast with $x \geq 5$]
 \label{remark:5.5}
-For $x \geq 5$, the m4-stage GPK is not per-pair determined (Theorem 5.3). The DFST state space grows exponentially with the shift parameter $s = \log_2(x-1)$: the reference distance spans $\lfloor s/2 \rfloor$  pairs, requiring tracking of distant pair information. This enlarged state space admits configurations where carry structure depends on inter-pair correlations that escape the structural constraints of Lemmas 5.1--5.8. This is consistent with the known existence of non-trivial cycles for $5n+1$ [2]: the carry structure of $5n+1$ admits stable configurations that the 2-bit observation space cannot resolve or constrain.
+For $x \geq 5$, the m4-stage GPK is not per-pair determined (Theorem 5.3). The DFST state space grows exponentially with the shift parameter $s = \log_2(x-1)$: the reference distance spans $\lfloor s/2 \rfloor$  pairs, requiring tracking of distant pair information. This enlarged state space admits configurations where carry structure depends on inter-pair correlations that escape the structural constraints of Lemmas 5.1--5.8. This is consistent with the known existence of non-trivial cycles for $5n+1$ \cite{Guy2004}: the carry structure of $5n+1$ admits stable configurations that the 2-bit observation space cannot resolve or constrain.
 \end{remark}
 
 \subsection{Numerical Verification}
 \label{subsec:5.8}
 
-\textbf{Verification of Theorem B.} For the 50 odd numbers $n=1$,3,5,$\ldots$ ,99 and large values n=127,255,511,1023,4095,8191,65535,99991,999999, the coincidence of the m4-stage $G_{out}[i]$ with $m2(n)_{i},$ and $P_{out}[i]$ with $m7(n)_{i}$ for $3n+1$ was verified computationally. Full agreement for all numbers.
+\textbf{Verification of Theorem B.} For the 50 odd numbers $n=1$,3,5,$\ldots$ ,99 and large values n=127,255,511,1023,4095,8191,65535,99991,999999, the coincidence of the m4-stage $G_{\mathrm{out}}[i]$ with $m2(n)_{i},$ and $P_{\mathrm{out}}[i]$ with $m7(n)_{i}$ for $3n+1$ was verified computationally. Full agreement for all numbers.
 
 \textbf{Verification of Theorem C.} In addition to the exhaustive 784-way matching for $n=31$, the same matching was performed for $n=7$,13,19,27,43,83. For $n=27$,43, some predicate combinations coincidentally match (due to the arrangement of pair values), but for $n=31$, complete non-coincidence holds. Theorem C is an existence statement; a single counterexample suffices.
 
@@ -1490,9 +1513,10 @@ In the conversion from the pair sequence of $m$ to that of $m/2^{d}$:
 
 More precisely, let $q = \lfloor d/2 \rfloor$ and let the MSB-side pair sequence of $m$ be $(\alpha_{0},\beta_{0}),(\alpha_{1},\beta_{1}), \ldots$ The re-pairing after removing the trailing $d$ bits gives:
 
-\[ d \text{ even: } m4(n')_{j} = \alpha_{j+q}, \quad m6(n')_{j} = \beta_{j+q} \]
-
-\[ d \text{ odd: } m4(n')_{j} = \beta_{j+q}, \quad m6(n')_{j} = \alpha_{j+q+1} \]
+\begin{align}
+d \text{ even:}\quad m4(n')_{j} &= \alpha_{j+q}, \quad m6(n')_{j} = \beta_{j+q}, \label{eq:exchange-even} \\
+d \text{ odd:}\quad m4(n')_{j} &= \beta_{j+q}, \quad m6(n')_{j} = \alpha_{j+q+1}, \label{eq:exchange-odd}
+\end{align}
 
 where the index range is $0 \leq j \leq k' - 1$ with $k' = \lceil (2k - d)/2 \rceil$ and the leading-zero padding is applied when $2k - d$ is odd.
 \end{theorem}
@@ -1613,7 +1637,7 @@ As an application of the unified algorithm, we analyze the known cycles of $5n+1
 \subsection{Known Cycles of $5n+1$}
 \label{subsec:7.1}
 
-The following non-trivial cycles of $5n+1$ are known [2]:
+The following non-trivial cycles of $5n+1$ are known \cite{Guy2004}:
 
 \textbf{Cycle A (2 elements):} $1 	o 3 	o 1$
 
@@ -1744,7 +1768,7 @@ The existence of non-trivial cycles for $5n+1$ (Cycles B and C above) is consist
 \label{subsec:7.8}
 
 \begin{definition}
-\label{definition:8.1}
+\label{definition:7.1}
 A sequence of odd numbers $n_{0},n_{1}, \ldots ,n_{p-1}$ forms a cycle of period $p$ if $T(n_{i})=n_{(i+1) \bmod p}$ holds for all $i$.
 \end{definition}
 
@@ -1769,9 +1793,9 @@ A sequence of odd numbers $n_{0},n_{1}, \ldots ,n_{p-1}$ forms a cycle of period
 \subsection{Relation to Prior Work}
 \label{subsec:8.1}
 
-\textbf{Relation to the Syracuse function.} The Syracuse function $T(n) = (3n+1)/2^{v_{2}(3n+1)}$ [1] elides even steps and defines the odd-to-odd map in a single expression. However, it does not penetrate the internal structure of $3n+1$, and the value of $v_{2}$ can only be known after computation. Our m4/m6 scan yields the same result as T(n), but in the process obtains the carry structure (GPK classification) of each pair as a by-product. The Syracuse function is a \textit{definition} of the map; the m4/m6 scan is a \textit{decomposition} of the map.
+\textbf{Relation to the Syracuse function.} The Syracuse function $T(n) = (3n+1)/2^{v_{2}(3n+1)}$ \cite{Lagarias1985} elides even steps and defines the odd-to-odd map in a single expression. However, it does not penetrate the internal structure of $3n+1$, and the value of $v_{2}$ can only be known after computation. Our m4/m6 scan yields the same result as T(n), but in the process obtains the carry structure (GPK classification) of each pair as a by-product. The Syracuse function is a \textit{definition} of the map; the m4/m6 scan is a \textit{decomposition} of the map.
 
-\textbf{Relation to binary analysis.} Binary-based analysis of Collatz maps by Wirsching [3] and Lagarias [1] treats $3n+1$ as 2n+n+1 and tracks bit-string changes. Our approach extends this direction but differs in the following respects:
+\textbf{Relation to binary analysis.} Binary-based analysis of Collatz maps by Wirsching \cite{Wirsching1998} and Lagarias \cite{Lagarias1985} treats $3n+1$ as 2n+n+1 and tracks bit-string changes. Our approach extends this direction but differs in the following respects:
 
 \begin{itemize}
 \item Decomposition into 2-bit pairs and the introduction of the 16-predicate system uses the \textit{pair type} (4 kinds) rather than individual bits as the basic unit. This allows carry behavior to be described as a function of pair type.
@@ -1779,7 +1803,7 @@ A sequence of odd numbers $n_{0},n_{1}, \ldots ,n_{p-1}$ forms a cycle of period
 \item The completeness and per-pair independence of the 16 predicates provides tools for establishing both positive results (Theorem 5.1) and negative results (Theorem 5.2): "what is expressible and what is not."
 \end{itemize}
 
-\textbf{Relation to carry-lookahead adders.} The GPK decomposition of \S4 is based on the same principle as carry-lookahead technology introduced by Bedrij [6]. Our contribution is to connect this technology to the carry structure of Collatz-type maps and to show that the GPK classification is interpretable as pair predicates (specifically m2/m7). This bridges a standard technique from computer science to a problem in number theory.
+\textbf{Relation to carry-lookahead adders.} The GPK decomposition of \S4 is based on the same principle as carry-lookahead technology introduced by Bedrij \cite{Bedrij1962}. Our contribution is to connect this technology to the carry structure of Collatz-type maps and to show that the GPK classification is interpretable as pair predicates (specifically m2/m7). This bridges a standard technique from computer science to a problem in number theory.
 
 \subsection{Novelty of This Paper}
 \label{subsec:8.2}
@@ -1801,11 +1825,11 @@ A sequence of odd numbers $n_{0},n_{1}, \ldots ,n_{p-1}$ forms a cycle of period
 
 Every structural claim in this paper follows from the algebraic identity $3n+1 = 2n+n+1$ and the closure of the GPK operator space, not from finite numerical verification. An earlier version employed a stopping-time algorithm for GPK statistics, which introduced a systematic bias by truncating trajectories. The measurements below use full-path tracking to avoid this issue; they serve as empirical illustration rather than logical foundation.
 
-Using our implementation of Algorithm 4.1, we measured GPK distributions for $x=3$,5,9 using full-path tracking. For $x=3$, all odd $n \leq 10^{9}$ (500,000,000 numbers) were tracked to $n=1$. For $x \geq 5$, trajectories do not generally converge; each trajectory was tracked for a fixed number of steps (max\_steps), accumulating GPK over the entire computation. The results are shown in Table 9.1.
+Using our implementation of Algorithm 4.1, we measured GPK distributions for $x=3$,5,9 using full-path tracking. For $x=3$, all odd $n \leq 10^{9}$ (500,000,000 numbers) were tracked to $n=1$. For $x \geq 5$, trajectories do not generally converge; each trajectory was tracked for a fixed number of steps (max\_steps), accumulating GPK over the entire computation. The results are shown in Table 8.1.
 
 \textbf{Methodological note.} GPK statistics measure the carry structure of the $xn+1$ addition in each odd-to-odd step (Syracuse function). The division by $2^{d}$ involves no addition and produces no GPK. For $x=3$, full-path tracking to $n=1$ captures the complete trajectory including the descent phase. For $x \geq 5$, trajectories enter non-trivial cycles or diverge; the max\_steps cap provides a uniform computation budget. The total odd-to-odd steps aggregated are approximately $3.5 \times 10^{10}$ for both $3n+1$ and $5n+1$, ensuring comparable sample sizes. The structural arguments of \S5.7, which derive all conclusions from finite case analysis of Tables 5.1 and 5.2, do not depend on these numerical values.
 
-\textbf{Table 9.1.} GPK distribution comparison for Collatz-type maps $T(n) = (xn+1)/2^{d}$ (full-path tracking).
+\textbf{Table 8.1.} GPK distribution comparison for Collatz-type maps $T(n) = (xn+1)/2^{d}$ (full-path tracking).
 
 
 \begin{center}
@@ -1832,11 +1856,21 @@ Max carry chain length & 23 & 71 & 69 \\
 
 \textbf{Observation 2: $P \approx 25\%$ is common for $x \geq 5$.} For $x=5$, P=25.26\%; for $x=9$, P=25.16\%---both near 1/4, and converging closer to 1/4 as $s$ increases. This is not coincidental. For $x \geq 5$, Propagate in the serial composition of m4-stage and m6-stage arises independently: $P \approx P_{m4} \cdot P_{m6} \approx 1/2 \times 1/2 = 1/4$. For $x=3$, P=29.89\% is higher because the m4-stage input is the pair itself $(a_{i},b_{i}),$ creating correlation with the m6-stage. This elevated P is a direct signature of structural closure (Theorem B).
 
-\textbf{Observation 3: Carry chain peak shifts rightward with s.} The carry chain length histogram peaks at 2--3 for $x=3$ ($s=1$), 7--8 for $x=5$ ($s=2$), and 9--10 for $x=9$ ($s=3$); see Figure 9.1 ($\log$ scale) and Figure 9.2 (linear scale). For $x=3$, the histogram decays exponentially from the peak; for $x \geq 5$, the histogram is bell-shaped with a longer tail. Notably, carry chains of length $\ell = 0$ are entirely absent for $x=3$ (the histogram begins at $\ell = 1$), while they occur for both $x=5$ and $x=9$. This is a direct numerical confirmation of the structural closure: for $x=3$, every Generate position is followed by at least one Propagate before the next Kill, because the intra-pair predicates structurally prevent G-K adjacency. For $x \geq 5$, Kill placement depends on inter-pair correlations (Theorem C), allowing both isolated carries ($\ell = 0$) and occasional long chains. Note that in the tail region ($\ell \gtrsim$55), event counts drop to single digits against trillions of total pairs; the fluctuations visible in Figure 9.1 reflect the limits of available computation time rather than structural features.
+\textbf{Observation 3: Carry chain peak shifts rightward with s.} The carry chain length histogram peaks at 2--3 for $x=3$ ($s=1$), 7--8 for $x=5$ ($s=2$), and 9--10 for $x=9$ ($s=3$); see \cref{fig:carry-chain-log} ($\log$ scale) and \cref{fig:carry-chain-linear} (linear scale). For $x=3$, the histogram decays exponentially from the peak; for $x \geq 5$, the histogram is bell-shaped with a longer tail. Notably, carry chains of length $\ell = 0$ are entirely absent for $x=3$ (the histogram begins at $\ell = 1$), while they occur for both $x=5$ and $x=9$. This is a direct numerical confirmation of the structural closure: for $x=3$, every Generate position is followed by at least one Propagate before the next Kill, because the intra-pair predicates structurally prevent G-K adjacency. For $x \geq 5$, Kill placement depends on inter-pair correlations (Theorem C), allowing both isolated carries ($\ell = 0$) and occasional long chains. Note that in the tail region ($\ell \gtrsim$55), event counts drop to single digits against trillions of total pairs; the fluctuations visible in \cref{fig:carry-chain-log} reflect the limits of available computation time rather than structural features.
 
-\textbf{Figure 9.1.} Carry chain length distribution for \textit{xn}+1 mappings ($\log$ scale).
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.85\textwidth]{fig_carry_chain_log.png}
+\caption{Carry chain length distribution for $xn+1$ mappings ($\log$ scale).}
+\label{fig:carry-chain-log}
+\end{figure}
 
-\textbf{Figure 9.2.} Carry chain length distribution for \textit{xn}+1 mappings (linear scale).
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.85\textwidth]{fig_carry_chain_linear.png}
+\caption{Carry chain length distribution for $xn+1$ mappings (linear scale).}
+\label{fig:carry-chain-linear}
+\end{figure}
 
 \subsection{Limitations of This Paper}
 \label{subsec:8.4}
@@ -1922,26 +1956,42 @@ The Collatz conjecture has resisted resolution for over 80 years despite its ele
 
 The author has not proved anything. The 2-bit pair decomposition is a standard grouping of binary digits. The GPK classification is a half-century-old technique from carry-lookahead adder design. The algebraic identity $3n+1 = 2n+n+1$ is elementary. Every derivation in this paper consists of substituting known values into known structures and recording what follows. If the structural descriptions presented here have any value, it belongs to the generations of researchers across number theory, computer arithmetic, dynamical systems, and combinatorics whose accumulated work made these observations possible. This paper merely directed an existing lens at an existing problem, revealing structures that may pave the way for further insights.
 
-\section{References}
-\label{sec:references}
+\subsection*{Acknowledgments}
+The structural verification tool used in this study was implemented in Rust and is publicly available at \url{https://github.com/onigirito/collatz-m4m6}. The author thanks the developers of the open-source tools that made the computational verification possible.
 
-[1] J. C. Lagarias, "The 3x+1 problem and its generalizations," \textit{American Mathematical Monthly}, vol. 92, no. 1, pp. 3--23, 1985.
+\medskip
+\noindent\textbf{Author's note.} The author has no background in advanced mathematics and does not write in English. The English text of this paper was produced entirely with the assistance of AI-based translation and language tools. It should be noted, however, that AI systems translating material related to the Collatz conjecture are susceptible to authority bias: the established status of the conjecture as an open problem can cause these systems to paraphrase, attenuate, or silently modify the author's intended claims during translation. The author's means of detecting and correcting such alterations remain limited. The author therefore cannot fully ensure that this manuscript conforms to the conventions expected of a formal academic publication, and recognizes that providing rigorous and precise responses during peer review may pose significant difficulty. The author wishes to state this limitation transparently. The statement in \S9.4 that ``the author has not proved anything'' faithfully reflects the author's own position and is not an artifact of translation.
 
-[2] R. K. Guy, \textit{Unsolved Problems in Number Theory}, 3rd ed. New York: Springer, 2004.
+\begin{thebibliography}{8}
 
-[3] G. J. Wirsching, \textit{The Dynamical System Generated by the $3n+1$ Function}, Lecture Notes in Mathematics, vol. 1681. Berlin: Springer, 1998.
+\bibitem{Lagarias1985}
+J. C. Lagarias, ``The 3x+1 problem and its generalizations,'' \textit{American Mathematical Monthly}, vol.~92, no.~1, pp.~3--23, 1985.
 
-[4] R. Terras, "A stopping time problem on the positive integers," \textit{Acta Arithmetica}, vol. 30, pp. 241--252, 1976.
+\bibitem{Guy2004}
+R. K. Guy, \textit{Unsolved Problems in Number Theory}, 3rd~ed. New York: Springer, 2004.
 
-[5] C. J. Everett, "Iteration of the number-theoretic function f(2n)=n, f(2n+1)=3n+2," \textit{Advances in Mathematics}, vol. 25, pp. 42--45, 1977.
+\bibitem{Wirsching1998}
+G. J. Wirsching, \textit{The Dynamical System Generated by the $3n+1$ Function}, Lecture Notes in Mathematics, vol.~1681. Berlin: Springer, 1998.
 
-[6] O. J. Bedrij, "Carry-select adder," \textit{IRE Transactions on Electronic Computers}, vol. EC-11, no. 3, pp. 340--346, 1962.
+\bibitem{Terras1976}
+R. Terras, ``A stopping time problem on the positive integers,'' \textit{Acta Arithmetica}, vol.~30, pp.~241--252, 1976.
 
-[7] P. M. Kogge and H. S. Stone, "A parallel algorithm for the efficient solution of a general class of recurrence equations," \textit{IEEE Transactions on Computers}, vol. C-22, no. 8, pp. 786--793, 1973.
+\bibitem{Everett1977}
+C. J. Everett, ``Iteration of the number-theoretic function f(2n)=n, f(2n+1)=3n+2,'' \textit{Advances in Mathematics}, vol.~25, pp.~42--45, 1977.
 
-[8] R. P. Brent and H. T. Kung, "A regular layout for parallel adders," \textit{IEEE Transactions on Computers}, vol. C-31, no. 3, pp. 260--264, 1982.
+\bibitem{Bedrij1962}
+O. J. Bedrij, ``Carry-select adder,'' \textit{IRE Transactions on Electronic Computers}, vol.~EC-11, no.~3, pp.~340--346, 1962.
 
-\section{Appendix (Overview)}
+\bibitem{Kogge1973}
+P. M. Kogge and H. S. Stone, ``A parallel algorithm for the efficient solution of a general class of recurrence equations,'' \textit{IEEE Transactions on Computers}, vol.~C-22, no.~8, pp.~786--793, 1973.
+
+\bibitem{Brent1982}
+R. P. Brent and H. T. Kung, ``A regular layout for parallel adders,'' \textit{IEEE Transactions on Computers}, vol.~C-31, no.~3, pp.~260--264, 1982.
+
+\end{thebibliography}
+
+\appendix
+\section*{Appendix (Overview)}
 \label{sec:appendix}
 
 The complete version of this paper includes the following appendices.

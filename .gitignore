@@ -6,3 +6,10 @@ tmp_*.txt
 clean_html.py
 convert_to_html.py
 verify_structural.py
+
+# LaTeX build artifacts
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
