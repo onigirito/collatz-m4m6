@@ -372,11 +372,13 @@
 <!-- ===== 5 ===== -->
 <h2><span class="sn">§5</span> 3n+1 Is Completely "Closed"</h2>
 
-<p>Throughout the entire flow, pair types stay <strong>within the same 4 kinds</strong>:</p>
+<p>Throughout the entire flow, pair types <strong>never leave these 4 kinds</strong>:</p>
 
 <div class="box" style="text-align:center; font-size:1rem;">
   Input {K, P01, P10, G} <span class="hl">→</span> Scan output {K, P01, P10, G} <span class="hl">→</span> Re-pairing {K, P01, P10, G} <span class="hl">→</span> n' {K, P01, P10, G}
 </div>
+
+<p style="font-size:0.9rem;">"Closed" does not mean all 4 types appear every time. Each step may use a different subset. But <strong>a 5th type never appears</strong>. Feed n' back into the same table → get n''. Feed n'' in again → same table. <strong>The same 4 types and the same 16-row table, forever.</strong> That is closure.</p>
 
 <p>Moreover, the following properties hold <strong>without exception</strong>:</p>
 

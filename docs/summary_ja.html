@@ -381,11 +381,13 @@
 <!-- ===== 5. 閉鎖性 ===== -->
 <h2><span class="sn">§5</span> 3n+1 は完全に「閉じている」</h2>
 
-<p>フロー全体で、ペアの種類は<strong>常に同じ4種</strong>：</p>
+<p>フロー全体で、ペアの種類は<strong>この4種の外に出ない</strong>：</p>
 
 <div class="box" style="text-align:center; font-size:1rem;">
   入力 {K, P01, P10, G} <span class="hl">→</span> スキャン出力 {K, P01, P10, G} <span class="hl">→</span> re-pairing {K, P01, P10, G} <span class="hl">→</span> n' {K, P01, P10, G}
 </div>
+
+<p style="font-size:0.9rem;">「閉じている」は「毎回4種が全部登場する」ではない。各ステップで使われる種類は異なりうるが、<strong>5番目の型が発生することは絶対にない</strong>。出力の n' をまた同じ表に入れれば次の n'' が出る。その次も同じ表。<strong>永久に同じ4種と同じ16行の表で回り続ける</strong>。これが閉鎖。</p>
 
 <p>しかも、以下の性質が<strong>例外なく</strong>成り立つ：</p>
 
