@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Structure of 3n+1 — The Collatz Map via Pair Decomposition</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --border: #30363d;
+    --text: #c9d1d9;
+    --text-muted: #8b949e;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --red: #f85149;
+    --yellow: #d29922;
+    --purple: #bc8cff;
+    --orange: #f0883e;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.9;
+    padding: 2rem;
+    max-width: 860px;
+    margin: 0 auto;
+  }
+  h1 {
+    font-size: 1.5rem;
+    color: var(--accent);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .subtitle {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-bottom: 2rem;
+  }
+  h2 {
+    font-size: 1.15rem;
+    color: var(--purple);
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    padding-left: 0.8rem;
+    border-left: 3px solid var(--purple);
+  }
+  h3 {
+    font-size: 1rem;
+    color: var(--yellow);
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  p { margin-bottom: 1rem; }
+  code {
+    font-family: 'Cascadia Code', 'Consolas', monospace;
+    background: var(--surface);
+    padding: 0.15em 0.4em;
+    border-radius: 3px;
+    font-size: 0.9em;
+    color: var(--green);
+  }
+  .box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.2rem 1.5rem;
+    margin: 1rem 0;
+    font-family: 'Cascadia Code', 'Consolas', monospace;
+    font-size: 0.85rem;
+    line-height: 2;
+    overflow-x: auto;
+  }
+  .box .label {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  .hl { color: var(--yellow); font-weight: bold; }
+  .hg { color: var(--green); }
+  .hr { color: var(--red); }
+  .ha { color: var(--accent); }
+  .ho { color: var(--orange); }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 0.88rem;
+  }
+  th {
+    background: var(--surface);
+    color: var(--accent);
+    font-weight: 600;
+    text-align: left;
+    padding: 0.6rem 1rem;
+    border: 1px solid var(--border);
+  }
+  td {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border);
+  }
+  tr:nth-child(even) td { background: rgba(22,27,34,0.5); }
+  .yes { color: var(--green); font-weight: bold; }
+  .no { color: var(--red); font-weight: bold; }
+  .note {
+    background: rgba(88,166,255,0.08);
+    border-left: 3px solid var(--accent);
+    padding: 0.8rem 1.2rem;
+    margin: 1rem 0;
+    border-radius: 0 6px 6px 0;
+    font-size: 0.9rem;
+  }
+  .warn {
+    background: rgba(248,81,73,0.08);
+    border-left: 3px solid var(--red);
+    padding: 0.8rem 1.2rem;
+    margin: 1rem 0;
+    border-radius: 0 6px 6px 0;
+    font-size: 0.9rem;
+  }
+  .causal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.2rem 1.5rem;
+    margin: 1rem 0;
+    font-family: 'Cascadia Code', 'Consolas', monospace;
+    font-size: 0.82rem;
+    line-height: 2.2;
+    color: var(--text-muted);
+  }
+  ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+  li { margin-bottom: 0.4rem; }
+  .example {
+    background: rgba(63,185,80,0.06);
+    border-left: 3px solid var(--green);
+    padding: 0.8rem 1.2rem;
+    margin: 1rem 0;
+    border-radius: 0 6px 6px 0;
+  }
+  .example-title {
+    color: var(--green);
+    font-weight: bold;
+    font-size: 0.85rem;
+    margin-bottom: 0.3rem;
+  }
+  .verified {
+    font-size: 0.75rem;
+    color: var(--green);
+    margin-top: 0.5rem;
+  }
+  .verified::before { content: "✓ "; }
+  .sn { color: var(--text-muted); font-size: 0.85rem; margin-right: 0.3rem; }
+</style>
+</head>
+<body>
+
+<h1>Structure of 3n+1 — The Collatz Map via Pair Decomposition</h1>
+<p class="subtitle">Readable with high-school math + binary arithmetic</p>
+
+
+<!-- ===== 0 ===== -->
+<h2><span class="sn">§0</span> Background: The Collatz Conjecture</h2>
+
+<p>For any positive integer n, repeat the following:</p>
+<ul>
+  <li>If n is even → n ÷ 2</li>
+  <li>If n is odd → 3n + 1</li>
+</ul>
+<p><strong>"Every starting number eventually reaches 1."</strong> This is the Collatz conjecture. Posed in 1937, it remains unsolved after nearly 90 years.</p>
+
+<div class="example">
+  <div class="example-title">Example: n = 27</div>
+  27 → 82 → 41 → 124 → 62 → 31 → ... → peaks at 9232 → ... → reaches 1 (111 total steps)
+</div>
+
+<p>The paper asks: <strong>What is the internal structure of 3n+1? Why is x=3 special?</strong></p>
+
+
+<!-- ===== 1 ===== -->
+<h2><span class="sn">§1</span> Zipper Structure: Splitting Numbers into 2-Bit Pairs</h2>
+
+<p>Every positive integer can be written in binary, then <strong>split into consecutive 2-bit pairs</strong>.</p>
+
+<div class="example">
+  <div class="example-title">Example: n = 27</div>
+  27 = 11011 (binary) → pad to even length → <code>011011</code><br><br>
+  Split into pairs:
+  <span class="ha">(01)</span> <span class="ho">(10)</span> <span class="hg">(11)</span><br><br>
+  Left bits of each pair (m4): <code>0, 1, 1</code> → <code>011</code><br>
+  Right bits of each pair (m6): <code>1, 0, 1</code> → <code>101</code>
+</div>
+
+<p>The key idea is the <strong>zipper structure</strong>. Interleave m4 and m6 to reconstruct the original number:</p>
+
+<div class="box">
+  m4 = <span class="ha">0</span>_<span class="ha">1</span>_<span class="ha">1</span>_ = <span class="ha">0</span>·<span class="ho">1</span>·<span class="ha">1</span>·<span class="ho">0</span>·<span class="ha">1</span>·<span class="ho">1</span> = 011011 = 27 ✓<br>
+  m6 = _<span class="ho">1</span>_<span class="ho">0</span>_<span class="ho">1</span>
+</div>
+
+<p>A simpler illustration:</p>
+
+<div class="box">
+  <span class="label">m4 only (left bits)</span><br>
+  <span class="ha">1</span> 0 <span class="ha">1</span> 0 = <span class="ha">1010</span><br><br>
+  <span class="label">m6 only (right bits)</span><br>
+  0 <span class="ho">1</span> 0 <span class="ho">1</span> = <span class="ho">0101</span><br><br>
+  <span class="label">Zip them together</span><br>
+  <span class="ha">1</span><span class="ho">1</span><span class="ha">1</span><span class="ho">1</span> = <span class="hl">1111</span><br><br>
+  <span class="ha">1010</span> + <span class="ho">0101</span> = <span class="hl">1111</span>
+</div>
+
+<p><strong>Any number can be split into two bit-strings m4 and m6, and zipped back together.</strong> This is the foundation of pair decomposition.</p>
+
+
+<!-- ===== 2 ===== -->
+<h2><span class="sn">§2</span> Four Pair Types and GPK</h2>
+
+<p>A 2-bit pair has exactly 4 possible values. Each one gets a name:</p>
+
+<table>
+  <tr><th>Pair</th><th>Name</th><th>Meaning</th><th>Role in addition</th></tr>
+  <tr>
+    <td><code>(0, 0)</code></td><td><strong>K</strong> (Kill)</td>
+    <td>Both bits 0</td><td><strong>Stops</strong> the carry</td>
+  </tr>
+  <tr>
+    <td><code>(0, 1)</code></td><td><strong>P</strong> (Propagate)</td>
+    <td>One bit is 1</td><td><strong>Passes</strong> the carry through</td>
+  </tr>
+  <tr>
+    <td><code>(1, 0)</code></td><td><strong>P</strong> (Propagate)</td>
+    <td>One bit is 1</td><td><strong>Passes</strong> the carry through</td>
+  </tr>
+  <tr>
+    <td><code>(1, 1)</code></td><td><strong>G</strong> (Generate)</td>
+    <td>Both bits 1</td><td><strong>Creates</strong> a new carry</td>
+  </tr>
+</table>
+
+<p>This G/P/K classification comes from carry-lookahead adder design, standard in computer science since the 1960s.</p>
+
+<div class="example">
+  <div class="example-title">Example: n = 27 = 011011</div>
+  Pair sequence: (0,1), (1,0), (1,1)<br>
+  GPK: <strong>P, P, G</strong><br><br>
+  → You can read the GPK just by looking at the pairs. No computation needed.
+</div>
+
+
+<!-- ===== 3 ===== -->
+<h2><span class="sn">§3</span> Inside 3n+1: Table Lookup Instead of Multiplication</h2>
+
+<p>3n+1 = 2n + n + 1. Here 2n is just n <strong>shifted left by 1 bit</strong>. So:</p>
+
+<div class="box">
+  3n + 1 = (n shifted left by 1 bit) + (n) + (1)
+</div>
+
+<p>This addition can be broken down pair by pair. At each pair position, "which bits are added" is fixed, and the result is one of <strong>only 16 possibilities</strong>.</p>
+
+<p>Why 16?</p>
+<ul>
+  <li>Input pair type: 4 options (K, P, P, G)</li>
+  <li>State (carry from previous pair + previous left bit): 4 options</li>
+  <li>Total: 4 × 4 = <strong>16</strong></li>
+</ul>
+
+<p>Writing out all 16 cases gives <strong>Table 5.1</strong> — the core of the paper.</p>
+
+<div class="example">
+  <div class="example-title">Example: n = 107 → n' = 161 by table lookup only</div>
+  107 = 01101011 → pairs (LSB order): (1,1), (0,1), (1,0), (0,1)<br>
+  GPK: G, P, P, P<br><br>
+  Initial state (1, 0) (from the +1 effect)<br><br>
+  pair 0: G + state(1,0) → Case 15 → output P(1,0)<br>
+  pair 1: P(0,1) + state(1,1) → Case 8 → output P(0,1)<br>
+  pair 2: P(1,0) + state(1,0) → Case 11 → output G(1,1)<br>
+  pair 3: P(0,1) + state(1,1) → Case 8 → output P(0,1)<br><br>
+  Output = 01110110 = 322 → trailing zero count = 1 → d=1 → 322 ÷ 2 = <strong>161</strong><br><br>
+  Check: (3×107+1)/2 = 322/2 = 161 ✓<br>
+  <strong>No multiplication. No addition. Just 4 table lookups.</strong>
+</div>
+
+
+<!-- ===== 4 ===== -->
+<h2><span class="sn">§4</span> Complete Flow: n → n'</h2>
+
+<div class="box" style="font-size:0.95rem; line-height:2.5; text-align:center;">
+  n<br>
+  <span class="hl">↓</span> Pair decomposition<br>
+  GPK classification of each pair <span style="color:var(--text-muted)">(just read it)</span><br>
+  <span class="hl">↓</span> Table lookup via Table 5.1 (16 patterns)<br>
+  Pair sequence of 3n+1<br>
+  <span class="hl">↓</span> Count trailing zeros → determine d<br>
+  <span class="hl">↓</span> ÷ 2<sup>d</sup> (remove zeros)<br>
+  <span class="hl">↓</span> Re-pair if d is odd <span style="color:var(--text-muted)">(Table 5.2, re-reading the zipper)</span><br>
+  n'
+</div>
+
+<div class="note">
+  <strong>No external information needed.</strong> The bit pattern of n completely determines the bit pattern of n'.<br>
+  GPK is not an "extra output" — it is an inherent attribute of each input pair. You just read it.
+</div>
+
+<p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.5rem;">
+  ※ The flow diagram shows "n" and "n'" as integers, but <strong>the computation never needs to reconstruct the integer</strong>. The scan takes pairs in and puts pairs out. Division removes pairs and shifts boundaries. Re-pairing maps pairs to pairs. The next scan reads pairs again. <strong>The entire trajectory runs in pair form until it reaches 1.</strong> Zipping back to a number is a display operation for human readability, not part of the computation.
+</p>
+
+
+<!-- ===== 5 ===== -->
+<h2><span class="sn">§5</span> 3n+1 Is Completely "Closed"</h2>
+
+<p>Throughout the entire flow, pair types stay <strong>within the same 4 kinds</strong>:</p>
+
+<div class="box" style="text-align:center; font-size:1rem;">
+  Input {K, P01, P10, G} <span class="hl">→</span> Scan output {K, P01, P10, G} <span class="hl">→</span> Re-pairing {K, P01, P10, G} <span class="hl">→</span> n' {K, P01, P10, G}
+</div>
+
+<p>Moreover, the following properties hold <strong>without exception</strong>:</p>
+
+<table>
+  <tr><th>Property</th><th>For 3n+1</th><th>Meaning</th></tr>
+  <tr>
+    <td>G → carry output</td>
+    <td class="yes">Always 1 (all 4 cases)</td>
+    <td>G <strong>always</strong> generates a carry</td>
+  </tr>
+  <tr>
+    <td>K → carry output</td>
+    <td class="yes">Always 0 (all 4 cases)</td>
+    <td>K <strong>always</strong> kills the carry</td>
+  </tr>
+  <tr>
+    <td>Can K become G?</td>
+    <td class="no">Never</td>
+    <td>Once K, <strong>never G again</strong></td>
+  </tr>
+</table>
+
+<p>"Always" and "never" are not figurative. All 16 table entries were checked: <strong>zero exceptions</strong>.</p>
+
+<div class="note">
+  These are not "tendencies" or "probabilities." They are <strong>algebraic identities</strong> — true for every n, every bit length, every step.
+</div>
+
+
+<!-- ===== 6 ===== -->
+<h2><span class="sn">§6</span> How Does 5n+1 Differ?</h2>
+
+<p>The same procedure builds a table for 5n+1 (= 4n + n + 1, shift = 2 bits). Comparing the two:</p>
+
+<table>
+  <tr>
+    <th>Property</th>
+    <th>3n+1</th>
+    <th>5n+1</th>
+  </tr>
+  <tr>
+    <td>Table size</td>
+    <td>16 rows (4 states × 4 inputs)</td>
+    <td>32 rows (8 states × 4 inputs)</td>
+  </tr>
+  <tr>
+    <td>G → carry always 1?</td>
+    <td class="yes">Yes (all cases)</td>
+    <td class="no">No (one state gives 0)</td>
+  </tr>
+  <tr>
+    <td>K → carry always 0?</td>
+    <td class="yes">Yes (all cases)</td>
+    <td class="no">No (one state gives 1)</td>
+  </tr>
+  <tr>
+    <td>K → G transition</td>
+    <td class="yes">Impossible</td>
+    <td class="no">Possible (in 2 states)</td>
+  </tr>
+  <tr>
+    <td>Escape routes</td>
+    <td class="yes">None</td>
+    <td class="no">Exist</td>
+  </tr>
+  <tr>
+    <td>Non-trivial cycles</td>
+    <td>None</td>
+    <td>Exist (e.g. 13→33→83→13)</td>
+  </tr>
+</table>
+
+<p class="verified">Both tables constructed and verified against 500 odd numbers each</p>
+
+<div class="warn">
+  <strong>The key point:</strong> Two tables built by the same procedure have qualitatively different content.<br>
+  3n+1 has "no escape routes." 5n+1 has them.<br>
+  This difference corresponds to the presence or absence of non-trivial cycles.
+</div>
+
+
+<!-- ===== 7 ===== -->
+<h2><span class="sn">§7</span> Why "Closed" Means "No Escape"</h2>
+
+<h3>What growth requires</h3>
+<p>For 3n+1 to make a number larger, division by 2 must happen only once (d=1). This occurs <strong>only when the lowest pair is G(1,1)</strong>.</p>
+
+<h3>What happens when it grows</h3>
+<p>When the lowest pair is G(1,1), the table lookup (Case 15) produces:</p>
+<ul>
+  <li>Output becomes P(1,0) → <strong>the G is destroyed</strong></li>
+  <li>Carry c<sub>out</sub> = 1 is generated → <strong>neighbors are affected</strong></li>
+</ul>
+<p><strong>The cause of growth (G) always produces the carry that destroys it.</strong> There is no table entry that avoids this.</p>
+
+<h3>Can destroyed G come back?</h3>
+
+<table>
+  <tr><th>Path</th><th>Possible?</th><th>Property</th></tr>
+  <tr>
+    <td>K → G (revival from Kill)</td>
+    <td class="no">Impossible</td>
+    <td>No K→G entry in all 16 rows</td>
+  </tr>
+  <tr>
+    <td>P → G (generation from Propagate)</td>
+    <td>Possible (3 cases)</td>
+    <td>But c<sub>out</sub>=0 — <strong>does not chain</strong></td>
+  </tr>
+</table>
+
+<h3>Asymmetry between creation and destruction</h3>
+<table>
+  <tr><th></th><th>G creation (P→G)</th><th>G destruction (G→P)</th></tr>
+  <tr><td>Scale</td><td>One at a time</td><td>Cascades (destroys bridges too)</td></tr>
+  <tr><td>Carry</td><td>0 (no ripple effect)</td><td>1 (ripples outward)</td></tr>
+  <tr><td>Fuel</td><td>Consumes P-positions</td><td>—</td></tr>
+</table>
+
+<p><strong>Destruction cascades, but creation does not.</strong> This asymmetry is an algebraic fact read directly from the 16-row table.</p>
+
+
+<!-- ===== 8 ===== -->
+<h2><span class="sn">§8</span> Big Picture: Closure → Self-Destruction → No Escape</h2>
+
+<div class="causal">
+  <span style="color:var(--text)">3n+1 = 2n + n + 1 (shift = 1 bit &lt; pair width = 2 bits)</span><br>
+  <span style="color:var(--accent)">&nbsp;&nbsp;└→</span> <span style="color:var(--text)">GPK classification determined by reading the pair alone (closure)</span><br>
+  <span style="color:var(--accent)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└→</span> <span style="color:var(--text)">Carry behavior is state-independent</span><br>
+  <span style="color:var(--accent)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├→</span> <span style="color:var(--text)">G unconditionally generates carry</span><br>
+  <span style="color:var(--accent)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;└→</span> <span style="color:var(--green)">That carry destroys the G itself</span><br>
+  <span style="color:var(--accent)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├→</span> <span style="color:var(--text)">K unconditionally kills carry</span><br>
+  <span style="color:var(--accent)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;└→</span> <span style="color:var(--green)">K can never become G again</span><br>
+  <span style="color:var(--accent)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└→</span> <span style="color:var(--yellow)"><strong>The engine of growth = the agent of its own destruction. No escape.</strong></span>
+</div>
+
+<p>n=1 has pair (0,1)=P, d=2, n'=1. <strong>Fixed point.</strong> All other n are structurally unable to sustain any other cycle under these constraints.</p>
+
+<div class="note">
+  For 5n+1, closure fails: G can avoid generating carry (escape route), and K can become G (revival). That is why 5n+1 has non-trivial cycles like 13→33→83→13.
+</div>
+
+
+<!-- ===== 9 ===== -->
+<h2><span class="sn">§9</span> This Is Not a Probabilistic Argument</h2>
+
+<p>A common argument: "3n+1 shrinks on average because E[d] &gt; log₂3." But that's probabilistic, so "maybe a trajectory gets unlucky and diverges" is a valid counter.</p>
+
+<p>The paper's argument operates on <strong>a different level entirely</strong>:</p>
+
+<table>
+  <tr><th></th><th>Probabilistic claim</th><th>This paper's claim</th></tr>
+  <tr>
+    <td>Content</td>
+    <td>"On average d is large, so it tends to shrink"</td>
+    <td>"G <strong>unconditionally</strong> outputs carry = 1"</td>
+  </tr>
+  <tr>
+    <td>Counter</td>
+    <td class="no">"Variance could cause one-sided drift" → valid</td>
+    <td class="yes">No variance. Every position, every n, every time.</td>
+  </tr>
+</table>
+
+<ul>
+  <li>G → c<sub>out</sub>=1 is not a "tendency" — it is an <strong>identity</strong></li>
+  <li>K → G impossible is not "rare" — it is <strong>zero</strong></li>
+  <li>P → G producing c<sub>out</sub>=0 is not "usually" — it is <strong>all cases</strong></li>
+</ul>
+
+
+<!-- ===== 10 ===== -->
+<h2><span class="sn">§10</span> Once the Table Is Built, the Conclusion Is Already Inside It</h2>
+
+<p>Once the scan table (Table 5.1, 16 rows) and re-pairing table (Table 5.2, 16 rows) are constructed:</p>
+
+<table>
+  <tr><th>What can be read</th><th>How</th></tr>
+  <tr><td>G → c<sub>out</sub>=1 (no exceptions)</td><td>Read from the table</td></tr>
+  <tr><td>K → G is impossible (no exceptions)</td><td>Read from the table</td></tr>
+  <tr><td>P → G has c<sub>out</sub>=0 (no exceptions)</td><td>Read from the table</td></tr>
+  <tr><td>G-blocks cannot merge</td><td>Read from the table</td></tr>
+</table>
+
+<p>The paper's Lemmas and Propositions are <strong>just verbalizations of what the tables already contain</strong>.</p>
+
+<div class="note">
+  <strong>The paper's actual contribution is four things:</strong>
+  <ol style="padding-left:1.2rem; margin-top:0.5rem;">
+    <li>Recognizing that 3n+1 can be completely described by a 16-row table</li>
+    <li>Constructing that table</li>
+    <li>Reading its properties (G always carries, K→G impossible, etc.)</li>
+    <li>Comparing with 5n+1 to confirm "only 3n+1 is special"</li>
+  </ol>
+  <p style="font-size:1.15rem; color:var(--yellow); font-weight:bold; margin-top:1rem; margin-bottom:0;">Conclusion: It did nothing!</p>
+  <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0.3rem;">It just built a table and read it. 3n+1 does all the work by itself.</p>
+</div>
+
+
+<!-- footer -->
+<p style="margin-top:3rem; color:var(--text-muted); font-size:0.78rem; border-top:1px solid var(--border); padding-top:1rem;">
+  Verification scripts: dfst_final.py, dfst_properties.py<br>
+  Structural comparison data: dfst_comparison_record.md<br>
+  Source paper: "Pair Predicate Decomposition of Collatz-type Maps (xn+1)/2<sup>d</sup>" v5.1 (February 2026)
+</p>
+
+</body>
+</html>
