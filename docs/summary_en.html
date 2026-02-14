@@ -295,10 +295,10 @@
   71 = 01000111₂ → pairs (LSB order): (1,1), (0,1), (0,0), (0,1)<br>
   GPK: G, P, K, P<br><br>
   Initial state = <strong>S2</strong><br><br>
-  pair 0: G + S2 → Case 15 → output P(1,0), carry=1 → next: <strong>S3</strong> <span style="color:var(--red)">← G destroyed, carry generated</span><br>
-  pair 1: P(0,1) + S3 → Case 8 → output P(0,1), carry=1 → next: <strong>S2</strong> <span style="color:var(--yellow)">← carry passes through</span><br>
-  pair 2: K + S2 → Case 3 → output P(0,1), carry=0 → next: <strong>S0</strong> <span style="color:var(--green)">← K stops the carry</span><br>
-  pair 3: P(0,1) + S0 → Case 5 → output G, carry=0 <span style="color:var(--green)">← P→G creation! does not chain</span><br><br>
+  pair 0: G(1,1) + S2 → Case 15 → output P(1,0), carry=1 → next: <strong>S3</strong> <span style="color:var(--red)">← G destroyed, carry generated</span><br>
+  pair 1: P(0,1) + S3 → Case 8  → output P(0,1), carry=1 → next: <strong>S2</strong> <span style="color:var(--yellow)">← carry passes through</span><br>
+  pair 2: K(0,0) + S2 → Case 3  → output P(0,1), carry=0 → next: <strong>S0</strong> <span style="color:var(--green)">← K stops the carry</span><br>
+  pair 3: P(0,1) + S0 → Case 5  → output G(1,1), carry=0 <span style="color:var(--green)">← P→G creation! does not chain</span><br><br>
   Output = 11010110₂ = 214 → trailing zero count = 1 → d=1 → 214 ÷ 2 = <strong>107</strong><br><br>
   Check: (3×71+1)/2 = 214/2 = 107 ✓<br>
   <strong>No multiplication. No addition. Just 4 table lookups.</strong>
