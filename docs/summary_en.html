@@ -271,24 +271,22 @@
 
 <h3>What is "state"?</h3>
 <p>To look up the table, you need the input pair <strong>plus a state</strong>. The state is a pair of two values:</p>
-<table style="max-width:600px;">
-  <tr><th>Symbol</th><th>Meaning</th><th>Where it comes from</th></tr>
-  <tr>
-    <td><strong>c<sub>in</sub></strong></td>
-    <td>Carry coming in from the previous pair (0 or 1)</td>
-    <td>The previous pair's c<sub>out</sub></td>
-  </tr>
-  <tr>
-    <td><strong>a<sub>i-1</sub></strong></td>
-    <td>Left bit of the previous input pair (0 or 1)</td>
-    <td>The "a" from the previous pair's (a, b)</td>
-  </tr>
+<table style="max-width:640px;">
+  <tr><th>Label</th><th>c<sub>in</sub></th><th>a<sub>i-1</sub></th><th>Meaning</th></tr>
+  <tr><td><strong>S0</strong></td><td>0</td><td>0</td><td>No carry in, previous input pair's upper bit = 0</td></tr>
+  <tr><td><strong>S1</strong></td><td>0</td><td>1</td><td>No carry in, previous input pair's upper bit = 1</td></tr>
+  <tr><td><strong>S2</strong></td><td>1</td><td>0</td><td>Carry in, previous input pair's upper bit = 0</td></tr>
+  <tr><td><strong>S3</strong></td><td>1</td><td>1</td><td>Carry in, previous input pair's upper bit = 1</td></tr>
 </table>
-<p>We write the state as (c<sub>in</sub>, a<sub>i-1</sub>). Four possibilities: (0,0), (0,1), (1,0), (1,1).</p>
-<ul>
-  <li><strong>Initial state = (1, 0)</strong>: c<sub>in</sub>=1 from the "+1" in 3n+1. a<sub>i-1</sub>=0 because there is no previous pair.</li>
-  <li><strong>Next state</strong> = (this pair's c<sub>out</sub>, this pair's input left bit a<sub>i</sub>)</li>
-</ul>
+<p style="font-size:0.85rem; color:var(--text-muted);">
+  c<sub>in</sub> = carry coming in from the previous pair (carry in).
+  a<sub>i-1</sub> = the "a" of the previous input pair (a, b).
+  c<sub>out</sub> = carry going out from this pair (carry out) → becomes the next pair's c<sub>in</sub>.
+</p>
+<p>
+  <strong>Initial state = S2</strong> (+1 provides carry in; no previous pair so upper bit = 0).<br>
+  <strong>Next state</strong> is determined by the carry out and the current input pair's upper bit. The table gives it automatically.
+</p>
 
 <p>Writing out all 16 cases gives <strong>Table 5.1</strong> — the core of the paper.</p>
 
@@ -296,14 +294,11 @@
   <div class="example-title">Example: n = 71 → n' = 107 by table lookup only</div>
   71 = 01000111₂ → pairs (LSB order): (1,1), (0,1), (0,0), (0,1)<br>
   GPK: G, P, K, P<br><br>
-  Initial state (c<sub>in</sub>=1, a<sub>-1</sub>=0) = <strong>(1, 0)</strong> ← +1 effect and no previous pair<br><br>
-  pair 0: G(<strong>1</strong>,1) + state(1,0) → Case 15 → output P(1,0), c<sub>out</sub>=1 <span style="color:var(--red)">← G destroyed, carry generated</span><br>
-  <span style="color:var(--text-muted)">　　next state = (c<sub>out</sub>=1, a<sub>0</sub>=1) = (1,1)</span><br>
-  pair 1: P(<strong>0</strong>,1) + state(1,1) → Case 8 → output P(0,1), c<sub>out</sub>=1 <span style="color:var(--yellow)">← carry passes through</span><br>
-  <span style="color:var(--text-muted)">　　next state = (c<sub>out</sub>=1, a<sub>1</sub>=0) = (1,0)</span><br>
-  pair 2: K(<strong>0</strong>,0) + state(1,0) → Case 3 → output P(0,1), c<sub>out</sub>=0 <span style="color:var(--green)">← K stops the carry</span><br>
-  <span style="color:var(--text-muted)">　　next state = (c<sub>out</sub>=0, a<sub>2</sub>=0) = (0,0)</span><br>
-  pair 3: P(<strong>0</strong>,1) + state(0,0) → Case 5 → output G(1,1), c<sub>out</sub>=0 <span style="color:var(--green)">← P→G creation! does not chain</span><br><br>
+  Initial state = <strong>S2</strong><br><br>
+  pair 0: G + S2 → Case 15 → output P(1,0), carry=1 → next: <strong>S3</strong> <span style="color:var(--red)">← G destroyed, carry generated</span><br>
+  pair 1: P(0,1) + S3 → Case 8 → output P(0,1), carry=1 → next: <strong>S2</strong> <span style="color:var(--yellow)">← carry passes through</span><br>
+  pair 2: K + S2 → Case 3 → output P(0,1), carry=0 → next: <strong>S0</strong> <span style="color:var(--green)">← K stops the carry</span><br>
+  pair 3: P(0,1) + S0 → Case 5 → output G, carry=0 <span style="color:var(--green)">← P→G creation! does not chain</span><br><br>
   Output = 11010110₂ = 214 → trailing zero count = 1 → d=1 → 214 ÷ 2 = <strong>107</strong><br><br>
   Check: (3×71+1)/2 = 214/2 = 107 ✓<br>
   <strong>No multiplication. No addition. Just 4 table lookups.</strong>
