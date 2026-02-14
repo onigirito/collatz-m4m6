@@ -287,6 +287,45 @@
 
 
 <!-- ===== 4 ===== -->
+<h3>Table 5.1: Complete scan transition table for 3n+1</h3>
+
+<p>This is the entire table. Every claim in this summary can be verified by reading it.</p>
+
+<div style="overflow-x:auto;">
+<table style="font-size:0.78rem; white-space:nowrap;">
+  <tr>
+    <th>#</th><th>Input</th><th>GPK</th>
+    <th>c<sub>in</sub></th><th>a<sub>i-1</sub></th>
+    <th>c<sub>out</sub></th>
+    <th>Output</th><th>Out GPK</th>
+    <th style="color:var(--text-muted)">Note</th>
+  </tr>
+  <tr><td>1</td><td>(0,0)</td><td>K</td><td>0</td><td>0</td><td class="yes">0</td><td>(0,0)</td><td>K</td><td></td></tr>
+  <tr><td>2</td><td>(0,0)</td><td>K</td><td>0</td><td>1</td><td class="yes">0</td><td>(0,1)</td><td>P</td><td></td></tr>
+  <tr><td>3</td><td>(0,0)</td><td>K</td><td>1</td><td>0</td><td class="yes">0</td><td>(0,1)</td><td>P</td><td></td></tr>
+  <tr><td>4</td><td>(0,0)</td><td>K</td><td>1</td><td>1</td><td class="yes">0</td><td>(1,0)</td><td>P</td><td style="color:var(--green)">K→G nowhere</td></tr>
+  <tr style="background:rgba(63,185,80,0.1);"><td>5</td><td>(0,1)</td><td>P</td><td>0</td><td>0</td><td class="yes">0</td><td><strong>(1,1)</strong></td><td><strong style="color:var(--green)">G</strong></td><td style="color:var(--green)">P→G, c<sub>out</sub>=0</td></tr>
+  <tr><td>6</td><td>(0,1)</td><td>P</td><td>0</td><td>1</td><td>1</td><td>(0,0)</td><td>K</td><td></td></tr>
+  <tr><td>7</td><td>(0,1)</td><td>P</td><td>1</td><td>0</td><td>1</td><td>(0,0)</td><td>K</td><td></td></tr>
+  <tr><td>8</td><td>(0,1)</td><td>P</td><td>1</td><td>1</td><td>1</td><td>(0,1)</td><td>P</td><td></td></tr>
+  <tr><td>9</td><td>(1,0)</td><td>P</td><td>0</td><td>0</td><td class="yes">0</td><td>(1,0)</td><td>P</td><td></td></tr>
+  <tr style="background:rgba(63,185,80,0.1);"><td>10</td><td>(1,0)</td><td>P</td><td>0</td><td>1</td><td class="yes">0</td><td><strong>(1,1)</strong></td><td><strong style="color:var(--green)">G</strong></td><td style="color:var(--green)">P→G, c<sub>out</sub>=0</td></tr>
+  <tr style="background:rgba(63,185,80,0.1);"><td>11</td><td>(1,0)</td><td>P</td><td>1</td><td>0</td><td class="yes">0</td><td><strong>(1,1)</strong></td><td><strong style="color:var(--green)">G</strong></td><td style="color:var(--green)">P→G, c<sub>out</sub>=0</td></tr>
+  <tr><td>12</td><td>(1,0)</td><td>P</td><td>1</td><td>1</td><td>1</td><td>(0,0)</td><td>K</td><td></td></tr>
+  <tr style="background:rgba(248,81,73,0.08);"><td>13</td><td>(1,1)</td><td>G</td><td>0</td><td>0</td><td class="no">1</td><td>(0,1)</td><td>P</td><td style="color:var(--red)">G→P, c<sub>out</sub>=1</td></tr>
+  <tr style="background:rgba(248,81,73,0.08);"><td>14</td><td>(1,1)</td><td>G</td><td>0</td><td>1</td><td class="no">1</td><td>(1,0)</td><td>P</td><td style="color:var(--red)">G→P, c<sub>out</sub>=1</td></tr>
+  <tr style="background:rgba(248,81,73,0.08);"><td>15</td><td>(1,1)</td><td>G</td><td>1</td><td>0</td><td class="no">1</td><td>(1,0)</td><td>P</td><td style="color:var(--red)">G→P, c<sub>out</sub>=1</td></tr>
+  <tr style="background:rgba(248,81,73,0.08);"><td>16</td><td>(1,1)</td><td>G</td><td>1</td><td>1</td><td class="no">1</td><td>(1,1)</td><td>G</td><td style="color:var(--red)">G→G, c<sub>out</sub>=1</td></tr>
+</table>
+</div>
+
+<p style="font-size:0.85rem; color:var(--text-muted);">
+  Read directly from this table:<br>
+  <span class="no">■</span> Cases 13–16: G input → c<sub>out</sub>=1 in <strong>all 4 cases</strong> (unconditional carry generation)<br>
+  <span class="yes">■</span> Cases 1–4: K input → c<sub>out</sub>=0 in <strong>all 4 cases</strong>, output is never G (K→G impossible)<br>
+  <span style="color:var(--green)">■</span> Cases 5, 10, 11: P→G — but c<sub>out</sub>=0 in all 3 (creation does not chain)
+</p>
+
 <h2><span class="sn">§4</span> Complete Flow: n → n'</h2>
 
 <div class="box" style="font-size:0.95rem; line-height:2.5; text-align:center;">

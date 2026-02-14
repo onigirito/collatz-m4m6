@@ -295,6 +295,45 @@
 </div>
 
 
+<h3>Table 5.1：3n+1 の完全なスキャン遷移表</h3>
+
+<p>これが表の全体。この要約の全ての主張はこの表を読めば検証できる。</p>
+
+<div style="overflow-x:auto;">
+<table style="font-size:0.78rem; white-space:nowrap;">
+  <tr>
+    <th>#</th><th>入力</th><th>GPK</th>
+    <th>c<sub>in</sub></th><th>a<sub>i-1</sub></th>
+    <th>c<sub>out</sub></th>
+    <th>出力</th><th>出力GPK</th>
+    <th style="color:var(--text-muted)">注目点</th>
+  </tr>
+  <tr><td>1</td><td>(0,0)</td><td>K</td><td>0</td><td>0</td><td class="yes">0</td><td>(0,0)</td><td>K</td><td></td></tr>
+  <tr><td>2</td><td>(0,0)</td><td>K</td><td>0</td><td>1</td><td class="yes">0</td><td>(0,1)</td><td>P</td><td></td></tr>
+  <tr><td>3</td><td>(0,0)</td><td>K</td><td>1</td><td>0</td><td class="yes">0</td><td>(0,1)</td><td>P</td><td></td></tr>
+  <tr><td>4</td><td>(0,0)</td><td>K</td><td>1</td><td>1</td><td class="yes">0</td><td>(1,0)</td><td>P</td><td style="color:var(--green)">K→Gなし</td></tr>
+  <tr style="background:rgba(63,185,80,0.1);"><td>5</td><td>(0,1)</td><td>P</td><td>0</td><td>0</td><td class="yes">0</td><td><strong>(1,1)</strong></td><td><strong style="color:var(--green)">G</strong></td><td style="color:var(--green)">P→G, c<sub>out</sub>=0</td></tr>
+  <tr><td>6</td><td>(0,1)</td><td>P</td><td>0</td><td>1</td><td>1</td><td>(0,0)</td><td>K</td><td></td></tr>
+  <tr><td>7</td><td>(0,1)</td><td>P</td><td>1</td><td>0</td><td>1</td><td>(0,0)</td><td>K</td><td></td></tr>
+  <tr><td>8</td><td>(0,1)</td><td>P</td><td>1</td><td>1</td><td>1</td><td>(0,1)</td><td>P</td><td></td></tr>
+  <tr><td>9</td><td>(1,0)</td><td>P</td><td>0</td><td>0</td><td class="yes">0</td><td>(1,0)</td><td>P</td><td></td></tr>
+  <tr style="background:rgba(63,185,80,0.1);"><td>10</td><td>(1,0)</td><td>P</td><td>0</td><td>1</td><td class="yes">0</td><td><strong>(1,1)</strong></td><td><strong style="color:var(--green)">G</strong></td><td style="color:var(--green)">P→G, c<sub>out</sub>=0</td></tr>
+  <tr style="background:rgba(63,185,80,0.1);"><td>11</td><td>(1,0)</td><td>P</td><td>1</td><td>0</td><td class="yes">0</td><td><strong>(1,1)</strong></td><td><strong style="color:var(--green)">G</strong></td><td style="color:var(--green)">P→G, c<sub>out</sub>=0</td></tr>
+  <tr><td>12</td><td>(1,0)</td><td>P</td><td>1</td><td>1</td><td>1</td><td>(0,0)</td><td>K</td><td></td></tr>
+  <tr style="background:rgba(248,81,73,0.08);"><td>13</td><td>(1,1)</td><td>G</td><td>0</td><td>0</td><td class="no">1</td><td>(0,1)</td><td>P</td><td style="color:var(--red)">G→P, c<sub>out</sub>=1</td></tr>
+  <tr style="background:rgba(248,81,73,0.08);"><td>14</td><td>(1,1)</td><td>G</td><td>0</td><td>1</td><td class="no">1</td><td>(1,0)</td><td>P</td><td style="color:var(--red)">G→P, c<sub>out</sub>=1</td></tr>
+  <tr style="background:rgba(248,81,73,0.08);"><td>15</td><td>(1,1)</td><td>G</td><td>1</td><td>0</td><td class="no">1</td><td>(1,0)</td><td>P</td><td style="color:var(--red)">G→P, c<sub>out</sub>=1</td></tr>
+  <tr style="background:rgba(248,81,73,0.08);"><td>16</td><td>(1,1)</td><td>G</td><td>1</td><td>1</td><td class="no">1</td><td>(1,1)</td><td>G</td><td style="color:var(--red)">G→G, c<sub>out</sub>=1</td></tr>
+</table>
+</div>
+
+<p style="font-size:0.85rem; color:var(--text-muted);">
+  この表から直接読み取れること：<br>
+  <span class="no">■</span> Case 13–16：G入力 → c<sub>out</sub>=1 が<strong>全4ケース</strong>（無条件キャリー生成）<br>
+  <span class="yes">■</span> Case 1–4：K入力 → c<sub>out</sub>=0 が<strong>全4ケース</strong>、出力にGなし（K→G不可能）<br>
+  <span style="color:var(--green)">■</span> Case 5, 10, 11：P→G — ただし c<sub>out</sub>=0（生成は連鎖しない）
+</p>
+
 <!-- ===== 4. n→n' フロー ===== -->
 <h2><span class="sn">§4</span> n → n' の完全なフロー</h2>
 
