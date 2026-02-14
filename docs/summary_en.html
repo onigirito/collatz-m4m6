@@ -272,16 +272,16 @@
 <p>Writing out all 16 cases gives <strong>Table 5.1</strong> — the core of the paper.</p>
 
 <div class="example">
-  <div class="example-title">Example: n = 107 → n' = 161 by table lookup only</div>
-  107 = 01101011 → pairs (LSB order): (1,1), (0,1), (1,0), (0,1)<br>
-  GPK: G, P, P, P<br><br>
+  <div class="example-title">Example: n = 71 → n' = 107 by table lookup only</div>
+  71 = 01000111₂ → pairs (LSB order): (1,1), (0,1), (0,0), (0,1)<br>
+  GPK: G, P, K, P<br><br>
   Initial state (1, 0) (from the +1 effect)<br><br>
-  pair 0: G + state(1,0) → Case 15 → output P(1,0)<br>
+  pair 0: G(1,1) + state(1,0) → Case 15 → output P(1,0) <span style="color:var(--red)">← G destroyed, carry=1</span><br>
   pair 1: P(0,1) + state(1,1) → Case 8 → output P(0,1)<br>
-  pair 2: P(1,0) + state(1,0) → Case 11 → output G(1,1)<br>
-  pair 3: P(0,1) + state(1,1) → Case 8 → output P(0,1)<br><br>
-  Output = 01110110 = 322 → trailing zero count = 1 → d=1 → 322 ÷ 2 = <strong>161</strong><br><br>
-  Check: (3×107+1)/2 = 322/2 = 161 ✓<br>
+  pair 2: K(0,0) + state(1,0) → Case 3 → output P(0,1) <span style="color:var(--green)">← K stops the carry</span><br>
+  pair 3: P(0,1) + state(0,0) → Case 5 → output G(1,1) <span style="color:var(--green)">← P→G creation! c<sub>out</sub>=0</span><br><br>
+  Output = 11010110₂ = 214 → trailing zero count = 1 → d=1 → 214 ÷ 2 = <strong>107</strong><br><br>
+  Check: (3×71+1)/2 = 214/2 = 107 ✓<br>
   <strong>No multiplication. No addition. Just 4 table lookups.</strong>
 </div>
 

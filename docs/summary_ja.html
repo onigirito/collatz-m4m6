@@ -281,16 +281,16 @@
 <p>この16通りを全部書き出したのが<strong>Table 5.1</strong>（論文の核心）。</p>
 
 <div class="example">
-  <div class="example-title">例：n = 107 → n' = 161 を表引きだけで求める</div>
-  107 = 01101011 → ペア(LSB順)：(1,1), (0,1), (1,0), (0,1)<br>
-  GPK：G, P, P, P<br><br>
+  <div class="example-title">例：n = 71 → n' = 107 を表引きだけで求める</div>
+  71 = 01000111₂ → ペア(LSB順)：(1,1), (0,1), (0,0), (0,1)<br>
+  GPK：G, P, K, P<br><br>
   初期状態 (1, 0)（+1 の効果）<br><br>
-  pair 0: G + 状態(1,0) → 表の Case 15 → 出力 P(1,0)<br>
+  pair 0: G(1,1) + 状態(1,0) → Case 15 → 出力 P(1,0) <span style="color:var(--red)">← Gが破壊され、キャリー=1</span><br>
   pair 1: P(0,1) + 状態(1,1) → Case 8 → 出力 P(0,1)<br>
-  pair 2: P(1,0) + 状態(1,0) → Case 11 → 出力 G(1,1)<br>
-  pair 3: P(0,1) + 状態(1,1) → Case 8 → 出力 P(0,1)<br><br>
-  出力 = 01110110 = 322 → 末尾に0が1個 → d=1 → 322 ÷ 2 = <strong>161</strong><br><br>
-  検算：(3×107+1)/2 = 322/2 = 161 ✓<br>
+  pair 2: K(0,0) + 状態(1,0) → Case 3 → 出力 P(0,1) <span style="color:var(--green)">← Kがキャリーを止める</span><br>
+  pair 3: P(0,1) + 状態(0,0) → Case 5 → 出力 G(1,1) <span style="color:var(--green)">← P→G生成！ c<sub>out</sub>=0</span><br><br>
+  出力 = 11010110₂ = 214 → 末尾に0が1個 → d=1 → 214 ÷ 2 = <strong>107</strong><br><br>
+  検算：(3×71+1)/2 = 214/2 = 107 ✓<br>
   <strong>掛け算も足し算もしていない。表を4回引いただけ。</strong>
 </div>
 
