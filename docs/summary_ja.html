@@ -274,8 +274,29 @@
 <p>なぜ16通りか：</p>
 <ul>
   <li>入力ペアの種類：4通り（K, P, P, G）</li>
-  <li>状態（前のペアからの繰り上がり＋前の左ビット）：4通り</li>
+  <li>状態：4通り（下記参照）</li>
   <li>合計：4 × 4 = <strong>16通り</strong></li>
+</ul>
+
+<h3>「状態」とは何か</h3>
+<p>表を引くには、入力ペアの他に<strong>状態</strong>が必要。状態は2つの値の組：</p>
+<table style="max-width:600px;">
+  <tr><th>記号</th><th>意味</th><th>どこから来るか</th></tr>
+  <tr>
+    <td><strong>c<sub>in</sub></strong></td>
+    <td>前のペアから来る繰り上がり（0か1）</td>
+    <td>前のペアの c<sub>out</sub></td>
+  </tr>
+  <tr>
+    <td><strong>a<sub>i-1</sub></strong></td>
+    <td>前の入力ペアの左ビット（0か1）</td>
+    <td>前の入力ペアの(a, b)のa</td>
+  </tr>
+</table>
+<p>状態を (c<sub>in</sub>, a<sub>i-1</sub>) と書く。4通り：(0,0), (0,1), (1,0), (1,1)。</p>
+<ul>
+  <li><strong>初期状態 = (1, 0)</strong>：c<sub>in</sub>=1 は「+1」の効果。a<sub>i-1</sub>=0 は「前のペアがない」こと。</li>
+  <li><strong>次の状態</strong> = (このペアの c<sub>out</sub>, このペアの入力の左ビット a<sub>i</sub>)</li>
 </ul>
 
 <p>この16通りを全部書き出したのが<strong>Table 5.1</strong>（論文の核心）。</p>
@@ -284,11 +305,14 @@
   <div class="example-title">例：n = 71 → n' = 107 を表引きだけで求める</div>
   71 = 01000111₂ → ペア(LSB順)：(1,1), (0,1), (0,0), (0,1)<br>
   GPK：G, P, K, P<br><br>
-  初期状態 (1, 0)（+1 の効果）<br><br>
-  pair 0: G(1,1) + 状態(1,0) → Case 15 → 出力 P(1,0) <span style="color:var(--red)">← Gが破壊され、キャリー=1</span><br>
-  pair 1: P(0,1) + 状態(1,1) → Case 8 → 出力 P(0,1) <span style="color:var(--yellow)">← キャリーが通過（c<sub>out</sub>=1）</span><br>
-  pair 2: K(0,0) + 状態(1,0) → Case 3 → 出力 P(0,1) <span style="color:var(--green)">← Kがキャリーを止める</span><br>
-  pair 3: P(0,1) + 状態(0,0) → Case 5 → 出力 G(1,1) <span style="color:var(--green)">← P→G生成！ c<sub>out</sub>=0</span><br><br>
+  初期状態 (c<sub>in</sub>=1, a<sub>-1</sub>=0) = <strong>(1, 0)</strong>　← +1の効果 と 前ペアなし<br><br>
+  pair 0: G(<strong>1</strong>,1) + 状態(1,0) → Case 15 → 出力 P(1,0), c<sub>out</sub>=1 <span style="color:var(--red)">← Gが破壊、キャリー生成</span><br>
+  <span style="color:var(--text-muted)">　　次の状態 = (c<sub>out</sub>=1, a<sub>0</sub>=1) = (1,1)</span><br>
+  pair 1: P(<strong>0</strong>,1) + 状態(1,1) → Case 8 → 出力 P(0,1), c<sub>out</sub>=1 <span style="color:var(--yellow)">← キャリーが通過</span><br>
+  <span style="color:var(--text-muted)">　　次の状態 = (c<sub>out</sub>=1, a<sub>1</sub>=0) = (1,0)</span><br>
+  pair 2: K(<strong>0</strong>,0) + 状態(1,0) → Case 3 → 出力 P(0,1), c<sub>out</sub>=0 <span style="color:var(--green)">← Kがキャリーを止める</span><br>
+  <span style="color:var(--text-muted)">　　次の状態 = (c<sub>out</sub>=0, a<sub>2</sub>=0) = (0,0)</span><br>
+  pair 3: P(<strong>0</strong>,1) + 状態(0,0) → Case 5 → 出力 G(1,1), c<sub>out</sub>=0 <span style="color:var(--green)">← P→G生成！連鎖しない</span><br><br>
   出力 = 11010110₂ = 214 → 末尾に0が1個 → d=1 → 214 ÷ 2 = <strong>107</strong><br><br>
   検算：(3×71+1)/2 = 214/2 = 107 ✓<br>
   <strong>掛け算も足し算もしていない。表を4回引いただけ。</strong>
