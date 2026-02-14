@@ -277,7 +277,7 @@
   GPK: G, P, K, P<br><br>
   Initial state (1, 0) (from the +1 effect)<br><br>
   pair 0: G(1,1) + state(1,0) → Case 15 → output P(1,0) <span style="color:var(--red)">← G destroyed, carry=1</span><br>
-  pair 1: P(0,1) + state(1,1) → Case 8 → output P(0,1)<br>
+  pair 1: P(0,1) + state(1,1) → Case 8 → output P(0,1) <span style="color:var(--yellow)">← carry passes through (c<sub>out</sub>=1)</span><br>
   pair 2: K(0,0) + state(1,0) → Case 3 → output P(0,1) <span style="color:var(--green)">← K stops the carry</span><br>
   pair 3: P(0,1) + state(0,0) → Case 5 → output G(1,1) <span style="color:var(--green)">← P→G creation! c<sub>out</sub>=0</span><br><br>
   Output = 11010110₂ = 214 → trailing zero count = 1 → d=1 → 214 ÷ 2 = <strong>107</strong><br><br>
