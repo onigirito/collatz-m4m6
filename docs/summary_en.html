@@ -205,12 +205,12 @@
 
 <div class="box">
   <span class="label">m4 only (left bits)</span><br>
-  <span class="ha">1</span> 0 <span class="ha">1</span> 0 = <span class="ha">1010</span><br><br>
+  <span class="ho">1</span> 0 <span class="ho">1</span> 0 = <span class="ho">1010</span><br><br>
   <span class="label">m6 only (right bits)</span><br>
-  0 <span class="ho">1</span> 0 <span class="ho">1</span> = <span class="ho">0101</span><br><br>
+  0 <span class="ha">1</span> 0 <span class="ha">1</span> = <span class="ha">0101</span><br><br>
   <span class="label">Zip them together</span><br>
-  <span class="ha">1</span><span class="ho">1</span><span class="ha">1</span><span class="ho">1</span> = <span class="hl">1111</span><br><br>
-  <span class="ha">1010</span> + <span class="ho">0101</span> = <span class="hl">1111</span>
+  <span class="ho">1</span><span class="ha">1</span><span class="ho">1</span><span class="ha">1</span> = <span class="hl">1111</span><br><br>
+  <span class="ho">1010</span> + <span class="ha">0101</span> = <span class="hl">1111</span>
 </div>
 
 <p><strong>Any number can be split into two bit-strings m4 and m6, and zipped back together.</strong> This is the foundation of pair decomposition.</p>
@@ -444,15 +444,17 @@
 <!-- ===== 8 ===== -->
 <h2><span class="sn">§8</span> Big Picture: Closure → Self-Destruction → No Escape</h2>
 
-<div class="causal">
-  <span style="color:var(--text)">3n+1 = 2n + n + 1 (shift = 1 bit &lt; pair width = 2 bits)</span><br>
-  <span style="color:var(--accent)">&nbsp;&nbsp;└→</span> <span style="color:var(--text)">GPK classification determined by reading the pair alone (closure)</span><br>
-  <span style="color:var(--accent)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└→</span> <span style="color:var(--text)">Carry behavior is state-independent</span><br>
-  <span style="color:var(--accent)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├→</span> <span style="color:var(--text)">G unconditionally generates carry</span><br>
-  <span style="color:var(--accent)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;└→</span> <span style="color:var(--green)">That carry destroys the G itself</span><br>
-  <span style="color:var(--accent)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├→</span> <span style="color:var(--text)">K unconditionally kills carry</span><br>
-  <span style="color:var(--accent)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;└→</span> <span style="color:var(--green)">K can never become G again</span><br>
-  <span style="color:var(--accent)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└→</span> <span style="color:var(--yellow)"><strong>The engine of growth = the agent of its own destruction. No escape.</strong></span>
+<div class="box" style="font-size:0.82rem; line-height:2.2;">
+<pre style="margin:0; font-family:inherit; color:var(--text-muted); white-space:pre-wrap;">
+<span style="color:var(--text)">3n+1 = 2n + n + 1 (shift = 1 bit &lt; pair width = 2 bits)</span>
+<span style="color:var(--accent)">  └→</span> <span style="color:var(--text)">GPK classification determined by reading the pair alone (closure)</span>
+<span style="color:var(--accent)">      └→</span> <span style="color:var(--text)">Carry behavior is state-independent</span>
+<span style="color:var(--accent)">          ├→</span> <span style="color:var(--text)">G unconditionally generates carry</span>
+<span style="color:var(--accent)">          │   └→</span> <span style="color:var(--green)">That carry destroys the G itself</span>
+<span style="color:var(--accent)">          ├→</span> <span style="color:var(--text)">K unconditionally kills carry</span>
+<span style="color:var(--accent)">          │   └→</span> <span style="color:var(--green)">K can never become G again</span>
+<span style="color:var(--accent)">          └→</span> <span style="color:var(--yellow)"><strong>The engine of growth = the agent of its own destruction. No escape.</strong></span>
+</pre>
 </div>
 
 <p>n=1 has pair (0,1)=P, d=2, n'=1. <strong>Fixed point.</strong> All other n are structurally unable to sustain any other cycle under these constraints.</p>

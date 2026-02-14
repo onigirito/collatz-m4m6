@@ -214,12 +214,12 @@
 
 <div class="box">
   <span class="label">m4 だけ（左ビット）</span><br>
-  <span class="ha">1</span> 0 <span class="ha">1</span> 0 = <span class="ha">1010</span><br><br>
+  <span class="ho">1</span> 0 <span class="ho">1</span> 0 = <span class="ho">1010</span><br><br>
   <span class="label">m6 だけ（右ビット）</span><br>
-  0 <span class="ho">1</span> 0 <span class="ho">1</span> = <span class="ho">0101</span><br><br>
+  0 <span class="ha">1</span> 0 <span class="ha">1</span> = <span class="ha">0101</span><br><br>
   <span class="label">ファスナーで噛み合わせる</span><br>
-  <span class="ha">1</span><span class="ho">1</span><span class="ha">1</span><span class="ho">1</span> = <span class="hl">1111</span><br><br>
-  <span class="ha">1010</span> + <span class="ho">0101</span> = <span class="hl">1111</span>
+  <span class="ho">1</span><span class="ha">1</span><span class="ho">1</span><span class="ha">1</span> = <span class="hl">1111</span><br><br>
+  <span class="ho">1010</span> + <span class="ha">0101</span> = <span class="hl">1111</span>
 </div>
 
 <p>つまり<strong>どんな数も、m4 と m6 の2本のビット列に分解でき、ファスナーで元に戻せる</strong>。これがペア分解の基本。</p>
@@ -453,15 +453,17 @@
 <!-- ===== 8. 因果の連鎖 ===== -->
 <h2><span class="sn">§8</span> 全体像：閉鎖性 → 自壊 → 脱出不可能</h2>
 
-<div class="causal">
-  <span style="color:var(--text)">3n+1 = 2n + n + 1（シフト量1ビット &lt; ペア幅2ビット）</span><br>
-  <span style="color:var(--accent)">&nbsp;&nbsp;└→</span> <span style="color:var(--text)">GPK分類がペアを読むだけで確定する（閉鎖性）</span><br>
-  <span style="color:var(--accent)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└→</span> <span style="color:var(--text)">繰り上がり挙動が状態に依存しない</span><br>
-  <span style="color:var(--accent)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├→</span> <span style="color:var(--text)">G は無条件に繰り上がりを生む</span><br>
-  <span style="color:var(--accent)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;└→</span> <span style="color:var(--green)">その繰り上がりが G 自身を破壊する</span><br>
-  <span style="color:var(--accent)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├→</span> <span style="color:var(--text)">K は無条件に繰り上がりを止める</span><br>
-  <span style="color:var(--accent)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;└→</span> <span style="color:var(--green)">K が G に戻ることもない</span><br>
-  <span style="color:var(--accent)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└→</span> <span style="color:var(--yellow)"><strong>成長の源（G）＝ 成長の破壊者。逃げ道なし。</strong></span>
+<div class="box" style="font-size:0.82rem; line-height:2.2;">
+<pre style="margin:0; font-family:inherit; color:var(--text-muted); white-space:pre-wrap;">
+<span style="color:var(--text)">3n+1 = 2n + n + 1（シフト量1ビット &lt; ペア幅2ビット）</span>
+<span style="color:var(--accent)">  └→</span> <span style="color:var(--text)">GPK分類がペアを読むだけで確定する（閉鎖性）</span>
+<span style="color:var(--accent)">      └→</span> <span style="color:var(--text)">繰り上がり挙動が状態に依存しない</span>
+<span style="color:var(--accent)">          ├→</span> <span style="color:var(--text)">G は無条件に繰り上がりを生む</span>
+<span style="color:var(--accent)">          │   └→</span> <span style="color:var(--green)">その繰り上がりが G 自身を破壊する</span>
+<span style="color:var(--accent)">          ├→</span> <span style="color:var(--text)">K は無条件に繰り上がりを止める</span>
+<span style="color:var(--accent)">          │   └→</span> <span style="color:var(--green)">K が G に戻ることもない</span>
+<span style="color:var(--accent)">          └→</span> <span style="color:var(--yellow)"><strong>成長の源（G）＝ 成長の破壊者。逃げ道なし。</strong></span>
+</pre>
 </div>
 
 <p>n=1 はペア (0,1)=P で、d=2、n'=1。<strong>不動点</strong>。他の全ての n は上記の制約により、この不動点に向かう以外の構造を持てない。</p>
