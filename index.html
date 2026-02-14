@@ -9,20 +9,17 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Yu Gothic', 'Meiryo', sans-serif; line-height: 1.7; color: #222; background: var(--bg); }
 
-  /* Language switcher + tab navigation */
+  /* Language switcher */
   .lang-bar { background: var(--accent-dark); color: #fff; padding: 6px 20px; font-size: 0.85em; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
   .lang-bar .site-id { font-weight: 600; letter-spacing: 0.5px; }
   .lang-btn { background: none; border: 1px solid rgba(255,255,255,0.5); color: #fff; padding: 2px 10px; border-radius: 3px; cursor: pointer; margin-left: 4px; font-size: 0.85em; }
   .lang-btn.active { background: rgba(255,255,255,0.25); border-color: #fff; }
 
-  /* Tab navigation */
-  .nav-tabs { display: flex; gap: 2px; }
-  .nav-tab { background: none; border: none; color: rgba(255,255,255,0.7); padding: 6px 14px; cursor: pointer; font-size: 0.85em; border-radius: 4px 4px 0 0; white-space: nowrap; }
-  .nav-tab:hover { color: #fff; background: rgba(255,255,255,0.1); }
-  .nav-tab.active { color: #fff; background: rgba(255,255,255,0.2); font-weight: 600; }
-
-  /* Hamburger menu toggle */
-  .menu-toggle { display: none; background: none; border: 1px solid rgba(255,255,255,0.5); color: #fff; padding: 2px 8px; border-radius: 3px; cursor: pointer; font-size: 1.1em; line-height: 1; }
+  /* Inline tab navigation */
+  .inline-tabs { display: flex; gap: 2px; margin-bottom: 20px; border-bottom: 2px solid #dee2e6; padding-bottom: 0; flex-wrap: wrap; }
+  .nav-tab { background: none; border: none; color: #666; padding: 8px 16px; cursor: pointer; font-size: 0.9em; border-radius: 4px 4px 0 0; white-space: nowrap; border-bottom: 2px solid transparent; margin-bottom: -2px; }
+  .nav-tab:hover { color: var(--accent); background: #f0f4f8; }
+  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
 
   /* Page section switching */
   .page-section { display: none; }
@@ -93,31 +90,17 @@
     .content-inner { padding: 0 16px 40px; }
     .card-row { flex-direction: column; }
     .doc-cards { grid-template-columns: 1fr; }
-    .nav-tabs { display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--accent-dark); flex-direction: column; padding: 4px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
-    .nav-tabs.open { display: flex; }
-    .nav-tab { text-align: left; padding: 10px 20px; border-radius: 0; }
-    .nav-tab.active { background: rgba(255,255,255,0.15); }
-    .menu-toggle { display: block; }
+    .inline-tabs { gap: 0; }
+    .nav-tab { padding: 6px 10px; font-size: 0.82em; }
   }
 </style>
 </head>
 <body>
 
-<!-- ===== LANGUAGE BAR + TAB NAVIGATION ===== -->
+<!-- ===== LANGUAGE BAR ===== -->
 <div class="lang-bar">
   <span class="site-id">collatz-m4m6</span>
-  <nav class="nav-tabs" id="nav-tabs">
-    <button class="nav-tab active" data-lang="en" data-page="home" onclick="setPage('home')">Home</button>
-    <button class="nav-tab" data-lang="en" data-page="features" onclick="setPage('features')">Features</button>
-    <button class="nav-tab" data-lang="en" data-page="technical" onclick="setPage('technical')">Technical</button>
-    <button class="nav-tab" data-lang="en" data-page="about" onclick="setPage('about')">About</button>
-    <button class="nav-tab active" data-lang="ja" data-page="home" onclick="setPage('home')">ホーム</button>
-    <button class="nav-tab" data-lang="ja" data-page="features" onclick="setPage('features')">機能</button>
-    <button class="nav-tab" data-lang="ja" data-page="technical" onclick="setPage('technical')">技術</button>
-    <button class="nav-tab" data-lang="ja" data-page="about" onclick="setPage('about')">概要</button>
-  </nav>
   <div style="display:flex;align-items:center;gap:8px;">
-    <button class="menu-toggle" onclick="toggleMenu()">&#9776;</button>
     <button class="lang-btn active" onclick="setLang('en')" id="btn-en">EN</button>
     <button class="lang-btn" onclick="setLang('ja')" id="btn-ja">JA</button>
   </div>
@@ -135,8 +118,20 @@
 
 <div class="content-inner">
 
-<!-- ========== PAGE: HOME ========== -->
-<div class="page-section active" id="page-home">
+<!-- ===== INLINE TAB NAVIGATION ===== -->
+<nav class="inline-tabs" id="nav-tabs">
+  <button class="nav-tab active" data-lang="en" data-page="download" onclick="setPage('download')">Download</button>
+  <button class="nav-tab" data-lang="en" data-page="features" onclick="setPage('features')">Features</button>
+  <button class="nav-tab" data-lang="en" data-page="technical" onclick="setPage('technical')">Technical</button>
+  <button class="nav-tab" data-lang="en" data-page="about" onclick="setPage('about')">About</button>
+  <button class="nav-tab active" data-lang="ja" data-page="download" onclick="setPage('download')">DL</button>
+  <button class="nav-tab" data-lang="ja" data-page="features" onclick="setPage('features')">機能</button>
+  <button class="nav-tab" data-lang="ja" data-page="technical" onclick="setPage('technical')">技術</button>
+  <button class="nav-tab" data-lang="ja" data-page="about" onclick="setPage('about')">概要</button>
+</nav>
+
+<!-- ========== PAGE: DOWNLOAD ========== -->
+<div class="page-section active" id="page-download">
 
 <!-- ===== DOWNLOAD ===== -->
 <h2 id="download" data-lang="en" class="show">Download</h2>
@@ -256,7 +251,7 @@
   </div>
 </div>
 
-</div><!-- end page-home -->
+</div><!-- end page-download -->
 
 <!-- ========== PAGE: FEATURES ========== -->
 <div class="page-section" id="page-features">
@@ -362,6 +357,9 @@
 <!-- ===== PERFORMANCE ===== -->
 <h2 id="performance" data-lang="en" class="show">Performance</h2>
 <h2 id="performance-ja" data-lang="ja">パフォーマンス</h2>
+
+<p data-lang="en" class="show" style="font-size:0.9em;color:#555;margin-bottom:16px;">GPK (Generate/Propagate/Kill) originates from carry-lookahead adder design — a technique for making addition <i>faster</i> through parallel prefix computation (Kogge &amp; Stone, 1973). The single-analysis mode uses the same GPK in the <i>reverse</i> direction: unrolling it serially to make the carry structure visible at every position. Speed is intentionally sacrificed for structural transparency. The sweep modes use a Kogge-Stone CLA (parallel prefix), so the speed penalty there should be minimal.</p>
+<p data-lang="ja" style="font-size:0.9em;color:#555;margin-bottom:16px;">GPK（Generate/Propagate/Kill）はもともとキャリー先読み加算器（CLA）を高速化するための技術です — 並列プレフィックス演算による加算の高速化（Kogge &amp; Stone, 1973）。単発解析の処理はこの同じGPKを逆方向に使っています。構造を各位置で可視化するために直列に展開しているため、速度は当然犠牲になっています。スイープ側は Kogge-Stone CLA（並列プレフィックス）を組んでいるので、そこまで遅くはならないはずです。</p>
 
 <div data-lang="en" class="show">
 <p>Three-tier computation architecture automatically selects the optimal path:</p>
@@ -526,7 +524,7 @@
 
 <!-- Language switching + Tab navigation -->
 <script>
-var currentPage = 'home';
+var currentPage = 'download';
 
 function setPage(id) {
   currentPage = id;
@@ -536,14 +534,8 @@ function setPage(id) {
   document.querySelectorAll('.nav-tab').forEach(function(btn) {
     btn.classList.toggle('active', btn.getAttribute('data-page') === id);
   });
-  // Close mobile menu
-  document.getElementById('nav-tabs').classList.remove('open');
   // Scroll to top
   window.scrollTo(0, 0);
-}
-
-function toggleMenu() {
-  document.getElementById('nav-tabs').classList.toggle('open');
 }
 
 function setLang(lang) {
