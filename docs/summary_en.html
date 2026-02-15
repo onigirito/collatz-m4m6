@@ -501,6 +501,30 @@
 
 <p><strong>Destruction cascades, but creation does not.</strong> This asymmetry is an algebraic fact read directly from the 16-row table.</p>
 
+<h3>Structural upper bound combining scan + re-pairing (net ≤ 0)</h3>
+
+<p>Reading Table 5.1 and Table 5.2 together, the net change of the leftmost G-block per step has a strict upper bound:</p>
+
+<table>
+  <tr><th>Phase</th><th>Effect</th><th>Basis</th></tr>
+  <tr>
+    <td>Scan</td>
+    <td>Leading G eliminated → −1</td>
+    <td>Table 5.1 (Lemma 5.1(b))</td>
+  </tr>
+  <tr>
+    <td>Re-pairing</td>
+    <td>Tail extension at most +1</td>
+    <td>Table 5.2 (Lemma 5.6)</td>
+  </tr>
+  <tr>
+    <td><strong>One-step total</strong></td>
+    <td><strong>≤ 0</strong></td>
+    <td><strong>All cases, no exceptions</strong></td>
+  </tr>
+</table>
+
+<p>This is a worst-case bound, not an average. max(X) ≤ 0, not E[X] &lt; 0. No configuration yields net +1.</p>
 
 <!-- ===== 7.5 ===== -->
 <h2><span class="sn">§7.5</span> Why Convergence to 1 Is Structurally Inevitable</h2>
@@ -588,7 +612,7 @@ Since n has at most ⌊log<sub>2</sub> n⌋ + 1 bits,<br>
 
 <h3>Net ≤ 0: structural bound vs. probabilistic tendency</h3>
 
-<p>The distinction is especially clear for the G-block net change (§7.5):</p>
+<p>The distinction is especially clear for the G-block net change (§7):</p>
 
 <table>
   <tr><th></th><th>Probabilistic argument</th><th>Net ≤ 0 (this paper)</th></tr>
