@@ -510,6 +510,30 @@
 
 <p><strong>破壊は連鎖するが、生成は連鎖しない。</strong>この非対称性は16行の表から読み取れる代数的事実。</p>
 
+<h3>scan + re-pairing を合わせた構造的上限（net ≤ 0）</h3>
+
+<p>Table 5.1 と Table 5.2 を合わせて読むと、最左 G-block の1ステップあたりのネット変化に上限がある：</p>
+
+<table>
+  <tr><th>フェーズ</th><th>影響</th><th>根拠</th></tr>
+  <tr>
+    <td>Scan</td>
+    <td>先頭 G を除去 → −1</td>
+    <td>Table 5.1 (Lemma 5.1(b))</td>
+  </tr>
+  <tr>
+    <td>Re-pairing</td>
+    <td>末尾で最大 +1 伸長</td>
+    <td>Table 5.2 (Lemma 5.6)</td>
+  </tr>
+  <tr>
+    <td><strong>1ステップ合計</strong></td>
+    <td><strong>≤ 0</strong></td>
+    <td><strong>全ケース、例外なし</strong></td>
+  </tr>
+</table>
+
+<p>これは平均ではなく最悪ケースの上限。max(X) ≤ 0 であり、E[X] &lt; 0 ではない。net +1 となる配列は存在しない。</p>
 
 <!-- ===== 7.5 ===== -->
 <h2><span class="sn">§7.5</span> なぜ 1 への収束は構造的に不可避か</h2>
@@ -597,7 +621,7 @@ n のビット数は高々 ⌊log<sub>2</sub> n⌋ + 1 なので、<br>
 
 <h3>ネット ≤ 0：構造的上限 vs. 確率的傾向</h3>
 
-<p>G-block のネット変化（§7.5）で、この区別は特に明確になる：</p>
+<p>G-block のネット変化（§7）で、この区別は特に明確になる：</p>
 
 <table>
   <tr><th></th><th>確率的議論</th><th>ネット ≤ 0（本論文）</th></tr>
