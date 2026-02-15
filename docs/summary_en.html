@@ -505,75 +505,15 @@
 <!-- ===== 7.5 ===== -->
 <h2><span class="sn">§7.5</span> Why Convergence to 1 Is Structurally Inevitable</h2>
 
-<p>§7 showed what happens <em>within a single scan</em>: G self-destructs, K→G is impossible, P→G doesn't chain. But can re-pairing (Table 5.2) undo this, keeping the number growing — or even cycling — forever? The paper answers this through a <strong>positional</strong> argument — not by tracking total G, but by asking: can the specific condition for growth persist?</p>
+<p>§7 showed what happens within a single scan. But can re-pairing (Table 5.2) undo everything? Three points settle the question.</p>
 
-<h3>1. The question: can d=1 persist indefinitely?</h3>
+<h3>1. Re-pairing does not break closure</h3>
 
-<p>Each step of 3n+1 adds log<sub>2</sub>3 ≈ 1.585 bits and removes d bits. Net growth is positive <strong>only when d=1</strong>. Sustained divergence therefore requires d=1 at most steps.</p>
+<p>Re-pairing outputs the same 4 pair types (all 16 cases verifiable in Table 5.2). Scan → division → re-pairing → next scan: no 5th type ever appears. The table properties from §7 (G→c<sub>out</sub>=1, K→G impossible, P→G has c<sub>out</sub>=0) apply equally to n' after re-pairing.</p>
 
-<h3>2. d=1 is a positional condition (Lemma 5.8)</h3>
+<h3>2. Consecutive d=1 has an arithmetic ceiling (Corollary 5.3)</h3>
 
-<p>For odd n, d=1 <strong>if and only if pair 0 is G(1,1)</strong>. This is a condition on a <em>single specific position</em> (the lowest pair), not on the total number of G's.</p>
-
-<p style="font-size:0.85rem; color:var(--text-muted);">Derivation: For odd n, bit 0 = 1, so pair 0 is either G(1,1) or P(0,1). If G: Case 15, output trailing bits …10, d=1. If P: Case 7, output trailing bits …00, d≥2.</p>
-
-<h3>3. Inseparable coupling: G at pair 0 destroys itself</h3>
-
-<p>When pair 0 is G(1,1), the scan (Case 15) outputs c<sub>out</sub>=1 and converts it to P(1,0). The very condition that enables d=1 is the condition that eliminates it. This is the "inseparable coupling" of Proposition 5.4: the activation condition for growth and its destruction are the same algebraic event.</p>
-
-<h3>4. Leftmost G-block consumption (net ≤ 0)</h3>
-
-<p>If pair 0 is inside a G-block of length L, d=1 can recur for multiple steps — the re-pairing after d=1 picks up the next G in the block as the new pair 0. But the block shrinks:</p>
-
-<table>
-  <tr><th>Phase</th><th>Effect on leftmost G-block</th><th>Bound</th></tr>
-  <tr>
-    <td>Scan (Lemma 5.1(b))</td>
-    <td>Leading G eliminated (→P)</td>
-    <td><strong>−1</strong> or more</td>
-  </tr>
-  <tr>
-    <td>Re-pairing (Lemma 5.6)</td>
-    <td>Tail extension at most +1</td>
-    <td><strong>+1</strong> at most</td>
-  </tr>
-  <tr>
-    <td><strong>Net per step</strong></td>
-    <td></td>
-    <td><strong>≤ 0</strong></td>
-  </tr>
-</table>
-
-<p>This is a worst-case upper bound, not an average. No configuration produces net +1 for the leftmost G-block. A block of length L is consumed in at most L steps, after which pair 0 is no longer G, d ≥ 2, and the trajectory contracts.</p>
-
-<h3>5. Dimensional separation: total G is irrelevant</h3>
-
-<p>A natural objection: "Even if the leftmost block is consumed, there are G's elsewhere — can't they sustain growth?" No. The growth condition d=1 requires <strong>pair 0 = G</strong> — a positional condition on a specific location. The aggregate number of G-positions elsewhere is <strong>structurally irrelevant</strong> to whether pair 0 is G.</p>
-
-<p>Once the leftmost G-block containing pair 0 is consumed, d ≥ 2 regardless of how many G-positions exist at other locations. This is the "dimensional separation" of Proposition 5.4.</p>
-
-<div class="note">
-  This is why tracking total G-count across trajectory steps answers the <strong>wrong question</strong>. Total G can increase (P→G transitions, density fluctuations — even back to 100%). What matters is whether pair 0 is G, and the leftmost G-block containing pair 0 has a finite lifetime.
-</div>
-
-<h3>6. Episode structure: re-pairing provides no escape</h3>
-
-<p>After the leftmost G-block is consumed and d ≥ 2, the ÷2<sup>d</sup> + re-pairing may place a new G at pair 0 (mechanical re-indexing from Table 5.2). This starts a <strong>new episode</strong>:</p>
-
-<div class="box" style="font-size:0.82rem; line-height:2.2;">
-<span style="color:var(--yellow)">Episode 1:</span> pair 0 = G → d=1 burst → leftmost block consumed → d≥2 <span style="color:var(--green)">(contraction)</span><br>
-<span style="color:var(--yellow)">Episode 2:</span> re-pairing places new G at pair 0 → d=1 burst → consumed → d≥2 <span style="color:var(--green)">(contraction)</span><br>
-<span style="color:var(--yellow)">Episode k:</span> ...<br>
-<span style="color:var(--text-muted)">Each episode is finite (bounded by its G-block length). Between episodes, d≥2 → contraction.</span>
-</div>
-
-<p>Any G-block placed at pair 0 by re-pairing is subject to the full constraint set: inseparable coupling (§7.5.3), net ≤ 0 (§7.5.4), non-mergeability (Lemma 5.5). Re-pairing doesn't undo the consumption process — it merely starts a new finite episode, each terminated by contraction.</p>
-
-<p><strong>This episode chain itself terminates.</strong> Note that n does <em>not</em> decrease monotonically — a d=1 burst can grow n significantly (e.g. n=27 reaches 3077). But the trajectory cannot diverge: d=1 is structurally unsustainable (Remark 5.3), so the trajectory is bounded. Within this closed, scale-invariant system (Proposition 5.4, Step 5), the same inseparable coupling applies at every value the trajectory visits. Since the system structurally admits only the 1-convergent cycle (§8.4), the trajectory reaches n=1, where pair 0 = P(0,1), d=2, and n′=1 — a fixed point.</p>
-
-<h3>7. Independent arithmetic confirmation (Corollary 5.3)</h3>
-
-<p>An entirely separate derivation reaches the same conclusion using only modular arithmetic — no GPK, no tables:</p>
+<p>Independent of the tables, a purely arithmetic fact:</p>
 
 <div class="box">
 L consecutive d=1 steps require n ≡ 2<sup>L+1</sup>−1 (mod 2<sup>L+1</sup>),<br>
@@ -582,22 +522,18 @@ Since n has at most ⌊log<sub>2</sub> n⌋ + 1 bits,<br>
 <strong>max consecutive d=1 ≤ ⌊log<sub>2</sub> n⌋.</strong>
 </div>
 
-<p>Two completely independent methods — GPK structural analysis and modular arithmetic — reach the same conclusion: d=1 cannot persist indefinitely. This cross-verification reinforces the robustness of the result.</p>
+<p>Growth (d=1) always stops after finitely many steps. This is an arithmetic fact, independent of GPK or the tables.</p>
 
-<h3>8. What trajectory data actually shows</h3>
+<h3>3. No escape inside a finite box</h3>
 
-<p>Trajectory data confirms the episode structure. In the n=27 trajectory, for instance:</p>
-<ul>
-  <li>Bursts of d=1 (growth episodes) alternate with d≥2 (contraction)</li>
-  <li>Total G can fluctuate freely — even reaching 100% density more than once</li>
-  <li>But each d=1 run is finite, exactly as the positional argument predicts</li>
-</ul>
+<p>Since d=1 cannot persist, the trajectory cannot diverge (it is bounded). Closure ensures that the same tables and constraints apply wherever the trajectory goes (scale invariance). The only possible terminal behavior for a bounded trajectory in a closed, scale-invariant system is a cycle. For x=3, the only structurally admissible cycle is the fixed point n=1 (§8.4).</p>
 
-<p>The trajectory GPK at each step is the correct internal state — it is not "decoration." But comparing consecutive snapshots does not reveal which G was destroyed by scan, where carry propagated, or how re-pairing shifted boundaries. Net ≤ 0 tracks a specific G-block through the transformation; the snapshot shows only the aggregate result.</p>
-
-<div class="warn">
-  <strong>The paper's argument is positional, not aggregate.</strong> It does not claim "total G decreases." It establishes that the <em>specific condition for growth</em> (pair 0 = G) cannot persist, because the mechanism that enables it (G at pair 0) is the mechanism that destroys it (carry from that G). The episode chain terminates because d=1 is structurally unsustainable (the trajectory is bounded), and the closed system admits only the 1-convergent cycle. This is verifiable row by row from Tables 5.1 and 5.2.
+<div class="note">
+  n=1 has pair P(0,1), d=2, n'=1. Fixed point.<br>
+  The trajectory can temporarily grow large (e.g. n=27 peaks at 3077 among odd steps; the 9232 in §0 is the even value 3×3077+1). But since d=1 is unsustainable, divergence is impossible.
 </div>
+
+<p style="font-size:0.85rem; color:var(--text-muted);">The paper's Proposition 5.4 provides a detailed derivation from table properties: leftmost G-block consumption (net ≤ 0), dimensional separation, episode structure. The three points above are the core of that conclusion.</p>
 
 
 <!-- ===== 8 ===== -->

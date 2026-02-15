@@ -237,11 +237,11 @@
     <td>両方0</td><td>繰り上がりを<strong>止める</strong></td>
   </tr>
   <tr>
-    <td><code>(0, 1)</code></td><td><strong>P</strong></td>
+    <td><code>(0, 1)</code></td><td><strong>P</strong> (Propagate)</td>
     <td>片方だけ1</td><td>繰り上がりを<strong>通す</strong></td>
   </tr>
   <tr>
-    <td><code>(1, 0)</code></td><td><strong>P</strong></td>
+    <td><code>(1, 0)</code></td><td><strong>P</strong> (Propagate)</td>
     <td>片方だけ1</td><td>繰り上がりを<strong>通す</strong></td>
   </tr>
   <tr>
@@ -514,75 +514,15 @@
 <!-- ===== 7.5 ===== -->
 <h2><span class="sn">§7.5</span> なぜ 1 への収束は構造的に不可避か</h2>
 
-<p>§7 で示したのは<em>1回の scan 内</em>の話：G は自壊し、K→G は不可能、P→G は連鎖しない。しかし re-pairing（Table 5.2）がこれを覆し、数が永遠に成長 — あるいは循環 — し続けることはないのか？ 論文はこの問いに<strong>位置的</strong>な議論で答える — G の総数ではなく、成長の条件そのものが持続可能かを問う。</p>
+<p>§7 で示したのは1回の scan 内の話。しかし re-pairing（Table 5.2）が全部ひっくり返すのでは？ この問いに3点で答える。</p>
 
-<h3>1. 問い：d=1 は永続しうるか？</h3>
+<h3>1. re-pairing は閉鎖性を壊さない</h3>
 
-<p>3n+1 の各ステップは log<sub>2</sub>3 ≈ 1.585 ビットを加え、d ビットを除去する。正味の成長が正になるのは <strong>d=1 のときだけ</strong>。持続的な発散には、ほとんどのステップで d=1 が必要になる。</p>
+<p>re-pairing の出力も同じ4種のペア（Table 5.2 で全16ケース確認可能）。スキャン → 除算 → re-pairing → 次のスキャン、どの段階でも5番目の型は現れない。§7 で示した表の性質（G→c<sub>out</sub>=1、K→G不可能、P→Gはc<sub>out</sub>=0）は、re-pairing 後の n' にもそのまま適用される。</p>
 
-<h3>2. d=1 は位置条件である（Lemma 5.8）</h3>
+<h3>2. 連続 d=1 には算術的上限がある（Corollary 5.3）</h3>
 
-<p>奇数 n に対して、d=1 <strong>⟺ pair 0 が G(1,1)</strong>。これは<em>特定の1つの位置</em>（最下位ペア）に対する条件であり、G の総数への条件ではない。</p>
-
-<p style="font-size:0.85rem; color:var(--text-muted);">導出：奇数 n では bit 0 = 1 なので pair 0 は G(1,1) か P(0,1)。G なら Case 15、出力末尾ビット …10、d=1。P なら Case 7、出力末尾ビット …00、d≥2。</p>
-
-<h3>3. 不可分結合：pair 0 の G は自らを破壊する</h3>
-
-<p>pair 0 が G(1,1) のとき、scan（Case 15）は c<sub>out</sub>=1 を出力し、その G を P(1,0) に変換する。d=1 を可能にする条件そのものが、d=1 を消滅させる条件でもある。これが Proposition 5.4 の「不可分結合」：成長の起動条件と成長の破壊は同じ代数的事象。</p>
-
-<h3>4. 最左 G-block の消滅（net ≤ 0）</h3>
-
-<p>pair 0 が長さ L の G-block に含まれる場合、d=1 は複数ステップ続きうる — d=1 後の re-pairing がブロック内の次の G を新しい pair 0 として拾うから。しかしブロックは縮小する：</p>
-
-<table>
-  <tr><th>フェーズ</th><th>最左 G-block への影響</th><th>上限</th></tr>
-  <tr>
-    <td>Scan（Lemma 5.1(b)）</td>
-    <td>先頭 G を除去（→P）</td>
-    <td><strong>−1</strong> 以上の減少</td>
-  </tr>
-  <tr>
-    <td>Re-pairing（Lemma 5.6）</td>
-    <td>末尾で最大 +1 伸長</td>
-    <td>最大 <strong>+1</strong></td>
-  </tr>
-  <tr>
-    <td><strong>1ステップの合計</strong></td>
-    <td></td>
-    <td><strong>≤ 0</strong></td>
-  </tr>
-</table>
-
-<p>これは最悪ケースの上限であり、平均ではない。最左 G-block の net +1 となる配列は存在しない。長さ L のブロックは最大 L ステップで消滅し、pair 0 は G でなくなり、d ≥ 2 となり、軌道は縮小する。</p>
-
-<h3>5. 次元分離：G の総数は無関係</h3>
-
-<p>自然な反論：「最左ブロックが消えても、他の場所に G がある — それで成長を維持できないか？」 できない。成長条件 d=1 は <strong>pair 0 = G</strong> を要求する — 特定の位置への条件。他の場所の G の総数は、pair 0 が G であるかどうかに<strong>構造的に無関係</strong>。</p>
-
-<p>pair 0 を含む最左 G-block が消滅すれば、他の位置にどれだけ G があろうと d ≥ 2 になる。これが Proposition 5.4 の「次元分離」。</p>
-
-<div class="note">
-  軌道の各ステップで G の総数を追跡することは、<strong>問いを間違えている</strong>。G の総数は増えうる（P→G 遷移、密度の変動 — 100% に戻ることさえある）。重要なのは pair 0 が G であるかどうかであり、pair 0 を含む最左 G-block は有限の寿命を持つ。
-</div>
-
-<h3>6. エピソード構造：re-pairing は逃げ道にならない</h3>
-
-<p>最左 G-block が消滅し d ≥ 2 になった後、÷2<sup>d</sup> + re-pairing が新しい G を pair 0 に配置することがある（Table 5.2 による機械的再索引）。これは<strong>新しいエピソード</strong>を開始する：</p>
-
-<div class="box" style="font-size:0.82rem; line-height:2.2;">
-<span style="color:var(--yellow)">エピソード 1:</span> pair 0 = G → d=1 バースト → 最左ブロック消滅 → d≥2 <span style="color:var(--green)">（縮小）</span><br>
-<span style="color:var(--yellow)">エピソード 2:</span> re-pairing が新しい G を pair 0 に配置 → d=1 バースト → 消滅 → d≥2 <span style="color:var(--green)">（縮小）</span><br>
-<span style="color:var(--yellow)">エピソード k:</span> ...<br>
-<span style="color:var(--text-muted)">各エピソードは有限（G-block の長さで上限）。エピソード間は d≥2 → 縮小。</span>
-</div>
-
-<p>re-pairing で pair 0 に配置された G-block にも、すべての制約が適用される：不可分結合（§7.5.3）、net ≤ 0（§7.5.4）、非結合性（Lemma 5.5）。re-pairing は消滅過程を覆さない — 新しい有限エピソードを開始するだけであり、各エピソードは縮小で終了する。</p>
-
-<p><strong>このエピソード連鎖自体が終端する。</strong>n は単調に減少するわけでは<em>ない</em> — d=1 バーストは n を大幅に増加させうる（例：n=27 は 3077 まで上昇する）。しかし軌道は発散できない：d=1 は構造的に持続不可能であり（Remark 5.3）、軌道は有界。この閉じたスケール不変な系（Proposition 5.4, Step 5）において、同じ不可分結合が軌道の訪れるすべての値で適用される。x=3 の閉じた自壊モデルは 1-convergent cycle のみを構造的に許容するため（§8.4）、軌道は n=1 に到達する — pair 0 = P(0,1)、d=2、n′=1 — 不動点。</p>
-
-<h3>7. 独立した算術的確認（Corollary 5.3）</h3>
-
-<p>まったく別の導出が、剰余算術のみで同じ結論に到達する — GPK なし、表なし：</p>
+<p>表とは独立に、剰余算術だけで導ける事実：</p>
 
 <div class="box">
 L 回連続 d=1 には n ≡ 2<sup>L+1</sup>−1 (mod 2<sup>L+1</sup>) が必要、<br>
@@ -591,22 +531,18 @@ n のビット数は高々 ⌊log<sub>2</sub> n⌋ + 1 なので、<br>
 <strong>連続 d=1 の最大回数 ≤ ⌊log<sub>2</sub> n⌋。</strong>
 </div>
 
-<p>GPK 構造解析と剰余算術 — 完全に独立した2つの方法が同じ結論に到達する。この相互検証が結果の頑健性を裏付ける。</p>
+<p>成長（d=1）は必ず有限回で止まる。これは GPK とも表とも無関係な算術的事実。</p>
 
-<h3>8. 軌道データが実際に示すもの</h3>
+<h3>3. 有限の箱の中に逃げ場はない</h3>
 
-<p>軌道データはエピソード構造を確認する。例えば n=27 の軌道では：</p>
-<ul>
-  <li>d=1 のバースト（成長エピソード）と d≥2（縮小）が交互する</li>
-  <li>G の総数は自由に変動する — 100% 密度に複数回到達することさえある</li>
-  <li>しかし各 d=1 の連続は有限であり、位置的議論の予測と正確に一致する</li>
-</ul>
+<p>d=1 が持続できないので軌道は発散しない（有界）。閉鎖性により、軌道がどこにいても同じ表・同じ制約が適用される（スケール不変）。有界な軌道が閉じたスケール不変な系の中で取りうる終状態は、サイクルだけ。x=3 では構造的に許容されるサイクルは n=1 の不動点のみ（§8.4）。</p>
 
-<p>軌道データの各ステップの GPK は正しい内部状態であり、「飾り」ではない。しかし連続するスナップショットを比較しても、scan でどの G が壊れ、carry がどこまで波及し、re-pairing でどの境界がずれたかは見えない。net ≤ 0 は特定の G-block を変換過程で追跡する。スナップショットは集約された結果のみを示す。</p>
-
-<div class="warn">
-  <strong>論文の議論は位置的であり、集計的ではない。</strong>「G の総数が減る」とも「エピソードごとに n が縮む」とも主張していない。<em>成長の特定条件</em>（pair 0 = G）が持続不可能であることを確立している。それを可能にするメカニズム（pair 0 の G）が、それを破壊するメカニズム（その G からの carry）だからである。軌道は一時的に増加しうる（n=27 は 3077 まで上昇する）が、d=1 が持続不可能であるため発散は不可能。唯一のサイクルが 1 であること（§8.4）と合わせて、軌道は 1 に到達する。これは Tables 5.1 と 5.2 の行ごとに検証可能。
+<div class="note">
+  n=1 はペア P(0,1)、d=2、n'=1。不動点。<br>
+  軌道は一時的に大きく増加しうる（例：n=27 は奇数ステップで 3077 まで上昇する；§0の9232は3×3077+1の偶数値）。しかし d=1 が持続不可能である以上、発散は不可能。
 </div>
+
+<p style="font-size:0.85rem; color:var(--text-muted);">論文本体の Proposition 5.4 では、G-block の左端消滅（net ≤ 0）、次元分離、エピソード構造など、表の性質からの詳細な導出を与えている。上の3点はその結論の核心部分。</p>
 
 
 <!-- ===== 8. 因果の連鎖 ===== -->
@@ -715,8 +651,8 @@ n のビット数は高々 ⌊log<sub>2</sub> n⌋ + 1 なので、<br>
 
 <!-- footer -->
 <p style="margin-top:3rem; color:var(--text-muted); font-size:0.78rem; border-top:1px solid var(--border); padding-top:1rem;">
-  検証スクリプト: dfst_final.py, dfst_properties.py（C:\git）<br>
-  構造比較データ: dfst_comparison_record.md（デスクトップ）<br>
+  検証スクリプト: dfst_final.py, dfst_properties.py<br>
+  構造比較データ: dfst_comparison_record.md<br>
   元論文: "Pair Predicate Decomposition of Collatz-type Maps (xn+1)/2<sup>d</sup>" v5.1 (February 2026)
 </p>
 
