@@ -154,6 +154,31 @@
   }
   .verified::before { content: "✓ "; }
   .sn { color: var(--text-muted); font-size: 0.85rem; margin-right: 0.3rem; }
+  /* Trace visualization */
+  .trace { font-family:'Cascadia Code','Consolas',monospace; }
+  .trace .info { display:flex; flex-wrap:wrap; gap:16px; margin-bottom:8px; padding:8px 12px; background:var(--surface); border-radius:6px; font-size:12px; }
+  .trace .info .l { color:var(--text-muted); }
+  .trace .info .v { color:#ffa657; font-weight:bold; }
+  .trace .tw { border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+  .trace .th { display:flex; padding:5px 8px; background:var(--surface); border-bottom:1px solid var(--border); font-size:11px; color:var(--text-muted); font-weight:bold; }
+  .trace .th .hn { width:160px; text-align:right; padding-right:8px; }
+  .trace .th .hg { flex:1; padding-left:8px; }
+  .trace .r { display:flex; padding:0 8px; line-height:1.65; align-items:baseline; font-size:12px; }
+  .trace .rg { background:rgba(255,70,70,0.08); border-left:3px solid rgba(255,70,70,0.3); }
+  .trace .rq { background:rgba(70,130,255,0.05); border-left:3px solid transparent; }
+  .trace .rf { background:rgba(255,166,87,0.08); border-left:3px solid #ffa657; }
+  .trace .r .n { width:160px; text-align:right; padding-right:8px; white-space:nowrap; }
+  .trace .rg .n { color:#ff6b6b; }
+  .trace .rq .n { color:#6b8fbb; }
+  .trace .rf .n { color:#ffa657; font-weight:bold; }
+  .trace .r .g { flex:1; padding-left:8px; letter-spacing:0.5px; border-left:1px solid var(--border); }
+  .trace .gc { color:#ff6b6b; font-weight:bold; }
+  .trace .pc { color:#6b7b8d; }
+  .trace .kc { color:#252a30; }
+  .trace .ep { border-top:1px solid rgba(255,70,70,0.3); }
+  .trace .co { border-top:1px solid rgba(70,130,255,0.2); }
+  .trace .omit { display:flex; justify-content:center; color:var(--text-muted); font-size:11px; padding:4px 0; border-left:3px solid transparent; background:rgba(255,255,255,0.02); letter-spacing:0; }
+  .trace .peak-label { font-size:10px; color:#ffa657; margin-left:8px; white-space:nowrap; }
 </style>
 </head>
 <body>
@@ -569,6 +594,68 @@ Since n has at most ⌊log<sub>2</sub> n⌋ + 1 bits,<br>
 </div>
 
 <p style="font-size:0.85rem; color:var(--text-muted);">The paper's Proposition 5.4 provides a detailed derivation from table properties: leftmost G-block consumption (net ≤ 0), dimensional separation, episode structure. The three points above are the core of that conclusion.</p>
+
+
+<h3>Observed data: trajectory of n = 670,617,279</h3>
+
+<p>Below is an excerpt of the full 370-step trajectory (83 episodes) for n = 670,617,279. <span style="color:#ff6b6b;font-weight:bold">Red rows</span> = pair₀ is G (d=1, growth). <span style="color:#6b8fbb">Blue rows</span> = pair₀ ≠ G (d≥2, collapse). Horizontal lines mark episode boundaries.</p>
+
+<div class="trace">
+<div class="info">
+  <div><span class="l">steps </span><span class="v">370</span></div>
+  <div><span class="l">episodes </span><span class="v">83</span></div>
+  <div><span class="l">d=1 </span><span class="v">58%</span></div>
+  <div><span class="l">peak </span><span class="v">322,205,345,153</span></div>
+</div>
+<div class="tw">
+<div class="th"><div class="hn">n</div><div class="hg">GPK (pair₀ = left edge)</div></div>
+<!-- Episode 1: leading GGG block grows then collapses -->
+<div class="r rg ep"><div class="n">670,617,279</div><div class="g"><span class="gc">G</span><span class="gc">G</span><span class="gc">G</span><span class="pc">P</span><span class="pc">P</span><span class="gc">G</span><span class="kc">K</span><span class="gc">G</span><span class="kc">K</span><span class="pc">P</span><span class="gc">G</span><span class="gc">G</span><span class="gc">G</span><span class="pc">P</span><span class="pc">P</span></div></div>
+<div class="r rg"><div class="n">1,005,925,919</div><div class="g"><span class="gc">G</span><span class="gc">G</span><span class="pc">P</span><span class="kc">K</span><span class="pc">P</span><span class="pc">P</span><span class="gc">G</span><span class="kc">K</span><span class="pc">P</span><span class="pc">P</span><span class="gc">G</span><span class="gc">G</span><span class="gc">G</span><span class="pc">P</span><span class="gc">G</span></div></div>
+<div class="r rg"><div class="n">1,508,888,879</div><div class="g"><span class="gc">G</span><span class="gc">G</span><span class="pc">P</span><span class="kc">K</span><span class="pc">P</span><span class="kc">K</span><span class="pc">P</span><span class="gc">G</span><span class="gc">G</span><span class="gc">G</span><span class="pc">P</span><span class="gc">G</span><span class="pc">P</span><span class="pc">P</span><span class="pc">P</span><span class="pc">P</span></div></div>
+<div class="r rg"><div class="n">2,263,333,319</div><div class="g"><span class="gc">G</span><span class="pc">P</span><span class="kc">K</span><span class="gc">G</span><span class="pc">P</span><span class="pc">P</span><span class="gc">G</span><span class="pc">P</span><span class="gc">G</span><span class="pc">P</span><span class="pc">P</span><span class="gc">G</span><span class="pc">P</span><span class="pc">P</span><span class="kc">K</span><span class="pc">P</span></div></div>
+<div class="r rg"><div class="n">3,394,999,979</div><div class="g"><span class="gc">G</span><span class="pc">P</span><span class="pc">P</span><span class="pc">P</span><span class="pc">P</span><span class="pc">P</span><span class="pc">P</span><span class="pc">P</span><span class="gc">G</span><span class="pc">P</span><span class="pc">P</span><span class="pc">P</span><span class="pc">P</span><span class="pc">P</span><span class="kc">K</span><span class="gc">G</span></div></div>
+<div class="r rq co"><div class="n">5,092,499,969</div><div class="g"><span class="pc">P</span><span class="kc">K</span><span class="kc">K</span><span class="kc">K</span><span class="pc">P</span><span class="kc">K</span><span class="pc">P</span><span class="pc">P</span><span class="pc">P</span><span class="pc">P</span><span class="kc">K</span><span class="pc">P</span><span class="gc">G</span><span class="gc">G</span><span class="pc">P</span><span class="kc">K</span><span class="pc">P</span></div></div>
+<div class="r omit">⋮ 39 steps ⋮</div>
+<!-- Peak area -->
+<div class="r rg"><div class="n">214,803,563,435</div><div class="g"><span class="gc">G</span><span class="pc">P</span><span class="pc">P</span><span class="pc">P</span><span class="gc">G</span><span class="kc">K</span><span class="kc">K</span><span class="pc">P</span><span class="pc">P</span><span class="pc">P</span><span class="kc">K</span><span class="pc">P</span><span class="gc">G</span><span class="kc">K</span><span class="kc">K</span><span class="kc">K</span><span class="pc">P</span><span class="kc">K</span><span class="gc">G</span></div></div>
+<div class="r rq co"><div class="n">322,205,345,153</div><div class="g"><span class="pc">P</span><span class="kc">K</span><span class="kc">K</span><span class="pc">P</span><span class="pc">P</span><span class="pc">P</span><span class="pc">P</span><span class="pc">P</span><span class="gc">G</span><span class="gc">G</span><span class="pc">P</span><span class="gc">G</span><span class="kc">K</span><span class="pc">P</span><span class="kc">K</span><span class="kc">K</span><span class="gc">G</span><span class="pc">P</span><span class="kc">K</span><span class="pc">P</span><span class="peak-label">← peak</span></div></div>
+<div class="r rq"><div class="n">241,654,008,865</div><div class="g"><span class="pc">P</span><span class="kc">K</span><span class="pc">P</span><span class="kc">K</span><span class="kc">K</span><span class="gc">G</span><span class="kc">K</span><span class="pc">P</span><span class="gc">G</span><span class="kc">K</span><span class="gc">G</span><span class="pc">P</span><span class="gc">G</span><span class="kc">K</span><span class="kc">K</span><span class="pc">P</span><span class="kc">K</span><span class="pc">P</span><span class="gc">G</span></div></div>
+<div class="r omit">⋮ 74 steps ⋮</div>
+<!-- Episode ~63: typical mid-trajectory episode -->
+<div class="r rg ep"><div class="n">1,727,860,415</div><div class="g"><span class="gc">G</span><span class="gc">G</span><span class="gc">G</span><span class="pc">P</span><span class="pc">P</span><span class="gc">G</span><span class="kc">K</span><span class="kc">K</span><span class="pc">P</span><span class="gc">G</span><span class="gc">G</span><span class="gc">G</span><span class="pc">P</span><span class="pc">P</span><span class="pc">P</span><span class="pc">P</span></div></div>
+<div class="r rg"><div class="n">2,591,790,623</div><div class="g"><span class="gc">G</span><span class="gc">G</span><span class="pc">P</span><span class="kc">K</span><span class="pc">P</span><span class="pc">P</span><span class="pc">P</span><span class="pc">P</span><span class="gc">G</span><span class="pc">P</span><span class="gc">G</span><span class="pc">P</span><span class="pc">P</span><span class="pc">P</span><span class="pc">P</span><span class="pc">P</span></div></div>
+<div class="r rg"><div class="n">3,887,685,935</div><div class="g"><span class="gc">G</span><span class="gc">G</span><span class="pc">P</span><span class="kc">K</span><span class="pc">P</span><span class="kc">K</span><span class="pc">P</span><span class="pc">P</span><span class="pc">P</span><span class="pc">P</span><span class="gc">G</span><span class="pc">P</span><span class="gc">G</span><span class="pc">P</span><span class="pc">P</span><span class="gc">G</span></div></div>
+<div class="r rg"><div class="n">5,831,528,903</div><div class="g"><span class="gc">G</span><span class="pc">P</span><span class="kc">K</span><span class="gc">G</span><span class="pc">P</span><span class="kc">K</span><span class="pc">P</span><span class="kc">K</span><span class="pc">P</span><span class="pc">P</span><span class="pc">P</span><span class="pc">P</span><span class="gc">G</span><span class="pc">P</span><span class="pc">P</span><span class="pc">P</span><span class="pc">P</span></div></div>
+<div class="r rg"><div class="n">8,747,293,355</div><div class="g"><span class="gc">G</span><span class="pc">P</span><span class="pc">P</span><span class="pc">P</span><span class="pc">P</span><span class="pc">P</span><span class="pc">P</span><span class="kc">K</span><span class="pc">P</span><span class="kc">K</span><span class="pc">P</span><span class="pc">P</span><span class="pc">P</span><span class="pc">P</span><span class="kc">K</span><span class="kc">K</span><span class="pc">P</span></div></div>
+<div class="r rq co"><div class="n">13,120,940,033</div><div class="g"><span class="pc">P</span><span class="kc">K</span><span class="kc">K</span><span class="kc">K</span><span class="kc">K</span><span class="pc">P</span><span class="pc">P</span><span class="pc">P</span><span class="pc">P</span><span class="kc">K</span><span class="pc">P</span><span class="kc">K</span><span class="pc">P</span><span class="gc">G</span><span class="kc">K</span><span class="kc">K</span><span class="gc">G</span></div></div>
+<div class="r omit">⋮ 229 steps ⋮</div>
+<!-- Final descent -->
+<div class="r rg"><div class="n">287</div><div class="g"><span class="gc">G</span><span class="gc">G</span><span class="pc">P</span><span class="kc">K</span><span class="pc">P</span></div></div>
+<div class="r rg"><div class="n">431</div><div class="g"><span class="gc">G</span><span class="gc">G</span><span class="pc">P</span><span class="pc">P</span><span class="pc">P</span></div></div>
+<div class="r rg"><div class="n">647</div><div class="g"><span class="gc">G</span><span class="pc">P</span><span class="kc">K</span><span class="pc">P</span><span class="pc">P</span></div></div>
+<div class="r rg"><div class="n">971</div><div class="g"><span class="gc">G</span><span class="pc">P</span><span class="kc">K</span><span class="gc">G</span><span class="gc">G</span></div></div>
+<div class="r rq co"><div class="n">1,457</div><div class="g"><span class="pc">P</span><span class="kc">K</span><span class="gc">G</span><span class="pc">P</span><span class="pc">P</span><span class="pc">P</span></div></div>
+<div class="r rq"><div class="n">1,093</div><div class="g"><span class="pc">P</span><span class="pc">P</span><span class="kc">K</span><span class="pc">P</span><span class="kc">K</span><span class="pc">P</span></div></div>
+<div class="r rq"><div class="n">205</div><div class="g"><span class="pc">P</span><span class="gc">G</span><span class="kc">K</span><span class="gc">G</span></div></div>
+<div class="r rq"><div class="n">77</div><div class="g"><span class="pc">P</span><span class="gc">G</span><span class="kc">K</span><span class="pc">P</span></div></div>
+<div class="r rq"><div class="n">29</div><div class="g"><span class="pc">P</span><span class="gc">G</span><span class="pc">P</span></div></div>
+<div class="r rg ep"><div class="n">11</div><div class="g"><span class="gc">G</span><span class="pc">P</span></div></div>
+<div class="r rq co"><div class="n">17</div><div class="g"><span class="pc">P</span><span class="kc">K</span><span class="pc">P</span></div></div>
+<div class="r rq"><div class="n">13</div><div class="g"><span class="pc">P</span><span class="gc">G</span></div></div>
+<div class="r rq"><div class="n">5</div><div class="g"><span class="pc">P</span><span class="pc">P</span></div></div>
+<div class="r rf"><div class="n">1</div><div class="g"><span class="pc">P</span></div></div>
+</div>
+</div>
+
+<details style="margin-top:0.8rem;">
+<summary style="cursor:pointer; color:var(--accent); font-size:0.85rem;">Show all 370 steps</summary>
+<iframe src="collatz_trace_670617279.html" style="width:100%; height:70vh; border:1px solid var(--border); border-radius:8px; margin-top:0.5rem;"></iframe>
+</details>
+
+<p style="font-size:0.85rem; color:var(--text-muted); margin-top:0.8rem;">
+  Every red band (d=1 growth burst) terminates after finitely many steps, followed by a blue band (d≥2 collapse). This pattern repeats across all 83 episodes. The leading G is born, consumed, and collapses — while GPK strings shorten toward n=1. This is §7.5's argument made visible.
+</p>
 
 
 <!-- ===== 8 ===== -->
