@@ -1,0 +1,72 @@
+ GUIツールの演算構造が論文の主張にそった統計を正しくあつめているか検証
+
+● Explore(Explore collatz-gui source structure)
+  ⎿  Done (16 tool uses · 64.2k tokens · 2m 4s)
+  (ctrl+o to expand)
+
+● ソース構造は把握した。次は論文との整合を具体的に検証する。核心部分を読む。
+
+● Read 3 files (ctrl+o to expand)
+
+● コアモジュールを読んだ。論文との整合を検証する。
+
+  検証結果
+
+  1. GPK定義 — 論文 Definition 4.1 + Proposition 4.1 と一致
+
+  scan.rs:211-229 の pair_gpk():
+  g_mid = p_r & q_r;    // m6段 Generate
+  p_mid = p_r ^ q_r;    // m6段 Propagate
+  g_out = p_l & q_l;    // m4段 Generate
+  p_out = p_l ^ q_l;    // m4段 Propagate
+  g_i = g_out | (p_out & g_mid);  // 直列合成
+  p_i = p_out & p_mid;            // 直列合成
+  論文の G_pair = G_out | (P_out & G_mid), P_pair = P_out & P_mid と完全一致。
+
+  2. x=3 参照パターン — 定理B と一致
+
+  scan.rs:329-331: ref_R=(a[i-1], b[i]), ref_L=(b[i], a[i])
+
+  論文: s=1, t=0, s奇数 → ref_R(i) = (a[i-0-1], b[i]), ref_L(i) = (b[i-0], a[i])
+
+  m4段GPK: G_out = b[i] AND a[i] = m2(n)_i, P_out = b[i] XOR a[i] = m7(n)_i → 定理Bそのもの。
+
+  3. x=5 参照パターン — 定理C の前提と一致
+
+  scan.rs:396-398: ref_R=(b[i-1], b[i]), ref_L=(a[i-1], a[i])
+
+  m4段GPK: G_out = a[i-1] AND a[i] → 位置 i-1 に依存 → ペア独立性を破る（定理Cの実装上の証拠）。
+
+  4. Kogge-Stone — 論文 Proposition 4.3 と一致
+
+  packed.rs:45-63: 6回のイテレーション（shift 1,2,4,8,16,32）で合成則 g = g | (p & g_shifted), p = p & p_shifted
+  を適用。境界は単位元 (0, 1) でパディング。標準的な並列プリフィックスそのもの。
+
+  5. GPK統計の測定範囲 — 論文の主張と一致
+
+  最重要ポイント: GPK は xn+1 の加算フェーズでのみ計測され、2^d での除算では計測されない。
+
+  - scan.rs:260: if i < k { gpk_info.set_gpk(...) } — 加算中に記録
+  - scan.rs:295: postprocess() は GPK 記録後に呼ばれる
+  - packed.rs:232-234: GPK マスクは packed_scan_word() 内の加算結果から取得、postprocess前
+
+  除算フェーズ（postprocess）はGPKに一切寄与しない。
+
+  6. 初期キャリー c=1 — "+1" の実装
+
+  scan.rs:246: let mut c: u8 = 1;
+  packed.rs:211: let mut carry = 1u64;
+
+  xn+1 の "+1" がキャリー初期値として正しく注入されている。
+
+  7. テストによる相互検証
+
+  packed.rs:529-551: 逐次版とパックド版の結果一致テスト（n=1~999の全奇数、3n+1）— n', d,
+  GPK各カウント、最大キャリー連鎖長すべて一致を検証。
+
+  packed.rs:616-639: パックド版の結果を標準算術 (3n+1) >> trailing_zeros と照合（n=27の軌道20ステップ）。
+
+  ---
+  結論: ツールの演算構造は論文の主張に忠実に実装されている。GPK統計は xn+1
+  の加算キャリー構造のみを測定し、除算は含まない。参照パターン、直列合成、並列プリフィックス、すべて論文の定義・定理と一
+  致。テストコードで逐次版・パックド版・標準算術の3者間整合も確認済み。

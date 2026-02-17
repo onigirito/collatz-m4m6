@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Opus 4.6 — Implementation Verification</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Yu Gothic', sans-serif; line-height: 1.7; color: #222; background: #fafafa; padding: 32px 24px; max-width: 820px; margin: 0 auto; }
+  h1 { font-size: 1.4em; border-bottom: 2px solid #2a6496; padding-bottom: 8px; margin-bottom: 20px; color: #1a3a5c; }
+  h2 { font-size: 1.1em; color: #2a6496; margin: 24px 0 10px; border-left: 4px solid #2a6496; padding-left: 10px; }
+  p { margin-bottom: 10px; }
+  code { background: #e9ecef; padding: 1px 5px; border-radius: 3px; font-size: 0.88em; }
+  pre { background: #f0f4f8; border: 1px solid #c8d6e5; border-radius: 6px; padding: 12px 16px; font-family: 'Consolas', monospace; font-size: 0.85em; line-height: 1.8; margin: 10px 0 16px; overflow-x: auto; }
+  .result { background: #d4edda; border: 1px solid #28a745; border-radius: 6px; padding: 12px 16px; margin: 10px 0; font-weight: 600; color: #155724; }
+  .badge { display: inline-block; background: #2a6496; color: #fff; padding: 2px 10px; border-radius: 4px; font-size: 0.8em; margin-left: 6px; vertical-align: middle; }
+  ul { margin: 8px 0 12px 24px; }
+  li { margin-bottom: 4px; }
+  .meta { color: #666; font-size: 0.85em; margin-bottom: 20px; }
+  .conclusion { background: #1a3a5c; color: #fff; border-radius: 8px; padding: 18px 22px; margin: 24px 0; }
+  .conclusion strong { color: #ffd966; }
+</style>
+</head>
+<body>
+
+<h1>Claude Opus 4.6 — Implementation Verification <span class="badge">Automated</span></h1>
+<p class="meta">Model: claude-opus-4-6 | Date: 2026-02-13 | Method: Source code reading + paper cross-reference</p>
+
+<h2>1. GPK Definition — Paper Definition 4.1 + Proposition 4.1</h2>
+<p><code>scan.rs:211-229</code> <code>pair_gpk()</code>:</p>
+<pre>g_mid = p_r &amp; q_r;    // m6-stage Generate
+p_mid = p_r ^ q_r;    // m6-stage Propagate
+g_out = p_l &amp; q_l;    // m4-stage Generate
+p_out = p_l ^ q_l;    // m4-stage Propagate
+g_i = g_out | (p_out &amp; g_mid);  // Serial composition
+p_i = p_out &amp; p_mid;            // Serial composition</pre>
+<div class="result">G_pair = G_out | (P_out &amp; G_mid), P_pair = P_out &amp; P_mid — Exact match with paper.</div>
+
+<h2>2. x=3 Reference Pattern — Theorem B</h2>
+<p><code>scan.rs:329-331</code>: <code>ref_R=(a[i-1], b[i])</code>, <code>ref_L=(b[i], a[i])</code></p>
+<p>Paper: s=1, t=0, s odd &rarr; <code>ref_R(i) = (a[i-0-1], b[i])</code>, <code>ref_L(i) = (b[i-0], a[i])</code></p>
+<div class="result">m4-stage GPK: G_out = b[i] AND a[i] = m2(n)<sub>i</sub>, P_out = b[i] XOR a[i] = m7(n)<sub>i</sub> — This IS Theorem B.</div>
+
+<h2>3. x=5 Reference Pattern — Theorem C Premise</h2>
+<p><code>scan.rs:396-398</code>: <code>ref_R=(b[i-1], b[i])</code>, <code>ref_L=(a[i-1], a[i])</code></p>
+<div class="result">m4-stage GPK: G_out = a[i-1] AND a[i] — Depends on position i-1 — Breaks per-pair independence (implementation evidence for Theorem C).</div>
+
+<h2>4. Kogge-Stone — Paper Proposition 4.3</h2>
+<p><code>packed.rs:45-63</code>: 6 iterations (shift 1, 2, 4, 8, 16, 32) applying composition rule <code>g = g | (p &amp; g_shifted)</code>, <code>p = p &amp; p_shifted</code>. Boundary padded with identity element <code>(0, 1)</code>. Standard parallel prefix.</p>
+<div class="result">Exact match with paper's parallel prefix composition (Proposition 4.3).</div>
+
+<h2>5. GPK Statistics Scope — Paper's Central Claim</h2>
+<p><strong>Key point:</strong> GPK measures the carry structure of the <em>xn+1 addition only</em>. Division by 2<sup>d</sup> produces no GPK.</p>
+<ul>
+<li><code>scan.rs:260</code>: <code>if i &lt; k { gpk_info.set_gpk(...) }</code> — Recorded during addition</li>
+<li><code>scan.rs:295</code>: <code>postprocess()</code> called AFTER GPK recording</li>
+<li><code>packed.rs:232-234</code>: GPK masks extracted from <code>packed_scan_word()</code> addition results, before postprocess</li>
+</ul>
+<div class="result">Division phase (postprocess) contributes nothing to GPK. Verified.</div>
+
+<h2>6. Initial Carry c=1 — The "+1" in xn+1</h2>
+<p><code>scan.rs:246</code>: <code>let mut c: u8 = 1;</code><br>
+<code>packed.rs:211</code>: <code>let mut carry = 1u64;</code></p>
+<div class="result">The "+1" in xn+1 correctly injected as initial carry. Verified.</div>
+
+<h2>7. Cross-Verification via Tests</h2>
+<ul>
+<li><code>packed.rs:529-551</code>: Sequential vs packed result match test (all odd n=1&ndash;999, 3n+1) — n', d, G/P/K counts, max carry chain all verified.</li>
+<li><code>packed.rs:616-639</code>: Packed results vs standard arithmetic <code>(3n+1) &gt;&gt; trailing_zeros</code> (n=27 trajectory, 20 steps).</li>
+</ul>
+<div class="result">Three-way consistency: sequential scan, packed scan, standard arithmetic. Verified.</div>
+
+<div class="conclusion">
+<strong>Conclusion:</strong> The tool's computation structure faithfully implements the paper's claims. GPK statistics measure only the xn+1 addition carry structure, excluding division. Reference patterns, serial composition, parallel prefix — all match the paper's definitions and theorems. Three-way consistency between sequential, packed, and standard arithmetic confirmed via test suite.
+</div>
+
+</body>
+</html>
