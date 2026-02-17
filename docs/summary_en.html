@@ -290,6 +290,17 @@
 
 <p>Writing out all 16 cases gives <strong>Table 5.1</strong> — the core of the paper.</p>
 
+<div class="warn">
+  <strong>Pair ordering: from here on, pairs are listed ones-place-first (LSB order)</strong><br><br>
+  When writing a binary number, we normally put the largest digit on the left (just like decimal). This is called <strong>MSB order</strong> (Most Significant Bit first).<br>
+  The reverse — starting from the ones place (smallest digit) — is called <strong>LSB order</strong> (Least Significant Bit first).<br><br>
+  In §1–2, we used the human-readable MSB order:<br>
+  27 = <code>011011</code> → <code>(01)(10)(11)</code> → GPK = P, P, G<br><br>
+  But in addition, carries propagate from <strong>the ones place upward</strong> — exactly why you start from the rightmost column in long addition. The scan (table lookup) therefore <strong>processes the ones-place pair first</strong>.<br><br>
+  From here on, all pair sequences are listed in <strong>LSB order</strong> (pair 0 = ones-place pair).<br>
+  The same 27 becomes <code>(11)(10)(01)</code> = G, P, P. Note this is <strong>the reverse</strong> of §1–2's P, P, G.
+</div>
+
 <div class="example">
   <div class="example-title">Example: n = 71 → n' = 107 by table lookup only</div>
   71 = 01000111₂ → pairs (LSB order): (1,1), (0,1), (0,0), (0,1)<br>

@@ -299,9 +299,20 @@
 
 <p>この16通りを全部書き出したのが<strong>Table 5.1</strong>（論文の核心）。</p>
 
+<div class="warn">
+  <strong>ペアの並び順について：ここから「一の位から」の順に変わる</strong><br><br>
+  二進法の数を書くとき、普通は大きい桁を左に書く（十進法と同じ）。これを<strong>MSB順</strong>（Most Significant Bit = 最上位ビットが先）という。<br>
+  逆に、一の位（最小の桁）から並べる順を<strong>LSB順</strong>（Least Significant Bit = 最下位ビットが先）という。<br><br>
+  §1–2 では人間が読みやすいMSB順で書いた：<br>
+  27 = <code>011011</code> → <code>(01)(10)(11)</code> → GPK = P, P, G<br><br>
+  しかし足し算の繰り上がりは<strong>一の位から上の桁へ</strong>順に伝わる。筆算で右端から計算するのと全く同じ理由で、スキャン（表引き）は<strong>一の位のペアから順に処理する</strong>。<br><br>
+  以降、ペア列はすべて<strong>LSB順</strong>（pair 0 = 一の位側のペア）で記述する。<br>
+  同じ 27 なら <code>(11)(10)(01)</code> = G, P, P の順になる。§1–2 の P, P, G と<strong>並びが逆転する</strong>ことに注意。
+</div>
+
 <div class="example">
   <div class="example-title">例：n = 71 → n' = 107 を表引きだけで求める</div>
-  71 = 01000111₂ → ペア(LSB順)：(1,1), (0,1), (0,0), (0,1)<br>
+  71 = 01000111₂ → ペア（LSB順）：(1,1), (0,1), (0,0), (0,1)<br>
   GPK：G, P, K, P<br><br>
   初期状態 = <strong>S2</strong><br><br>
   pair 0: G(1,1) + S2 → Case 15 → 出力 P(1,0), carry=1 → 次: <strong>S3</strong> <span style="color:var(--red)">← G破壊、キャリー生成</span><br>
