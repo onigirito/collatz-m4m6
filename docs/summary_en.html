@@ -734,6 +734,24 @@ Since n has at most ⌊log<sub>2</sub> n⌋ + 1 bits,<br>
 
 <p>Net ≤ 0 does <strong>not</strong> mean total G decreases monotonically. New G-blocks can be born (P→G), and ÷2<sup>d</sup> can remove non-G pairs, raising G density — even back to 100%. What net ≤ 0 guarantees is that <strong>each individual leftmost G-block has a finite lifetime</strong>: each d=1 run (growth burst) must end, and every burst is followed by d≥2 collapse.</p>
 
+<h3>Computational verification and structural description</h3>
+
+<p>Computational verification of the Collatz conjecture (e.g., confirming all trajectories up to 2<sup>68</sup>) has made indispensable contributions — building confidence in the conjecture and confirming the absence of counterexamples. By its nature, however, each trajectory check is <strong>inductive verification within a finite space bounded by 1 on both ends</strong>, and extending it to all n faces an inherent barrier.</p>
+
+<ul>
+  <li>Each trajectory is a finite path: n → (finitely many ups and downs) → 1</li>
+  <li>But GPK sequences of length k have 4<sup>k</sup> possibilities, and k has no upper bound</li>
+  <li>Deriving "holds for all n" from finitely many checks requires a different layer of argument</li>
+</ul>
+
+<p>Table 5.1 sits at that layer. In just 16 rows it covers <strong>every pair position of every GPK sequence</strong>, depending on neither the length nor the content of the sequence. Where computational verification "confirms the fact for each individual n," the table "describes the structure common to all n." The two are not in opposition — they illuminate the same object from different layers.</p>
+
+<div class="note">
+  Computational verification: "this particular n reached 1" (accumulation of individual facts).<br>
+  Table construction: "for any n, at any pair position, G always produces carry" (description of structure).<br>
+  The latter explains <em>why</em> the vast body of evidence accumulated by the former holds.
+</div>
+
 
 <!-- ===== 10 ===== -->
 <h2><span class="sn">§10</span> Once the Table Is Built, the Conclusion Is Already Inside It</h2>
