@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://onigirito.github.io/collatz-m4m6/sitemap.xml
